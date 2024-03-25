@@ -1,0 +1,24 @@
+project:
+  type: website
+
+website:
+  title: "Connect Cookbook"
+  navbar:
+    left:
+      - href: index.qmd
+        text: Home
+
+  sidebar: 
+    style: "docked"
+    search: true
+    contents: 
+      - section: Admin
+        # contents: admin/*
+      - section: Publisher
+        # contents: publisher/*
+
+format:
+  html:
+    theme: cosmo
+    # css: styles.css
+    toc: true
