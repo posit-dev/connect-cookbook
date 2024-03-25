@@ -1,0 +1,133 @@
+---
+title: Retrieve Content Usage Statistics
+---
+
+This recipe yields summary usage statistics for a content item deployed on Connect.
+
+## Ingredients
+
+- CONNECT_SERVER environment variable
+- CONNECT_API_KEY environment variable for an administrator or publisher^[the publisher must have access to the content item to pull usage statistics]
+- Content guid 
+- DAYS_BACK environment variable to specify the historical window for reporting
+- START_DATE and END_DATE for date interval?
+
+## Method - R
+
+
+```{r}
+#| label: setup
+
+library(connectapi)
+library(tidyverse)
+
+
+```
+
+
+```{r}
+#| label: preflight
+
+# specify the guid for the content
+content_guid <- "0e6cc3a1-b168-40fe-9093-ce9fa403a1ea" #py-shiny
+content_guid <- "e33879ca-e251-49fa-b9bf-a56db9997048" #streamlit-app
+content_guid <- "0477855b-caeb-43e8-b3d9-28e0965e6230" #shiny-r
+
+# Specify timeframe to report on. Default is 30 days prior to today
+as_of_date = lubridate::today()
+days_back = 365
+
+report_from <- as_of_date - lubridate::ddays(days_back)
+
+# check for required information
+if(content_guid == ""){message("You must specify a content guid")}
+if (
+  nchar(Sys.getenv("CONNECT_SERVER")) == 0 ||
+  nchar(Sys.getenv("CONNECT_API_KEY")) == 0
+){message("The CONNECT_SERVER and CONNECT_API_KEY environment variables are required in order for this report to pull usage data. Please define these variables and then re-run the report.")}
+
+```
+
+```{r}
+# NOTICE `connectapi::connect` will automatically detect the environment variables CONNECT_SERVER and CONNECT_API_KEY. They do not need to be specified as arguments to this function, however, if these environment variables are not set, the code will fail
+
+# establish connection to Connect server
+client <- connectapi::connect()
+
+# determine which content usage endpoint to use, either `shiny` or `non-shiny`
+
+content_info <- connectapi::get_content(client, guid = content_guid)
+
+type <- content_info$app_mode
+
+if(type == "shiny" || type == "python-shiny"){
+  usage <- connectapi::get_usage_shiny(client, 
+                                       content_guid = content_guid, 
+                                       from = report_from, 
+                                       to = as_of_date,
+                                       limit = Inf) |>
+            dplyr::mutate(day = lubridate::floor_date(started, "day"))
+}else{
+  usage <- connectapi::get_usage_static(client, 
+                                        content_guid = content_guid, 
+                                        from = report_from,
+                                        to = as_of_date,
+                                        limit = Inf) |>
+            dplyr::mutate(day = lubridate::floor_date(time, "day"))
+  
+}
+
+```
+
+## Plot content visits over time
+```{r}
+usage |>
+    filter(day > as_of_date - ddays(days_back)) %>% 
+    group_by(day) %>% 
+    summarise(visits = n()) %>% 
+    arrange(desc(visits)) %>% 
+    {ggplot(., aes(day, visits)) + 
+     geom_point() +
+     geom_smooth(se = FALSE) +
+     theme_minimal() +
+     labs(
+       y = "# of Content Visits",
+       x = NULL,
+       title = glue::glue("Content visits for {content_info$title}"),
+       caption = glue::glue("content guid: {content_guid}")
+     )} 
+```
+
+## Plot content visits by user, top 20 users
+
+```{r}
+
+all_users <- connectapi::get_users(client, limit = Inf)
+
+usage %>%
+    group_by(user_guid) %>% 
+    summarise(visits = n()) %>% 
+    left_join(all_users, by = c(user_guid = "guid")) %>%
+    mutate(username = coalesce(username, "anonymous")) %>%
+    select(username, visits) %>% 
+    arrange(desc(visits)) %>% 
+    head(20) %>% 
+    {ggplot(., aes(reorder(username, visits), visits, fill=username)) + 
+     geom_bar(stat = "identity") +  
+     coord_flip() + 
+     theme_minimal() +
+     labs(
+       y = "Number of Content Visits",
+       x = NULL,
+       title = glue::glue("Content visits for {content_info$title}"),
+       caption = glue::glue("content guid: {content_guid}")
+     ) + 
+  theme(legend.position="none")}
+```
+
+## Extend the recipe
+
+- Deploy as a Quarto dashboard
+
+
+
