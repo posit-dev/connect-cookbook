@@ -11,8 +11,7 @@ This recipe yields summary usage statistics for a content item deployed on Conne
 - CONNECT_SERVER environment variable
 - CONNECT_API_KEY environment variable for an administrator or publisher^[the publisher must have access to the content item to retrieve usage statistics]
 - Content guid for content of interest
-- DAYS_BACK environment variable to specify the historical window for reporting
-- START_DATE and END_DATE for date interval?
+
 
 ## Method 
 
