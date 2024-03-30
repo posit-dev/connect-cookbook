@@ -1,0 +1,297 @@
+---
+title: Content Usage Dashboard
+format:
+  dashboard:
+     theme: default
+     orientation: rows
+---
+
+
+```{python}
+#| label: setup
+from posit.connect import Client
+from datetime import datetime, timedelta
+import os
+import sys
+import pandas as pd
+import numpy as np
+import plotnine as p9
+
+
+import requests ## TODO can remove this when SDK has usage implementation
+```
+
+
+```{python}
+#| label: user-defined inputs 
+
+# 1. specify the guid for the content
+# content_guid = "INSERT_CONTENT_GUID" 
+content_guid = "0477855b-caeb-43e8-b3d9-28e0965e6230" #shiny
+# content_guid = "725e31c7-1588-45bb-95d6-cee508798145" #jupyter
+
+# 2. Specify timeframe for the report. Default is 30 days prior to today
+as_of_date = datetime.today()
+days_back = 30
+
+# 3. For by-user summary, specify if the data should truncate to show only the Top N users for the content. Default is Inf for no truncation
+top_n = 20
+
+report_from = as_of_date - timedelta(days=days_back)
+
+```
+
+
+```{python}
+#| label: environment variable check
+
+if (
+    len(os.getenv("CONNECT_SERVER", "")) == 0
+    or len(os.getenv("CONNECT_API_KEY", "")) == 0
+):
+    sys.stdout.write("The CONNECT_SERVER and CONNECT_API_KEY environment variables are required in order for this report to pull usage data. Please define these variables and then re-run the report.")
+
+
+headers = {"Authorization": "Key " + os.getenv("CONNECT_API_KEY")} ## TODO can remove this when SDK has usage implementation
+
+```
+
+
+```{python}
+### Establish connection to Connect server
+# Note `Client()` will automatically detect the environment variables CONNECT_SERVER and CONNECT_API_KEY. They do not need to be specified as arguments to this function, however, if these environment variables are not set, the code will fail
+client = Client()
+
+### Determine if the desired content is Shiny or not. This will dictate which telemetry endpoint to use
+# Retrieve content details
+content_info = client.content.get(content_guid)
+
+# Determine type from the `app_mode`
+type = content_info.app_mode
+
+### Query appropriate telemetry endpoint for usage data
+if type == "shiny" or type == "python-shiny":
+
+  # Request visit records for the given content GUID
+  session = requests.Session()
+  session.headers.update({ "Authorization": f"Key {os.getenv("CONNECT_API_KEY")}" })
+  session.params.update({
+    "content_guid": content_guid,
+    "from": report_from.strftime('%Y-%m-%dT%H:%M:%SZ'),
+    "to": as_of_date.strftime('%Y-%m-%dT%H:%M:%SZ')
+      })
+  response = session.get(
+      f"{os.getenv("CONNECT_SERVER")}/__api__/v1/instrumentation/shiny/usage"
+  )
+
+  # Store all the results and the paging information
+  json_data = response.json()
+  next_page = json_data['paging']['next']
+  usage = pd.DataFrame(json_data['results'])
+
+  # Continue to page through additional records
+  # while we have a "next" reference
+  while next_page:
+    response = session.get(next_page)
+    json_data = response.json()
+    next_page = json_data['paging']['next']
+    results = pd.DataFrame(json_data['results'])
+    usage = pd.concat([usage, results])
+
+  usage['started'] = pd.to_datetime(usage['started'])
+  usage['day'] = usage['started'].dt.floor('D')
+
+
+else:
+  # Request visit records for the given content GUID
+  session = requests.Session()
+  session.headers.update({ "Authorization": f"Key {os.getenv("CONNECT_API_KEY")}" })
+  session.params.update({
+    "content_guid": content_guid,
+    "from": report_from.strftime('%Y-%m-%dT%H:%M:%SZ'),
+    "to": as_of_date.strftime('%Y-%m-%dT%H:%M:%SZ')
+      })
+  response = session.get(
+      f"{os.getenv("CONNECT_SERVER")}/__api__/v1/instrumentation/content/visits"
+  )
+
+  # Store all the results and the paging information
+  json_data = response.json()
+  next_page = json_data['paging']['next']
+  usage = pd.DataFrame(json_data['results'])
+
+  # Continue to page through additional records
+  # while we have a "next" reference
+  while next_page:
+    response = session.get(next_page)
+    json_data = response.json()
+    next_page = json_data['paging']['next']
+    results = pd.DataFrame(json_data['results'])
+    usage = pd.concat([usage, results])
+
+  usage['time'] = pd.to_datetime(usage['time'])
+  usage['day'] = usage['time'].dt.floor('D')
+
+  
+
+# ### Fetch all user details to cross reference user_guids with usernames
+all_users = pd.DataFrame(client.users.find())
+
+total_visits_in_period = len(usage)
+unique_visitors = len(usage.loc[usage['user_guid'].notna(), 'user_guid'].unique())
+
+```
+
+## Row
+
+
+
+Content usage report for **`{python} content_info.title`**, for the period of **`{python} report_from.strftime('%Y-%m-%d')`** to **`{python} as_of_date.strftime('%Y-%m-%d')`**
+
+
+
+
+
+## Row 
+
+```{python}
+#| content: valuebox
+#| title: "Total content visits in period"
+#| icon: binoculars
+#| color: "success"
+dict(
+  value = total_visits_in_period
+)
+```
+
+```{python}
+#| content: valuebox
+#| title: "Unique viewers in period"
+#| icon: people
+#| color: "success"
+dict(
+  value = unique_visitors
+)
+```
+
+
+## Row 
+```{python}
+#| label: plot content visits over time
+
+
+usage_plot_data = (usage.groupby('day')
+                        .size()
+                        .reset_index(name='visits')
+                        .sort_values(by='visits', ascending=False))
+  
+ 
+
+p9.ggplot(usage_plot_data, p9.aes(x='day', y='visits')) + \
+    p9.geom_point(color="#AE929F", size=1) + \
+    p9.geom_smooth(se=False, color="#546A7B") + \
+    p9.theme_minimal() + \
+    p9.labs(y=None, x=None, title="Content visits for " + content_info['title'])
+
+
+
+```
+
+
+
+
+```{python}
+#| label: table content visits by user
+#| html-table-processing: none
+#| eval: false
+
+(usage[['user_guid', 'day']]
+              .groupby('user_guid', dropna=False)
+              .apply(lambda grp: grp.assign(tot_visits = lambda x: x['user_guid'].size ) )
+              .drop(columns=['user_guid'])
+              .reset_index()
+
+
+              # .agg(day=('day', 'first'), tot_visits=('user_guid', 'size'))
+              .groupby(['user_guid', 'day'], dropna=False)
+              .agg(tot_visits=('tot_visits', 'first'), daily_visits=('day','size'))
+              .reset_index()
+              .merge(all_users, left_on='user_guid', right_on='guid', how='left')
+              .assign(username=lambda x: x['username'].fillna('anonymous'))
+              .loc[:, ['username', 'day', 'tot_visits']]
+              .drop_duplicates()
+              .sort_values(by='tot_visits', ascending=False)
+              .pivot_table(index='username', columns='day', values='tot_visits')
+              .head(top_n))
+
+
+usage |> 
+  select(user_guid, day) |> 
+  group_by(user_guid) |> 
+  mutate(tot_visits = n()) |> 
+  ungroup() |> 
+  group_by(user_guid, day) |> 
+  mutate(daily_visits = n()) |> 
+  ungroup() |> 
+  left_join(all_users, by = c(user_guid = "guid")) |> 
+  mutate(username = coalesce(username, "anonymous")) |> 
+  select(username, day, tot_visits, daily_visits) |> 
+  distinct() |> 
+  arrange(desc(tot_visits)) |> 
+  pivot_wider(names_from = day, values_from = daily_visits) |> 
+  head(top_n) |> 
+  gt(rowname_col = "username") |> 
+    tab_header(
+  title = if(top_n == Inf){
+    paste("Content visits by user")
+}else{
+    paste("Top", top_n, "content users")
+
+})  |> 
+    tab_stubhead(label = "username") |> 
+    cols_label(tot_visits = "total visits") |> 
+    cols_nanoplot(
+        columns = -c(tot_visits),
+        new_col_name = "daily visits",
+        missing_vals = "zero",
+        autoscale = FALSE,
+        options = nanoplot_options(
+          show_data_points = FALSE,
+          data_area_fill_color = "#CFD9C7",
+            data_line_stroke_color = "#546A7B")
+                ) 
+
+
+```
+
+##
+
+```{python}
+#| label: make a table of content details
+#| html-table-processing: none
+#| eval: false
+
+
+content_info |> 
+  select(created_time, last_deployed_time, content_url, dashboard_url, owner_guid) |>
+  # join with user info table to identify owner username
+  left_join(select(all_users,guid, username, email), by = c(owner_guid = "guid")) |> 
+    rename(
+      content_owner = username,
+      owner_email = email) |> 
+    select(-owner_guid) |> 
+    relocate(content_owner, owner_email) |> 
+   mutate(across(everything(), as.character)) |>
+   pivot_longer(everything(), names_to = "item", values_to = "value") |>
+    gt(rowname_col = "item") |> 
+    tab_options(column_labels.hidden = TRUE) |> 
+    tab_style(
+  style = cell_text(font = system_fonts("monospace-code")),
+  locations = cells_body(columns = value)
+  ) |> 
+    fmt_url(columns = value, rows = c("dashboard_url", "content_url")) |> 
+    fmt_date(columns = value, rows = c("created_time", "last_deployed_time"), date_style = "iso")
+  
+  
+  ```
+

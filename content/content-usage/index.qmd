@@ -88,6 +88,120 @@ The code samples below will yield content usage data as a data frame.
 
 ## Python 
 
+```{python}
+### Load required packages
+from posit.connect import Client
+from datetime import datetime, timedelta
+import os
+import sys
+import pandas as pd
+
+import requests ## TODO can remove this when SDK has usage implementation. see https://github.com/posit-dev/posit-sdk-py/issues/137
+
+
+### User-defined inputs
+# 1. specify the guid for the content
+content_guid = "INSERT_CONTENT_GUID" 
+
+# 2. Specify timeframe for the report. Default is 30 days prior to today
+as_of_date = datetime.today()
+days_back = 30
+
+# 3. For by-user summary, specify if the data should truncate to show only the Top N users for the content. Default is Inf for no truncation
+top_n = 20
+
+report_from = as_of_date - timedelta(days=days_back)
+
+### Establish connection to Connect server
+# Note `Client()` will automatically detect the environment variables CONNECT_SERVER and CONNECT_API_KEY. They do not need to be specified as arguments to this function, however, if these environment variables are not set, the code will fail
+client = Client()
+
+### Determine if the desired content is Shiny or not. This will dictate which telemetry endpoint to use
+# Retrieve content details
+content_info = client.content.get(content_guid)
+
+# Determine type from the `app_mode`
+type = content_info.app_mode
+
+### Query appropriate telemetry endpoint for usage data
+if type == "shiny" or type == "python-shiny":
+
+  # Request visit records for the given content GUID
+  session = requests.Session()
+  session.headers.update({ "Authorization": f"Key {os.getenv("CONNECT_API_KEY")}" })
+  session.params.update({
+    "content_guid": content_guid,
+    "from": report_from.strftime('%Y-%m-%dT%H:%M:%SZ'),
+    "to": as_of_date.strftime('%Y-%m-%dT%H:%M:%SZ')
+      })
+  response = session.get(
+      f"{os.getenv("CONNECT_SERVER")}/__api__/v1/instrumentation/shiny/usage"
+  )
+
+  # Store all the results and the paging information
+  json_data = response.json()
+  next_page = json_data['paging']['next']
+  usage = pd.DataFrame(json_data['results'])
+
+  # Continue to page through additional records
+  # while we have a "next" reference
+  while next_page:
+    response = session.get(next_page)
+    json_data = response.json()
+    next_page = json_data['paging']['next']
+    results = pd.DataFrame(json_data['results'])
+    usage = pd.concat([usage, results])
+
+  usage['started'] = pd.to_datetime(usage['started'])
+  usage['day'] = usage['started'].dt.floor('D')
+
+
+else:
+  # Request visit records for the given content GUID
+  session = requests.Session()
+  session.headers.update({ "Authorization": f"Key {os.getenv("CONNECT_API_KEY")}" })
+  session.params.update({
+    "content_guid": content_guid,
+    "from": report_from.strftime('%Y-%m-%dT%H:%M:%SZ'),
+    "to": as_of_date.strftime('%Y-%m-%dT%H:%M:%SZ')
+      })
+  response = session.get(
+      f"{os.getenv("CONNECT_SERVER")}/__api__/v1/instrumentation/content/visits"
+  )
+
+  # Store all the results and the paging information
+  json_data = response.json()
+  next_page = json_data['paging']['next']
+  usage = pd.DataFrame(json_data['results'])
+
+  # Continue to page through additional records
+  # while we have a "next" reference
+  while next_page:
+    response = session.get(next_page)
+    json_data = response.json()
+    next_page = json_data['paging']['next']
+    results = pd.DataFrame(json_data['results'])
+    usage = pd.concat([usage, results])
+
+  usage['time'] = pd.to_datetime(usage['time'])
+  usage['day'] = usage['time'].dt.floor('D')
+
+### View usage data as a data frame
+usage
+
+```
+
+<!-- TODO: can this be formatted better? -->
+Sample output:
+```
+	content_guid	    user_guid	        started                   ended	     data_version	day
+0	0477855b-caeb-...	7d7d3b07-1ca1-...	2024-03-08 17:14:24+00:00	2024-03-08T17:14:43Z	1	2024-03-08 00:00:00+00:00
+1	0477855b-caeb-...	7d7d3b07-1ca1-...	2024-03-12 16:20:31+00:00	2024-03-12T16:20:47Z	1	2024-03-12 00:00:00+00:00
+2	0477855b-caeb-...	d03a6b7a-c818-...	2024-03-14 16:13:16+00:00	2024-03-14T16:17:30Z	1	2024-03-14 00:00:00+00:00
+3	0477855b-caeb-...	1ec56831-7a34-...	2024-03-19 21:09:03+00:00	2024-03-19T21:10:05Z	1	2024-03-19 00:00:00+00:00
+4	0477855b-caeb-...	1ec56831-7a34-...	2024-03-19 21:39:07+00:00	2024-03-19T22:39:48Z	1	2024-03-19 00:00:00+00:00
+5	0477855b-caeb-...	d59e7a7b-9684-...	2024-03-20 00:36:29+00:00	2024-03-20T00:37:10Z	1	2024-03-20 00:00:00+00:00
+```
 
 ## R
 

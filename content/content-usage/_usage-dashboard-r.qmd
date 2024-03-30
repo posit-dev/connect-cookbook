@@ -4,8 +4,6 @@ format:
   dashboard:
      theme: default
      orientation: rows
-  email:
-    toc: false
 ---
 
 
@@ -55,7 +53,7 @@ if (
 client <- connectapi::connect()
 
 ### Determine if the desired content is Shiny or not. This will dictate which telemetry endpoint to use
-# Retrive content details
+# Retrieve content details
 content_info <- connectapi::get_content(client, guid = content_guid)
 
 # Determine type from the `app_mode`
@@ -125,7 +123,6 @@ list (
 #| label: plot content visits over time
 
 usage_plot_data <- usage |>
-    filter(day > as_of_date - ddays(days_back)) |> 
     group_by(day) |> 
     summarise(visits = n()) |> 
     arrange(desc(visits)) 
