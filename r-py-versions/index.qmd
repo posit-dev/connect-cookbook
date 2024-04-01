@@ -1,3 +1,246 @@
 ---
-title: Connect Cookbook
+title: Retrieve Content Information for R, Python, and Quarto versions
+execute: 
+  eval: false
 ---
+
+This recipe yields content information grouped by the versions of R, Python, or Quarto that were used to create that content. 
+
+## Requirements
+
+- CONNECT_SERVER environment variable
+- CONNECT_API_KEY environment variable for an administrator or publisher^[the publisher must have access to the content item to retrieve usage statistics]
+- Content guid for content of interest
+
+
+## Method 
+
+Connect records content visits (or "hits") for all content types. These may be user visits to the content or programmatic requests to content or APIs hosted on Connect. 
+
+
+
+
+
+
+
+
+
+::: {.callout-note}
+
+::: 
+
+This recipe provides methods for:
+
+1. Retrieving overall historical content usage
+2. Identifying usage by user
+3. Deploying a sample Quarto dashboard using these methods 
+
+
+### Setup
+
+Install the required packages.
+
+::: {.panel-tabset group="language"}
+## Python
+
+We strongly recommend the use of virtual environments to manage project-level dependencies. The code below uses `venv` for this purpose.
+
+```{.bash}
+# In your project directory
+
+# create virtual environment and activate it
+python -m venv .venv && source .venv/bin/activate
+
+# upgrade pip, setuptools, and install wheel
+python -m pip install -U pip setuptools wheel
+
+# install the `posit-sdk` package
+pip install posit-sdk
+```
+
+## R
+
+We strongly recommend the use of virtual environments to manage project-level dependencies. The code below uses `renv` for this purpose.
+
+```{r}
+# In your project directory
+
+# install `renv` package
+install.packages(renv)
+
+# initialize the project-level environment
+renv::init()
+
+# install required packages
+install.packages(c("connectapi", "tidyverse"))
+
+```
+
+
+:::
+
+
+### Retrieve historical XXXX data
+
+The code samples below will yield content XXXX data as a data frame.
+
+:::{.panel-tabset group="language"}
+
+## Python 
+
+```{python}
+
+```
+
+
+
+## R
+
+```{r}
+### Load required packages
+library(connectapi)
+library(tidyverse)
+
+### User-defined inputs
+# 1. specify the guid for the content
+# content_guid <- "INSERT_CONTENT_GUID" 
+
+# # 2. Specify timeframe for the report. Default is 30 days prior to today
+# as_of_date <- lubridate::today()
+# days_back <- 30
+
+# report_from <- as_of_date - lubridate::ddays(days_back)
+
+### Establish connection to Connect server
+# Note `connectapi::connect` will automatically detect the environment variables CONNECT_SERVER and CONNECT_API_KEY. They do not need to be specified as arguments to this function, however, if these environment variables are not set, the code will fail
+client <- connectapi::connect()
+
+### Determine if 
+# Retrieve content details
+content_info <- connectapi::get_content(client, limit = Inf)
+
+# Retain only MAJOR.MINOR version components.
+major_minor  <-  function(versions) {
+  sapply(versions, function(version) {
+    if (is.na(version) || version == "") {
+      NA
+    } else {
+      parts <- strsplit(version, ".", fixed = TRUE)[[1]]
+      paste(parts[1:2], collapse = ".")
+    }
+  })
+}
+
+version_info <- content_info |> 
+  mutate(
+    python_version = major_minor(py_version),
+    r_version = major_minor(r_version),
+    quarto_version = major_minor(quarto_version)
+  ) |> 
+  select(guid, title, created_time, last_deployed_time, 
+         app_mode, r_version, python_version, quarto_version, owner, owner_guid, id, app_role, content_url, dashboard_url)
+  
+# number of items by version
+
+version_table <- version_info |> 
+  select(python_version, r_version, quarto_version) |> 
+  group_by(python_version, r_version, quarto_version) |> 
+  summarise(N = n()) |> 
+  arrange(desc(python_version), desc(r_version), desc(quarto_version)) |> 
+  ungroup() 
+
+version_table()
+
+
+
+
+```
+
+Sample output:
+```
+
+```
+
+The output above can be plotted for a historical perspective on content usage. An example is included in the Quarto dashboard code at the end of this recipe.
+
+:::
+
+### Identifying usage by user
+
+The code samples below will yield by-user content usage data as a data frame. 
+
+::: {.panel-tabset group="language"}
+
+## Python
+
+
+## R
+
+```{r}
+### Get user details to cross reference `user_guid` with usernames
+all_users <- connectapi::get_users(client, limit = Inf)
+
+### Join user data with usage data
+by_user_usage <- usage |>
+                  select(user_guid, day) |> 
+                  group_by(user_guid) |> 
+                  # add a column for total visits/hits by that user
+                  mutate(total_visits = n()) |> 
+                  ungroup() |> 
+                  group_by(user_guid, day) |> 
+                  # add a column for visits/hits by that user on a particular day
+                  mutate(daily_visits = n()) |> 
+                  ungroup() |> 
+                  # cross reference with user data to bring in usernames
+                  left_join(all_users, by = c(user_guid = "guid")) |> 
+                  # if content was accessed anonymously, the user_guid will be NA. Replace these with "anonymous"
+                  mutate(username = coalesce(username, "anonymous")) |> 
+                  select(username, day, total_visits, daily_visits) |> 
+                  distinct() |> 
+                  arrange(desc(total_visits))
+
+### View by-user usage data as a data frame
+by_user_usage
+```
+
+Sample output:
+```
+# A tibble: 9 × 4
+  username       day                 total_visits daily_visits
+  <chr>          <dttm>                     <int>        <int>
+1 lisa           2024-03-19 00:00:00            4            2
+2 lisa           2024-03-20 00:00:00            4            2
+3 daniel         2024-03-08 00:00:00            2            1
+4 daniel         2024-03-12 00:00:00            2            1
+5 andrie         2024-03-20 00:00:00            2            1
+6 andrie         2024-03-21 00:00:00            2            1
+7 sam            2024-03-14 00:00:00            1            1
+8 katie          2024-03-25 00:00:00            1            1
+9 connor         2024-03-26 00:00:00            1            1
+```
+
+The output above can be plotted for a historical perspective on content usage. An example is included in the Quarto dashboard code at the end of this recipe.
+
+:::
+
+
+## Deploy a sample Quarto dashboard with these metrics
+
+The Quarto document below builds visualizations around the data frames retrieved above. This can be deployed in your own environment, or customized to your needs.
+
+<!-- TODO: Add github repo and manifest.json link -->
+
+
+
+::: {.panel-tabset group="language"}
+## Python
+
+Tab content
+
+## R
+
+<!-- TODO: Make this embed work -->
+
+{{ < include _usage-dashboard.qmd > }}
+
+:::
