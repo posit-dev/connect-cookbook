@@ -32,6 +32,7 @@ Running the following code will generate a table of all content that is set with
 #| code-fold: false
 #| output: false
 
+library(connectapi)
 library(dplyr)
 library(httr)
 library(tidyr)
@@ -53,14 +54,11 @@ if (is.null(CONNECT_SERVER) || is.na(CONNECT_SERVER) || nchar(CONNECT_SERVER) ==
       }
 
 # get content from Connect API
-response <- GET(paste(CONNECT_SERVER,"__api__/v1/content",sep = ""),
-              add_headers(Authorization = paste("Key", CONNECT_API_KEY))
-              ,query = list(include = "owner"))
+client <- connectapi::connect()
 
+content <- connectapi::get_content(client)
+content <- unnest_wider(content,col = c('owner'),names_sep = '$')
 
-content <- (httr::content(response, as = "text")) |>
-   jsonlite::fromJSON(simplifyDataFrame = T) |>
-   unnest(cols = c(owner),names_sep = '$')
 
 content[['Last Updated']] = as.Date(content[['last_deployed_time']])
 tbl <- content |>
