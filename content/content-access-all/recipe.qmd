@@ -1,0 +1,143 @@
+---
+title: "Recipe: Identify content set to No Login Required"
+format:
+  html:
+    toc: true
+---
+
+This recipe provides details on how to identify any content published on Connect with permissions set to `no login required`. 
+
+This recipe would come in handy while performing an audit of all content published on Posit Connect and there is a need to identify any content with open access. It also helps identify which URL is associated with such content and who the publisher is.
+
+## Ingredients
+
+Running this recipe requires administrator privileges on Posit Connect.
+You would need the following information in your environment to run this report:
+
+- CONNECT_SERVER
+- CONNECT_API_KEY
+
+
+## Method
+
+Running the following code will generate a table of all content that is set without restriction. The information includes URL of the content on Connect and the user name. 
+
+::: {.panel-tabset group="language"}
+
+## R
+
+```{r identify_content_r}
+#| eval: true
+#| warning: false
+#| code-fold: false
+#| output: false
+
+library(dplyr)
+library(httr)
+library(tidyr)
+library(gt)
+library(htmlwidgets)
+
+# get Server URL and API Key from the environment
+CONNECT_SERVER <- Sys.getenv('CONNECT_SERVER')
+CONNECT_API_KEY <-Sys.getenv('CONNECT_API_KEY')
+
+# check if API Key is valid
+if (is.null(CONNECT_API_KEY) || is.na(CONNECT_API_KEY) || nchar(CONNECT_API_KEY) == 0) {
+        stop("ERROR: valid CONNECT API key is required")
+      }
+
+# check if Server URL is valid
+if (is.null(CONNECT_SERVER) || is.na(CONNECT_SERVER) || nchar(CONNECT_SERVER) == 0) {
+        stop("ERROR: valid CONNECT server URL is required")
+      }
+
+# get content from Connect API
+response <- GET(paste(CONNECT_SERVER,"__api__/v1/content",sep = ""),
+              add_headers(Authorization = paste("Key", CONNECT_API_KEY))
+              ,query = list(include = "owner"))
+
+
+content <- (httr::content(response, as = "text")) |>
+   jsonlite::fromJSON(simplifyDataFrame = T) |>
+   unnest(cols = c(owner),names_sep = '$')
+
+content[['Last Updated']] = as.Date(content[['last_deployed_time']])
+tbl <- content |>
+  rename( "Owner" = "owner$username",
+         "App Name" = "title",
+         "URL" = "content_url") |>
+  filter(access_type=='all') |>
+  select(c("App Name","Owner","URL","Last Updated"))
+
+# Build a table
+gt(tbl) |>
+  fmt_url(columns = c("URL")) |> 
+    opt_interactive(use_search = TRUE)
+
+```
+
+## Python
+
+```{python identify_content_python}
+#| code-fold: false
+#| output: false
+#| eval: false
+
+import requests
+import os
+import pandas as pd
+import itables
+from dotenv import load_dotenv
+load_dotenv()
+
+CONNECT_SERVER = os.getenv("CONNECT_SERVER")
+CONNECT_API_KEY = os.getenv("CONNECT_API_KEY")
+
+def make_clickable(val):
+    return f'<a target="_blank" href="{val}">{val}</a>'
+
+# check if API Key is valid
+if not CONNECT_API_KEY:
+        raise ValueError("ERROR: valid CONNECT API key is required")
+
+# check if Server URL is valid
+if not CONNECT_SERVER:
+        raise ValueError("ERROR: valid CONNECT Server URL is required")
+
+# get content from Connect API
+headers = {"Authorization": "Key " + CONNECT_API_KEY}
+params = {"include": "owner"}
+
+response = requests.get(
+            CONNECT_SERVER + "__api__/v1/content/", headers=headers
+            , params=params
+            )
+content = pd.DataFrame(response.json())
+
+content["Owner"] = (pd.json_normalize(content["owner"]))["username"]
+content["Last Updated"] = pd.to_datetime(content["last_deployed_time"]).dt.date
+content = content[content['access_type']=='all']
+content = content[["title","Owner","content_url","Last Updated"]]
+content = content.rename(columns={"title": "App Name", "content_url": "URL"})
+content = content.style.format({'URL': make_clickable})
+
+# Build a table
+itables.show(content) 
+
+```
+
+
+:::
+
+## Further Action
+
+There can be many ways to take further action based on the content list generated above. 
+
+If the objective was the generate a list of the content, the above code block provides that information
+
+The URLs provided can be used to audit the access within networks,i.e., you can check if the URL is reachable outside your organization's network or not.
+
+The usage of each content listed above can be checked using the content usage recipe.
+
+The list above also identifies the users who published the content who can be reached out to if there is a need to modify the access.
