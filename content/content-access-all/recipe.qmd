@@ -89,29 +89,17 @@ import itables
 from dotenv import load_dotenv
 load_dotenv()
 
-CONNECT_SERVER = os.getenv("CONNECT_SERVER")
-CONNECT_API_KEY = os.getenv("CONNECT_API_KEY")
+def make_clickable(val):
+    return f'<a target="_blank" href="{val}">{val}</a>'
+
+from posit.connect import Client
 
 def make_clickable(val):
     return f'<a target="_blank" href="{val}">{val}</a>'
 
-# check if API Key is valid
-if not CONNECT_API_KEY:
-        raise ValueError("ERROR: valid CONNECT API key is required")
+connect = Client()
 
-# check if Server URL is valid
-if not CONNECT_SERVER:
-        raise ValueError("ERROR: valid CONNECT Server URL is required")
-
-# get content from Connect API
-headers = {"Authorization": "Key " + CONNECT_API_KEY}
-params = {"include": "owner"}
-
-response = requests.get(
-            CONNECT_SERVER + "__api__/v1/content/", headers=headers
-            , params=params
-            )
-content = pd.DataFrame(response.json())
+content = pd.DataFrame(connect.content.find())
 
 content["Owner"] = (pd.json_normalize(content["owner"]))["username"]
 content["Last Updated"] = pd.to_datetime(content["last_deployed_time"]).dt.date
@@ -120,7 +108,7 @@ content = content[["title","Owner","content_url","Last Updated"]]
 content = content.rename(columns={"title": "App Name", "content_url": "URL"})
 content = content.style.format({'URL': make_clickable})
 
-# Build a table
+# # Build a table
 itables.show(content) 
 
 ```
