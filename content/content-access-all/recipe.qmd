@@ -89,9 +89,6 @@ import itables
 from dotenv import load_dotenv
 load_dotenv()
 
-def make_clickable(val):
-    return f'<a target="_blank" href="{val}">{val}</a>'
-
 from posit.connect import Client
 
 def make_clickable(val):
