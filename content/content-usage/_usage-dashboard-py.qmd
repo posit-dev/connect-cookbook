@@ -14,7 +14,6 @@ from posit.connect import Client
 from datetime import date, timedelta
 import os
 import sys
-import pandas as pd
 import polars as pl
 import polars.selectors as cs
 import numpy as np
@@ -92,7 +91,7 @@ if type == "shiny" or type == "python-shiny":
   # Store all the results and the paging information
   json_data = response.json()
   next_page = json_data['paging']['next']
-  usage = pd.DataFrame(json_data['results'])
+  usage = pl.DataFrame(json_data['results'])
 
   # Continue to page through additional records
   # while we have a "next" reference
@@ -100,13 +99,17 @@ if type == "shiny" or type == "python-shiny":
     response = session.get(next_page)
     json_data = response.json()
     next_page = json_data['paging']['next']
-    results = pd.DataFrame(json_data['results'])
-    usage = pd.concat([usage, results])
+    results = pl.DataFrame(json_data['results'])
+    usage = pl.concat([usage, results])
 
-  usage['started'] = pd.to_datetime(usage['started'])
-  usage['day'] = usage['started'].dt.floor('D').dt.date
-
-  usage = pl.from_pandas(usage)
+  
+  usage = usage.with_columns(
+    pl.col("started").str.to_datetime("%Y-%m-%dT%H:%M:%SZ")
+  )
+  usage = usage.with_columns(
+    pl.col("started").cast(pl.Date).alias("day")
+  )
+  
 
 else:
   # Request visit records for the given content GUID
@@ -124,7 +127,7 @@ else:
   # Store all the results and the paging information
   json_data = response.json()
   next_page = json_data['paging']['next']
-  usage = pd.DataFrame(json_data['results'])
+  usage = pl.DataFrame(json_data['results'])
 
   # Continue to page through additional records
   # while we have a "next" reference
@@ -132,13 +135,16 @@ else:
     response = session.get(next_page)
     json_data = response.json()
     next_page = json_data['paging']['next']
-    results = pd.DataFrame(json_data['results'])
-    usage = pd.concat([usage, results])
+    results = pl.DataFrame(json_data['results'])
+    usage = pl.concat([usage, results])
 
-  usage['time'] = pd.to_datetime(usage['time'])
-  usage['day'] = usage['time'].dt.floor('D').dt.date
+  usage = usage.with_columns(
+    pl.col("time").str.to_datetime("%Y-%m-%dT%H:%M:%SZ")
+  )
+  usage = usage.with_columns(
+    pl.col("time").cast(pl.Date).alias("day")
+  )
 
-  usage = pl.from_pandas(usage)
 
 # ### Fetch all user details to cross reference user_guids with usernames
 all_users = pl.DataFrame(client.users.find())
