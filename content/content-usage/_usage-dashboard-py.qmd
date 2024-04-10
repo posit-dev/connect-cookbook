@@ -5,7 +5,8 @@ format:
      theme: default
      orientation: rows
 ---
-
+<!-- TODO: add code comments
+TODO: python code review and cleanup -->
 
 ```{python}
 #| label: setup
@@ -14,8 +15,11 @@ from datetime import datetime, timedelta
 import os
 import sys
 import pandas as pd
+import polars as pl
+import polars.selectors as cs
 import numpy as np
 import plotnine as p9
+from great_tables import GT
 
 
 import requests ## TODO can remove this when SDK has usage implementation
@@ -34,8 +38,9 @@ content_guid = "0477855b-caeb-43e8-b3d9-28e0965e6230" #shiny
 as_of_date = datetime.today()
 days_back = 30
 
-# 3. For by-user summary, specify if the data should truncate to show only the Top N users for the content. Default is Inf for no truncation
+# 3. For by-user summary, specify if the data should truncate to show only the Top N users for the content. Default is `np.nan` for no truncation
 top_n = 20
+top_n = np.nan
 
 report_from = as_of_date - timedelta(days=days_back)
 
@@ -99,8 +104,9 @@ if type == "shiny" or type == "python-shiny":
     usage = pd.concat([usage, results])
 
   usage['started'] = pd.to_datetime(usage['started'])
-  usage['day'] = usage['started'].dt.floor('D')
+  usage['day'] = usage['started'].dt.floor('D').dt.date
 
+  usage = pl.from_pandas(usage)
 
 else:
   # Request visit records for the given content GUID
@@ -130,15 +136,17 @@ else:
     usage = pd.concat([usage, results])
 
   usage['time'] = pd.to_datetime(usage['time'])
-  usage['day'] = usage['time'].dt.floor('D')
+  usage['day'] = usage['time'].dt.floor('D').dt.date
 
-  
+  usage = pl.from_pandas(usage)
 
 # ### Fetch all user details to cross reference user_guids with usernames
-all_users = pd.DataFrame(client.users.find())
+all_users = pl.DataFrame(client.users.find())
 
-total_visits_in_period = len(usage)
-unique_visitors = len(usage.loc[usage['user_guid'].notna(), 'user_guid'].unique())
+total_visits_in_period = usage.height
+unique_visitors = usage.filter(pl.col('user_guid').is_not_null()).select('user_guid').n_unique()
+
+
 
 ```
 
@@ -176,16 +184,15 @@ dict(
 
 
 ## Row 
-```{python}
-#| label: plot content visits over time
 
+```{python}
+# plot content visits over time
 
 usage_plot_data = (usage.groupby('day')
-                        .size()
-                        .reset_index(name='visits')
-                        .sort_values(by='visits', ascending=False))
-  
- 
+                     .agg(pl.count('day').alias('visits'))
+                     .sort('visits', descending=True)
+                     .select('day', 'visits')
+                     ) 
 
 p9.ggplot(usage_plot_data, p9.aes(x='day', y='visits')) + \
     p9.geom_point(color="#AE929F", size=1) + \
@@ -199,99 +206,106 @@ p9.ggplot(usage_plot_data, p9.aes(x='day', y='visits')) + \
 
 
 
-
 ```{python}
 #| label: table content visits by user
 #| html-table-processing: none
-#| eval: false
 
-(usage[['user_guid', 'day']]
-              .groupby('user_guid', dropna=False)
-              .apply(lambda grp: grp.assign(tot_visits = lambda x: x['user_guid'].size ) )
-              .drop(columns=['user_guid'])
-              .reset_index()
-
-
-              # .agg(day=('day', 'first'), tot_visits=('user_guid', 'size'))
-              .groupby(['user_guid', 'day'], dropna=False)
-              .agg(tot_visits=('tot_visits', 'first'), daily_visits=('day','size'))
-              .reset_index()
-              .merge(all_users, left_on='user_guid', right_on='guid', how='left')
-              .assign(username=lambda x: x['username'].fillna('anonymous'))
-              .loc[:, ['username', 'day', 'tot_visits']]
-              .drop_duplicates()
-              .sort_values(by='tot_visits', ascending=False)
-              .pivot_table(index='username', columns='day', values='tot_visits')
-              .head(top_n))
+# define table title and truncation amount
+if np.isnan(top_n):
+  title = "Content visits by user"
+  # have to define a very high number to feed into `head` below
+  truncation_rows = 99999
+else:
+  title = "Top {} content users".format(top_n)
+  truncation_rows = top_n
 
 
-usage |> 
-  select(user_guid, day) |> 
-  group_by(user_guid) |> 
-  mutate(tot_visits = n()) |> 
-  ungroup() |> 
-  group_by(user_guid, day) |> 
-  mutate(daily_visits = n()) |> 
-  ungroup() |> 
-  left_join(all_users, by = c(user_guid = "guid")) |> 
-  mutate(username = coalesce(username, "anonymous")) |> 
-  select(username, day, tot_visits, daily_visits) |> 
-  distinct() |> 
-  arrange(desc(tot_visits)) |> 
-  pivot_wider(names_from = day, values_from = daily_visits) |> 
-  head(top_n) |> 
-  gt(rowname_col = "username") |> 
-    tab_header(
-  title = if(top_n == Inf){
-    paste("Content visits by user")
-}else{
-    paste("Top", top_n, "content users")
+user_tot_usage = (
+  usage.groupby('user_guid')
+  .agg(pl.count()
+  .alias("tot_visits"))
+  .with_columns(pl.coalesce(pl.col('user_guid'), pl.lit('anonymous')).alias('user_guid'))
+  
+)
 
-})  |> 
-    tab_stubhead(label = "username") |> 
-    cols_label(tot_visits = "total visits") |> 
-    cols_nanoplot(
-        columns = -c(tot_visits),
-        new_col_name = "daily visits",
-        missing_vals = "zero",
-        autoscale = FALSE,
-        options = nanoplot_options(
-          show_data_points = FALSE,
-          data_area_fill_color = "#CFD9C7",
-            data_line_stroke_color = "#546A7B")
-                ) 
+user_daily_usage = (
+  usage.groupby(['user_guid','day'])
+  .agg(pl.count()
+  .alias("daily_visits"))
+  .join(all_users, left_on='user_guid', right_on='guid', how='left')
+  .with_columns(pl.coalesce(pl.col('username'), pl.lit('anonymous')).alias('username'))
+  .with_columns(pl.coalesce(pl.col('user_guid'), pl.lit('anonymous')).alias('user_guid'))
+  .select(['username', 'user_guid', 'day', 'daily_visits'])
+  .pivot(index=['username','user_guid'], values='daily_visits', columns='day')
+  .join(user_tot_usage, on='user_guid', how='left')
+  .sort('tot_visits', descending=True)
+  .drop('user_guid')
+  .head(truncation_rows)
+  .select('username','tot_visits',pl.col("*").exclude('username','tot_visits'))
+)
+
+# combine access data into one column list for plotting
+nanoplot_columns = user_daily_usage.drop('tot_visits','username').columns
+
+user_daily_usage_concatenated = (user_daily_usage
+.fill_null(0)
+.with_columns(pl.concat_str([pl.col(nanoplot_columns)], separator=" ").alias('combined'))
+.select('username', 'tot_visits', 'combined')
+)
+
+
+(
+    GT(user_daily_usage_concatenated, rowname_col="username")
+    .tab_header(title=title)
+    .tab_stubhead(label="username")
+    .cols_label(tot_visits = "total visits")
+    .fmt_nanoplot(
+      columns="combined",
+      autoscale=False,
+      options=nanoplot_options(
+          show_data_points = False,
+          data_area_fill_color = "#CFD9C7", #TODO: this isn't working. Ask Rich.
+          data_line_stroke_color = "#546A7B"
+      )
+    )
+)
 
 
 ```
+
 
 ##
 
 ```{python}
 #| label: make a table of content details
 #| html-table-processing: none
-#| eval: false
 
 
-content_info |> 
-  select(created_time, last_deployed_time, content_url, dashboard_url, owner_guid) |>
+wide_info = (
+  pl.DataFrame(content_info)
+  .select('created_time', 'last_deployed_time', 'content_url', 'dashboard_url', 'owner_guid')
   # join with user info table to identify owner username
-  left_join(select(all_users,guid, username, email), by = c(owner_guid = "guid")) |> 
-    rename(
-      content_owner = username,
-      owner_email = email) |> 
-    select(-owner_guid) |> 
-    relocate(content_owner, owner_email) |> 
-   mutate(across(everything(), as.character)) |>
-   pivot_longer(everything(), names_to = "item", values_to = "value") |>
-    gt(rowname_col = "item") |> 
-    tab_options(column_labels.hidden = TRUE) |> 
-    tab_style(
-  style = cell_text(font = system_fonts("monospace-code")),
-  locations = cells_body(columns = value)
-  ) |> 
-    fmt_url(columns = value, rows = c("dashboard_url", "content_url")) |> 
-    fmt_date(columns = value, rows = c("created_time", "last_deployed_time"), date_style = "iso")
-  
+  .join(all_users.select('guid','username','email'),left_on='owner_guid',right_on='guid', how="left")
+  .rename({"username": "content_owner",
+          "email": "owner_email"})
+  .drop('owner_guid')
+  # reorder columns
+  .select('content_owner','owner_email',pl.col("*").exclude('content_owner','owner_email'))
+  )
+
+
+
+long_info = (wide_info  
+  .melt(value_vars=wide_info.columns, variable_name="item", value_name="value")
+)
+
+(
+  GT(long_info, rowname_col="item")
+  .tab_options(column_labels_hidden=True)
+  # .fmt_date(columns="value", rows=['created_time','last_deployed_time'], date_style="iso") # TODO: fix this
+)
+
+
   
   ```
 
