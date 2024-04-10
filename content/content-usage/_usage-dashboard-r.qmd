@@ -49,7 +49,7 @@ if (
 
 ```{r}
 ### Establish connection to Connect server
-# Note `connectapi::connect` will automatically detect the environment variables CONNECT_SERVER and CONNECT_API_KEY. They do not need to be specified as arguments to this function, however, if these environment variables are not set, the code will fail
+# Note `connectapi::connect` automatically detects the environment variables CONNECT_SERVER and CONNECT_API_KEY. They do not need to be specified as arguments to this function, however, if these environment variables are not set, the code will fail
 client <- connectapi::connect()
 
 ### Determine if the desired content is Shiny or not. This will dictate which telemetry endpoint to use
@@ -60,14 +60,14 @@ content_info <- connectapi::get_content(client, guid = content_guid)
 type <- content_info$app_mode
 
 ### Query appropriate telemetry endpoint for usage data
-if(type == "shiny" || type == "python-shiny"){
+if (type == "shiny" || type == "python-shiny"){
   usage <- connectapi::get_usage_shiny(client, 
                                        content_guid = content_guid, 
                                        from = report_from, 
                                        to = as_of_date,
                                        limit = Inf) |>
             dplyr::mutate(day = lubridate::floor_date(started, "day"))
-}else{
+} else {
   usage <- connectapi::get_usage_static(client, 
                                         content_guid = content_guid, 
                                         from = report_from,

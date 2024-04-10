@@ -63,7 +63,7 @@ headers = {"Authorization": "Key " + os.getenv("CONNECT_API_KEY")} ## TODO can r
 
 ```{python}
 ### Establish connection to Connect server
-# Note `Client()` will automatically detect the environment variables CONNECT_SERVER and CONNECT_API_KEY. They do not need to be specified as arguments to this function, however, if these environment variables are not set, the code will fail
+# Note `Client()` automatically detects the environment variables CONNECT_SERVER and CONNECT_API_KEY. They do not need to be specified as arguments to this function, however, if these environment variables are not set, the code will fail
 client = Client()
 
 ### Determine if the desired content is Shiny or not. This will dictate which telemetry endpoint to use
