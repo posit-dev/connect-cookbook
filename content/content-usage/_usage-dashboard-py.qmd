@@ -236,6 +236,7 @@ user_daily_usage = (
   .with_columns(pl.coalesce(pl.col('username'), pl.lit('anonymous')).alias('username'))
   .with_columns(pl.coalesce(pl.col('user_guid'), pl.lit('anonymous')).alias('user_guid'))
   .select(['username', 'user_guid', 'day', 'daily_visits'])
+  .sort('day')
   .pivot(index=['username','user_guid'], values='daily_visits', columns='day')
   .join(user_tot_usage, on='user_guid', how='left')
   .sort('tot_visits', descending=True)
