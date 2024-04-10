@@ -11,7 +11,7 @@ TODO: python code review and cleanup -->
 ```{python}
 #| label: setup
 from posit.connect import Client
-from datetime import datetime, timedelta
+from datetime import date, timedelta
 import os
 import sys
 import pandas as pd
@@ -35,7 +35,7 @@ content_guid = "0477855b-caeb-43e8-b3d9-28e0965e6230" #shiny
 # content_guid = "725e31c7-1588-45bb-95d6-cee508798145" #jupyter
 
 # 2. Specify timeframe for the report. Default is 30 days prior to today
-as_of_date = datetime.today()
+as_of_date = date.today()
 days_back = 30
 
 # 3. For by-user summary, specify if the data should truncate to show only the Top N users for the content. Default is `np.nan` for no truncation
