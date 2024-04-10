@@ -19,7 +19,7 @@ import polars as pl
 import polars.selectors as cs
 import numpy as np
 import plotnine as p9
-from great_tables import GT
+from great_tables import GT, nanoplot_options
 
 
 import requests ## TODO can remove this when SDK has usage implementation
@@ -188,8 +188,8 @@ dict(
 ```{python}
 # plot content visits over time
 
-usage_plot_data = (usage.groupby('day')
-                     .agg(pl.count('day').alias('visits'))
+usage_plot_data = (usage.group_by('day')
+                     .agg(pl.len().alias('visits'))
                      .sort('visits', descending=True)
                      .select('day', 'visits')
                      ) 
@@ -207,8 +207,8 @@ p9.ggplot(usage_plot_data, p9.aes(x='day', y='visits')) + \
 
 
 ```{python}
-#| label: table content visits by user
 #| html-table-processing: none
+# table content visits by user
 
 # define table title and truncation amount
 if np.isnan(top_n):
@@ -221,16 +221,16 @@ else:
 
 
 user_tot_usage = (
-  usage.groupby('user_guid')
-  .agg(pl.count()
+  usage.group_by('user_guid')
+  .agg(pl.len()
   .alias("tot_visits"))
   .with_columns(pl.coalesce(pl.col('user_guid'), pl.lit('anonymous')).alias('user_guid'))
   
 )
 
 user_daily_usage = (
-  usage.groupby(['user_guid','day'])
-  .agg(pl.count()
+  usage.group_by(['user_guid','day'])
+  .agg(pl.len()
   .alias("daily_visits"))
   .join(all_users, left_on='user_guid', right_on='guid', how='left')
   .with_columns(pl.coalesce(pl.col('username'), pl.lit('anonymous')).alias('username'))
@@ -264,7 +264,7 @@ user_daily_usage_concatenated = (user_daily_usage
       autoscale=False,
       options=nanoplot_options(
           show_data_points = False,
-          data_area_fill_color = "#CFD9C7", #TODO: this isn't working. Ask Rich.
+          data_area_fill_color = "#CFD9C7",
           data_line_stroke_color = "#546A7B"
       )
     )
@@ -277,13 +277,14 @@ user_daily_usage_concatenated = (user_daily_usage
 ##
 
 ```{python}
-#| label: make a table of content details
 #| html-table-processing: none
+# make a table of content details
 
 
 wide_info = (
   pl.DataFrame(content_info)
-  .select('created_time', 'last_deployed_time', 'content_url', 'dashboard_url', 'owner_guid')
+  .select('created_time', 'last_deployed_time', 
+          'content_url', 'dashboard_url', 'owner_guid')
   # join with user info table to identify owner username
   .join(all_users.select('guid','username','email'),left_on='owner_guid',right_on='guid', how="left")
   .rename({"username": "content_owner",
@@ -291,21 +292,23 @@ wide_info = (
   .drop('owner_guid')
   # reorder columns
   .select('content_owner','owner_email',pl.col("*").exclude('content_owner','owner_email'))
-  )
+)
 
 
 
-long_info = (wide_info  
+long_info = (
+  wide_info  
   .melt(value_vars=wide_info.columns, variable_name="item", value_name="value")
 )
 
 (
-  GT(long_info, rowname_col="item")
-  .tab_options(column_labels_hidden=True)
-  # .fmt_date(columns="value", rows=['created_time','last_deployed_time'], date_style="iso") # TODO: fix this
+    GT(long_info, rowname_col="item")
+    .tab_options(column_labels_hidden=True)
+    # .fmt_date(columns="value", rows=['created_time','last_deployed_time'], date_style="iso") # TODO: fix this
 )
+# TODO: add system font styling and URL formats
 
 
   
-  ```
+```
 
