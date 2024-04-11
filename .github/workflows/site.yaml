@@ -1,6 +1,6 @@
 name: site
 on:
-  # Runs on pushes targeting the default branch
+  # Runs on pushes
   push:
 
   # Allows you to run this workflow manually from the Actions tab
@@ -35,4 +35,5 @@ jobs:
           path: '_site'
       - id: deployment
         uses: actions/deploy-pages@v4
-        if: github.ref == 'refs/heads/main'
+        with:
+          preview: 'true'
