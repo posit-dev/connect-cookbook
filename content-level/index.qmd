@@ -1,4 +1,0 @@
----
-title: Recipes for management of content and content settings 
----
-
