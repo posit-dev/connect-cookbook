@@ -13,11 +13,11 @@ website:
     search: true
     contents: 
       - section: Server Management
-        contents: server-level
+        contents: server
       - section: Content Management
-        contents: content-level
+        contents: content
       - section: User/Group Management
-        contents: user-level
+        contents: user
 
 format:
   html:
