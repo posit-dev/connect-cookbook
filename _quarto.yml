@@ -12,10 +12,12 @@ website:
     style: "docked"
     search: true
     contents: 
-      - section: Admin
-        # contents: admin/*
-      - section: Publisher
-        # contents: publisher/*
+      - section: Server Management
+        contents: server-level
+      - section: Content Management
+        contents: content-level
+      - section: User/Group Management
+        contents: user-level
 
 format:
   html:
