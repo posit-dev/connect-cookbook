@@ -1,3 +1,11 @@
 ---
 title: Connect Cookbook
 ---
+
+Welcome
+
+These recipes are organized according to tasks surrounding:
+
+1. Server-level tasks: managment of the server, processes, and resources 
+2. Content-level tasks: mangement of content and content settings
+3. User- and group-level tasks: management and visibility of users and groups
