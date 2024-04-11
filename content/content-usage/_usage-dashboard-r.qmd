@@ -208,6 +208,10 @@ content_info |>
     select(-owner_guid) |> 
     relocate(content_owner, owner_email) |> 
    mutate(across(everything(), as.character)) |>
+   # format owner email as a hyperlink 
+   # TODO: resolution of https://github.com/rstudio/gt/issues/1616 will make this unnecessary
+    mutate(owner_email, owner_email=glue::glue("[{owner_email}](mailto:{owner_email})")) |> 
+   # convert to long format for better formatting of summary table
    pivot_longer(everything(), names_to = "item", values_to = "value") |>
     gt(rowname_col = "item") |> 
     tab_options(column_labels.hidden = TRUE) |> 
@@ -215,7 +219,7 @@ content_info |>
   style = cell_text(font = system_fonts("monospace-code")),
   locations = cells_body(columns = value)
   ) |> 
-    fmt_url(columns = value, rows = c("dashboard_url", "content_url")) |> 
+    fmt_url(columns = value, rows = c("dashboard_url", "content_url","owner_email")) |> 
     fmt_date(columns = value, rows = c("created_time", "last_deployed_time"), date_style = "iso")
   
   

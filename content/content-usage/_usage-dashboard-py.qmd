@@ -18,7 +18,7 @@ import polars as pl
 import polars.selectors as cs
 import numpy as np
 import plotnine as p9
-from great_tables import GT, nanoplot_options
+from great_tables import GT, nanoplot_options, style, loc, system_fonts, md
 
 
 import requests ## TODO can remove this when SDK has usage implementation
@@ -299,6 +299,14 @@ wide_info = (
   .drop('owner_guid')
   # reorder columns
   .select('content_owner','owner_email',pl.col("*").exclude('content_owner','owner_email'))
+  # format the urls TODO: this will be unnecessary when great_tables adds fmt_url. ADD GH Issue link here for tracking
+  .with_columns(pl.col(["content_url","dashboard_url"]).apply(lambda x: f"<{x}>"))
+  .with_columns(pl.col(["owner_email"]).apply(lambda x: f"[{x}](mailto:{x})"))
+  # format dates
+  .with_columns(pl.col(['created_time','last_deployed_time']).str.replace(r"T.*", "")
+  )
+
+
 )
 
 
@@ -311,9 +319,12 @@ long_info = (
 (
     GT(long_info, rowname_col="item")
     .tab_options(column_labels_hidden=True)
-    # .fmt_date(columns="value", rows=['created_time','last_deployed_time'], date_style="iso") # TODO: fix this
+    .tab_style(style=style.text(font="Courier"),locations=loc.body(columns="value"))
+    .fmt_markdown(columns="value", rows=['content_url', 'dashboard_url', 'owner_email'])
+    .tab_style(style=style.text(decorate="underline"),locations=loc.body(rows=['content_url','dashboard_url','owner_email'], columns="value"))
+    
 )
-# TODO: add system font styling and URL formats
+# TODO: show nanoplot value as integer. ADD GH issue
 
 
   
