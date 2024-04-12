@@ -28,29 +28,31 @@ content_guid <- "0477855b-caeb-43e8-b3d9-28e0965e6230"
 as_of_date <- lubridate::today()
 days_back <- 30
 
-# 3. For by-user summary, specify if the data should truncate to show only the Top N users for the content. Default is Inf for no truncation
-top_n <- 20
+# 3. Specify if the summary should show only the Top N users for the content, or all users (as indicated by `Inf`). Default is `Inf` so that all users are shown.
+top_n <- Inf
+
+# Note: The CONNECT_SERVER and CONNECT_API_KEY environment variables are required for this report to pull usage data. Use environment variables for added security; do not hard-code your API key or other secrets.
+
+```
+
+
+```{r}
+#| label: report timeframe
 
 report_from <- as_of_date - lubridate::ddays(days_back)
 
 ```
 
-
 ```{r}
-#| label: environment variable check
+#| label: Establish connection to Connect server
 
-if (
-  nchar(Sys.getenv("CONNECT_SERVER")) == 0 ||
-  nchar(Sys.getenv("CONNECT_API_KEY")) == 0
-){message("The CONNECT_SERVER and CONNECT_API_KEY environment variables are required in order for this report to pull usage data. Please define these variables and then re-run the report.")}
+# Note `connectapi::connect` automatically detects the environment variables CONNECT_SERVER and CONNECT_API_KEY. They do not need to be specified as arguments to this function, however, if these environment variables are not set, the code will fail
+client <- connectapi::connect()
 
 ```
 
-
 ```{r}
-### Establish connection to Connect server
-# Note `connectapi::connect` automatically detects the environment variables CONNECT_SERVER and CONNECT_API_KEY. They do not need to be specified as arguments to this function, however, if these environment variables are not set, the code will fail
-client <- connectapi::connect()
+#| label: Get content info and usage details
 
 ### Determine if the desired content is Shiny or not. This will dictate which telemetry endpoint to use
 # Retrieve content details
@@ -80,6 +82,7 @@ if (type == "shiny" || type == "python-shiny"){
 ### Fetch all user details to cross reference user_guids with usernames
 all_users <- connectapi::get_users(client, limit = Inf)
 
+### Count total visits and unique visitors
 total_visits_in_period <- nrow(usage)
 unique_visitors <- usage |> filter(!is.na(user_guid)) |>pull(user_guid) |> unique() |> length()
 
@@ -87,12 +90,7 @@ unique_visitors <- usage |> filter(!is.na(user_guid)) |>pull(user_guid) |> uniqu
 
 ## Row
 
-
-
 Content usage report for **`r content_info$title`**, for the period of **`r report_from`** to **`r as_of_date`**
-
-
-
 
 
 ## Row 
@@ -119,6 +117,7 @@ list (
 
 
 ## Row 
+
 ```{r}
 #| label: plot content visits over time
 
@@ -127,7 +126,7 @@ usage_plot_data <- usage |>
     summarise(visits = n()) |> 
     arrange(desc(visits)) 
   
- 
+ # generate plot
  {ggplot(usage_plot_data, aes(day, visits)) + 
      geom_point(color = "#AE929F", size = 1) +
      geom_smooth(se = FALSE, color = "#546A7B") +
@@ -140,16 +139,14 @@ usage_plot_data <- usage |>
       ggplotly(tooltip = c("y")) |> 
       config(displayModeBar = FALSE)
 
-
 ```
 
 
-
-
 ```{r}
-#| label: table content visits by user
+#| label: Create table of content visits by user
 #| html-table-processing: none
 
+### Make a table of a user's daily visits
 
 usage |> 
   select(user_guid, day) |> 
@@ -170,22 +167,21 @@ usage |>
     tab_header(
   title = if(top_n == Inf){
     paste("Content visits by user")
-}else{
-    paste("Top", top_n, "content users")
-
-})  |> 
-    tab_stubhead(label = "username") |> 
-    cols_label(tot_visits = "total visits") |> 
-    cols_nanoplot(
-        columns = -c(tot_visits),
-        new_col_name = "daily visits",
-        missing_vals = "zero",
-        autoscale = FALSE,
-        options = nanoplot_options(
-          show_data_points = FALSE,
-          data_area_fill_color = "#CFD9C7",
-            data_line_stroke_color = "#546A7B")
-                ) 
+    }else{
+    paste("Top", top_n, "content users")})  |> 
+  tab_stubhead(label = "username") |> 
+  cols_label(tot_visits = "total visits") |> 
+  cols_nanoplot(
+      columns = -c(tot_visits),
+      new_col_name = "daily visits",
+      missing_vals = "zero",
+      autoscale = FALSE,
+      options = nanoplot_options(
+        show_data_points = FALSE,
+        data_area_fill_color = "#CFD9C7",
+        data_line_stroke_color = "#546A7B"
+        )
+  ) 
 
 
 ```
@@ -197,31 +193,34 @@ usage |>
 #| html-table-processing: none
 
 
-
+### Clean content info and present as a table
 content_info |> 
   select(created_time, last_deployed_time, content_url, dashboard_url, owner_guid) |>
   # join with user info table to identify owner username
   left_join(select(all_users,guid, username, email), by = c(owner_guid = "guid")) |> 
-    rename(
-      content_owner = username,
-      owner_email = email) |> 
-    select(-owner_guid) |> 
-    relocate(content_owner, owner_email) |> 
-   mutate(across(everything(), as.character)) |>
-   # format owner email as a hyperlink 
-   # TODO: resolution of https://github.com/rstudio/gt/issues/1616 will make this unnecessary
-    mutate(owner_email, owner_email=glue::glue("[{owner_email}](mailto:{owner_email})")) |> 
-   # convert to long format for better formatting of summary table
-   pivot_longer(everything(), names_to = "item", values_to = "value") |>
-    gt(rowname_col = "item") |> 
+  rename(
+    content_owner = username,
+    owner_email = email) |> 
+  select(-owner_guid) |> 
+  relocate(content_owner, owner_email) |> 
+  mutate(across(everything(), as.character)) |>
+  # format owner email as a hyperlink 
+  # TODO: resolution of https://github.com/rstudio/gt/issues/1616 will make this unnecessary
+  mutate(owner_email, owner_email=glue::glue("[{owner_email}](mailto:{owner_email})")) |> 
+  # convert to long format for better formatting of summary table
+  pivot_longer(everything(), names_to = "item", values_to = "value") |>
+  gt(rowname_col = "item") |> 
     tab_options(column_labels.hidden = TRUE) |> 
     tab_style(
-  style = cell_text(font = system_fonts("monospace-code")),
-  locations = cells_body(columns = value)
-  ) |> 
+      style = cell_text(font = system_fonts("monospace-code")),
+      locations = cells_body(columns = value)
+      ) |> 
     fmt_url(columns = value, rows = c("dashboard_url", "content_url","owner_email")) |> 
-    fmt_date(columns = value, rows = c("created_time", "last_deployed_time"), date_style = "iso")
+    fmt_date(columns = value, rows = c("created_time", "last_deployed_time"), date_style = "iso") |> 
+  cols_align(
+    align = "left",
+    columns = value
+  )
   
-  
-  ```
+```
 
