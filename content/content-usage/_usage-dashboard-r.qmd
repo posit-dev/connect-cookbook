@@ -21,14 +21,13 @@ library(plotly)
 #| label: user-defined inputs 
 
 # 1. specify the guid for the content
-# content_guid <- "INSERT_CONTENT_GUID" 
-content_guid <- "0477855b-caeb-43e8-b3d9-28e0965e6230"
+content_guid <- "INSERT_CONTENT_GUID" 
 
 # 2. Specify timeframe for the report. Default is 30 days prior to today
 as_of_date <- lubridate::today()
 days_back <- 30
 
-# 3. Specify if the summary should show only the Top N users for the content, or all users (as indicated by `Inf`). Default is `Inf` so that all users are shown.
+# 3. Specify if the summary should show only the Top N users for the content (e.g., `top_n = 10`). Default is `Inf` so that all users are shown.
 top_n <- Inf
 
 # Note: The CONNECT_SERVER and CONNECT_API_KEY environment variables are required for this report to pull usage data. Use environment variables for added security; do not hard-code your API key or other secrets.
