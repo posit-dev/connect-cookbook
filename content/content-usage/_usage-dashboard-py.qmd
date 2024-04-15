@@ -8,18 +8,15 @@ format:
 
 ```{python}
 #| label: setup
-from posit.connect import Client
+from posit import connect
 from datetime import date, timedelta
 import os
 import sys
 import polars as pl
-import polars.selectors as cs
 import numpy as np
 import plotnine as p9
 from great_tables import GT, nanoplot_options, style, loc, system_fonts, md
 
-
-import requests ## TODO can remove this when SDK has usage implementation
 ```
 
 
@@ -27,15 +24,13 @@ import requests ## TODO can remove this when SDK has usage implementation
 #| label: user-defined inputs 
 
 # 1. specify the guid for the content
-# content_guid = "INSERT_CONTENT_GUID" 
-content_guid = "0477855b-caeb-43e8-b3d9-28e0965e6230" #shiny
-# content_guid = "725e31c7-1588-45bb-95d6-cee508798145" #jupyter
+content_guid = "INSERT_CONTENT_GUID" 
 
 # 2. Specify timeframe for the report. Default is 30 days prior to today
 as_of_date = date.today()
 days_back = 30
 
-# 3. Specify if the summary should show only the Top N users for the content, or all users (as indicated by `np.nan`). Default is `np.nan` so that all users are shown.
+# 3. Specify if the summary should show only the Top N users for the content (e.g., `top_n = 10`), or all users (as indicated by `np.nan`). Default is `np.nan` so that all users are shown. 
 top_n = 20
 top_n = np.nan
 
@@ -57,7 +52,7 @@ report_from = as_of_date - timedelta(days=days_back)
 #| label: Establish connection to Connect server
 
 # Note `connect.Client()` automatically detects the environment variables CONNECT_SERVER and CONNECT_API_KEY. They do not need to be specified as arguments to this function, however, if these environment variables are not set, the code will fail
-client = Client() #TODO: connect.Client() not working but desired
+client = connect.Client() 
 ```
 
 ```{python}
@@ -75,75 +70,26 @@ type = content_info.app_mode
 if type == "shiny" or type == "python-shiny":
 
   # Request visit records for the given content GUID
-  session = requests.Session()
-  session.headers.update({ "Authorization": f"Key {os.getenv("CONNECT_API_KEY")}" })
-  session.params.update({
-    "content_guid": content_guid,
-    "from": report_from.strftime("%Y-%m-%dT%H:%M:%SZ"),
-    "to": as_of_date.strftime("%Y-%m-%dT%H:%M:%SZ")
-      })
-  response = session.get(
-      f"{os.getenv("CONNECT_SERVER")}/__api__/v1/instrumentation/shiny/usage"
-  )
-
-  # Store all the results and the paging information
-  json_data = response.json()
-  next_page = json_data["paging"]["next"]
-  usage = pl.DataFrame(json_data["results"])
-
-  # Continue to page through additional records
-  # while we have a "next" reference
-  while next_page:
-    response = session.get(next_page)
-    json_data = response.json()
-    next_page = json_data["paging"]["next"]
-    results = pl.DataFrame(json_data["results"])
-    usage = pl.concat([usage, results])
-
-  
-  usage = usage.with_columns(
-    pl.col("started").str.to_datetime("%Y-%m-%dT%H:%M:%SZ")
-  )
-  usage = usage.with_columns(
-    pl.col("started").cast(pl.Date).alias("day")
-  )
-  
+  usage = (
+    pl.DataFrame(client.usage.find(content_guid=content_guid, start=report_from.strftime("%Y-%m-%dT%H:%M:%SZ"),
+      end=as_of_date.strftime("%Y-%m-%dT%H:%M:%SZ")))
+    .with_columns(
+      pl.col("started").str.to_datetime("%Y-%m-%dT%H:%M:%SZ"))
+    .with_columns(
+      pl.col("started").cast(pl.Date).alias("day"))
+    )
 
 else:
   # Request visit records for the given content GUID
-  session = requests.Session()
-  session.headers.update({ "Authorization": f"Key {os.getenv("CONNECT_API_KEY")}" })
-  session.params.update({
-    "content_guid": content_guid,
-    "from": report_from.strftime("%Y-%m-%dT%H:%M:%SZ"),
-    "to": as_of_date.strftime("%Y-%m-%dT%H:%M:%SZ")
-      })
-  response = session.get(
-      f"{os.getenv("CONNECT_SERVER")}/__api__/v1/instrumentation/content/visits"
-  )
-
-  # Store all the results and the paging information
-  json_data = response.json()
-  next_page = json_data["paging"]["next"]
-  usage = pl.DataFrame(json_data["results"])
-
-  # Continue to page through additional records
-  # while we have a "next" reference
-  while next_page:
-    response = session.get(next_page)
-    json_data = response.json()
-    next_page = json_data["paging"]["next"]
-    results = pl.DataFrame(json_data["results"])
-    usage = pl.concat([usage, results])
-
-  usage = usage.with_columns(
-    pl.col("time").str.to_datetime("%Y-%m-%dT%H:%M:%SZ")
-  )
-  usage = usage.with_columns(
-    pl.col("time").cast(pl.Date).alias("day")
-  )
-
-# visits = pl.DataFrame(client.visits.find(content_guid=content_guid))
+  
+  usage = (
+    pl.DataFrame(client.visits.find(content_guid=content_guid, start=report_from.strftime("%Y-%m-%dT%H:%M:%SZ"),
+    end=as_of_date.strftime("%Y-%m-%dT%H:%M:%SZ")))
+    .with_columns(
+      pl.col("time").str.to_datetime("%Y-%m-%dT%H:%M:%SZ"))
+    .with_columns(
+      pl.col("time").cast(pl.Date).alias("day"))
+    )
 
 ### Fetch all user details to cross reference user_guids with usernames
 all_users = pl.DataFrame(client.users.find())

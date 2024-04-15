@@ -240,7 +240,7 @@ platformdirs==4.2.0
     # via jupyter-core
 plotnine==0.13.3
 polars==0.20.18
-posit-sdk==0.1.0
+posit-sdk @ git+https://github.com/posit-dev/posit-sdk-py@073c01d41bd14c64531d2f7dc0b730226a3b3ef9
 prometheus-client==0.20.0
     # via jupyter-server
 prompt-toolkit==3.0.43

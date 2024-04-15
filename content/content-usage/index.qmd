@@ -51,7 +51,7 @@ We strongly recommend the use of virtual environments to manage project-level de
 # create virtual environment and activate it
 python -m venv .venv && source .venv/bin/activate
 
-# upgrade pip, setuptools, and install wheel
+# upgrade `pip` and install `setuptools`, `wheel`
 python -m pip install -U pip setuptools wheel
 
 # install the `posit-sdk` package
@@ -90,13 +90,12 @@ The code samples below yields content usage data as a data frame.
 
 ```{python}
 ### Load required packages
-from posit.connect import Client
-from datetime import datetime, timedelta
+from posit import connect
+from datetime import date, timedelta
 import os
 import sys
-import pandas as pd
-
-import requests ## TODO can remove this when SDK has usage implementation. see https://github.com/posit-dev/posit-sdk-py/issues/137
+import polars as pl
+import numpy as np
 
 
 ### User-defined inputs
@@ -104,17 +103,17 @@ import requests ## TODO can remove this when SDK has usage implementation. see h
 content_guid = "INSERT_CONTENT_GUID" 
 
 # 2. Specify timeframe for the report. Default is 30 days prior to today
-as_of_date = datetime.today()
+as_of_date = date.today()
 days_back = 30
 
-# 3. For by-user summary, specify if the data should truncate to show only the Top N users for the content. Default is Inf for no truncation
-top_n = 20
+# 3. Specify if the summary should show only the Top N users for the content (e.g., `top_n = 10`), or all users (as indicated by `np.nan`). Default is `np.nan` so that all users are shown. 
+top_n = np.nan
 
 report_from = as_of_date - timedelta(days=days_back)
 
 ### Establish connection to Connect server
-# Note `Client()` automatically detects the environment variables CONNECT_SERVER and CONNECT_API_KEY. They do not need to be specified as arguments to this function, however, if these environment variables are not set, the code will fail.
-client = Client()
+# Note `connect.Client()` automatically detects the environment variables CONNECT_SERVER and CONNECT_API_KEY. They do not need to be specified as arguments to this function, however, if these environment variables are not set, the code will fail
+client = connect.Client() 
 
 ### Determine if the desired content is Shiny or not. This will dictate which telemetry endpoint to use
 # Retrieve content details
@@ -127,64 +126,26 @@ type = content_info.app_mode
 if type == "shiny" or type == "python-shiny":
 
   # Request visit records for the given content GUID
-  session = requests.Session()
-  session.headers.update({ "Authorization": f"Key {os.getenv("CONNECT_API_KEY")}" })
-  session.params.update({
-    "content_guid": content_guid,
-    "from": report_from.strftime('%Y-%m-%dT%H:%M:%SZ'),
-    "to": as_of_date.strftime('%Y-%m-%dT%H:%M:%SZ')
-      })
-  response = session.get(
-      f"{os.getenv("CONNECT_SERVER")}/__api__/v1/instrumentation/shiny/usage"
-  )
-
-  # Store all the results and the paging information
-  json_data = response.json()
-  next_page = json_data['paging']['next']
-  usage = pd.DataFrame(json_data['results'])
-
-  # Continue to page through additional records
-  # while we have a "next" reference
-  while next_page:
-    response = session.get(next_page)
-    json_data = response.json()
-    next_page = json_data['paging']['next']
-    results = pd.DataFrame(json_data['results'])
-    usage = pd.concat([usage, results])
-
-  usage['started'] = pd.to_datetime(usage['started'])
-  usage['day'] = usage['started'].dt.floor('D')
-
+  usage = (
+    pl.DataFrame(client.usage.find(content_guid=content_guid, start=report_from.strftime("%Y-%m-%dT%H:%M:%SZ"),
+      end=as_of_date.strftime("%Y-%m-%dT%H:%M:%SZ")))
+    .with_columns(
+      pl.col("started").str.to_datetime("%Y-%m-%dT%H:%M:%SZ"))
+    .with_columns(
+      pl.col("started").cast(pl.Date).alias("day"))
+    )
 
 else:
   # Request visit records for the given content GUID
-  session = requests.Session()
-  session.headers.update({ "Authorization": f"Key {os.getenv("CONNECT_API_KEY")}" })
-  session.params.update({
-    "content_guid": content_guid,
-    "from": report_from.strftime('%Y-%m-%dT%H:%M:%SZ'),
-    "to": as_of_date.strftime('%Y-%m-%dT%H:%M:%SZ')
-      })
-  response = session.get(
-      f"{os.getenv("CONNECT_SERVER")}/__api__/v1/instrumentation/content/visits"
-  )
-
-  # Store all the results and the paging information
-  json_data = response.json()
-  next_page = json_data['paging']['next']
-  usage = pd.DataFrame(json_data['results'])
-
-  # Continue to page through additional records
-  # while we have a "next" reference
-  while next_page:
-    response = session.get(next_page)
-    json_data = response.json()
-    next_page = json_data['paging']['next']
-    results = pd.DataFrame(json_data['results'])
-    usage = pd.concat([usage, results])
-
-  usage['time'] = pd.to_datetime(usage['time'])
-  usage['day'] = usage['time'].dt.floor('D')
+  
+  usage = (
+    pl.DataFrame(client.visits.find(content_guid=content_guid, start=report_from.strftime("%Y-%m-%dT%H:%M:%SZ"),
+    end=as_of_date.strftime("%Y-%m-%dT%H:%M:%SZ")))
+    .with_columns(
+      pl.col("time").str.to_datetime("%Y-%m-%dT%H:%M:%SZ"))
+    .with_columns(
+      pl.col("time").cast(pl.Date).alias("day"))
+    )
 
 ### View usage data as a data frame
 usage
@@ -192,15 +153,23 @@ usage
 ```
 
 <!-- TODO: can this be formatted better? -->
-Sample output:
+Sample output for a Shiny app:
 ```
-	content_guid	    user_guid	        started                   ended	     data_version	day
-0	0477855b-caeb-...	7d7d3b07-1ca1-...	2024-03-08 17:14:24+00:00	2024-03-08T17:14:43Z	1	2024-03-08 00:00:00+00:00
-1	0477855b-caeb-...	7d7d3b07-1ca1-...	2024-03-12 16:20:31+00:00	2024-03-12T16:20:47Z	1	2024-03-12 00:00:00+00:00
-2	0477855b-caeb-...	d03a6b7a-c818-...	2024-03-14 16:13:16+00:00	2024-03-14T16:17:30Z	1	2024-03-14 00:00:00+00:00
-3	0477855b-caeb-...	1ec56831-7a34-...	2024-03-19 21:09:03+00:00	2024-03-19T21:10:05Z	1	2024-03-19 00:00:00+00:00
-4	0477855b-caeb-...	1ec56831-7a34-...	2024-03-19 21:39:07+00:00	2024-03-19T22:39:48Z	1	2024-03-19 00:00:00+00:00
-5	0477855b-caeb-...	d59e7a7b-9684-...	2024-03-20 00:36:29+00:00	2024-03-20T00:37:10Z	1	2024-03-20 00:00:00+00:00
+shape: (14, 6)
+content_guid	    user_guid	        started	            ended	  data_version	day
+str	                str	                datetime[μs]	    str	               i64	date
+"0477855b-caeb-…	"1ec56831-7a34-…	2024-03-19 21:09:03	"2024-03-19T21:…	 1	2024-03-19
+"0477855b-caeb-…	"1ec56831-7a34-…	2024-03-19 21:39:07	"2024-03-19T22:…	 1	2024-03-19
+"0477855b-caeb-…	"d59e7a7b-9684-…	2024-03-20 00:36:29	"2024-03-20T00:… 	 1	2024-03-20
+"0477855b-caeb-…	"1ec56831-7a34-…	2024-03-20 13:50:55	"2024-03-20T14:…	 1	2024-03-20
+"0477855b-caeb-…	"1ec56831-7a34-…	2024-03-20 16:43:56	"2024-03-20T16:…	 1	2024-03-20
+               …	               …	                  … 	             …	 …	         …
+"0477855b-caeb-…	"fc80bd89-4488-…	2024-03-28 18:26:20	"2024-03-28T18:…	 1	2024-03-28
+"0477855b-caeb-…	"fc80bd89-4488-…	2024-03-28 20:53:50	"2024-03-28T20:…	 1	2024-03-28
+"0477855b-caeb-…	"cbee884e-f940-…	2024-03-29 16:13:44	"2024-03-29T16:…	 1	2024-03-29
+"0477855b-caeb-…	"fc80bd89-4488-…	2024-03-29 18:16:10	"2024-03-29T20:…	 1	2024-03-29
+"0477855b-caeb-…	"3dc75833-f6c2-…	2024-04-11 00:36:00	"2024-04-11T00:…	 1	2024-04-11
+
 ```
 
 ## R
@@ -256,20 +225,23 @@ usage
 
 Sample output for a Shiny app:
 ```
-# A tibble: 11 × 6
-   content_guid         user_guid            started             ended               data_version day                
-   <chr>                <chr>                <dttm>              <dttm>                     <int> <dttm>             
- 1 0477855b-caeb-...    7d7d3b07-1ca1-...    2024-03-08 17:14:24 2024-03-08 17:14:43            1 2024-03-08 00:00:00
- 2 0477855b-caeb-...    7d7d3b07-1ca1-...    2024-03-12 16:20:31 2024-03-12 16:20:47            1 2024-03-12 00:00:00
- 3 0477855b-caeb-...    d03a6b7a-c818-...    2024-03-14 16:13:16 2024-03-14 16:17:30            1 2024-03-14 00:00:00
- 4 0477855b-caeb-...    1ec56831-7a34-...    2024-03-19 21:09:03 2024-03-19 21:10:05            1 2024-03-19 00:00:00
- 5 0477855b-caeb-...    1ec56831-7a34-...    2024-03-19 21:39:07 2024-03-19 22:39:48            1 2024-03-19 00:00:00
- 6 0477855b-caeb-...    d59e7a7b-9684-...    2024-03-20 00:36:29 2024-03-20 00:37:10            1 2024-03-20 00:00:00
- 7 0477855b-caeb-...    1ec56831-7a34-...    2024-03-20 13:50:55 2024-03-20 14:04:04            1 2024-03-20 00:00:00
- 8 0477855b-caeb-...    1ec56831-7a34-...    2024-03-20 16:43:56 2024-03-20 16:44:12            1 2024-03-20 00:00:00
- 9 0477855b-caeb-...    d59e7a7b-9684-...    2024-03-21 10:52:14 2024-03-21 11:52:37            1 2024-03-21 00:00:00
-10 0477855b-caeb-...    fc80bd89-4488-...    2024-03-25 19:16:45 2024-03-25 19:28:19            1 2024-03-25 00:00:00
-11 0477855b-caeb-...    989001e2-66df-...    2024-03-26 19:48:37 2024-03-26 21:43:10            1 2024-03-26 00:00:00
+# A tibble: 14 × 6
+   content_guid      user_guid         started             ended               data_version day                
+   <chr>             <chr>             <dttm>              <dttm>                     <int> <dttm>             
+ 1 0477855b-caeb-... 1ec56831-7a34-... 2024-03-19 21:09:03 2024-03-19 21:10:05            1 2024-03-19 00:00:00
+ 2 0477855b-caeb-... 1ec56831-7a34-... 2024-03-19 21:39:07 2024-03-19 22:39:48            1 2024-03-19 00:00:00
+ 3 0477855b-caeb-... d59e7a7b-9684-... 2024-03-20 00:36:29 2024-03-20 00:37:10            1 2024-03-20 00:00:00
+ 4 0477855b-caeb-... 1ec56831-7a34-... 2024-03-20 13:50:55 2024-03-20 14:04:04            1 2024-03-20 00:00:00
+ 5 0477855b-caeb-... 1ec56831-7a34-... 2024-03-20 16:43:56 2024-03-20 16:44:12            1 2024-03-20 00:00:00
+ 6 0477855b-caeb-... d59e7a7b-9684-... 2024-03-21 10:52:14 2024-03-21 11:52:37            1 2024-03-21 00:00:00
+ 7 0477855b-caeb-... fc80bd89-4488-... 2024-03-25 19:16:45 2024-03-25 19:28:19            1 2024-03-25 00:00:00
+ 8 0477855b-caeb-... 989001e2-66df-... 2024-03-26 19:48:37 2024-03-26 21:43:10            1 2024-03-26 00:00:00
+ 9 0477855b-caeb-... 5c7cb633-5959-... 2024-03-28 17:13:03 2024-03-28 17:19:35            1 2024-03-28 00:00:00
+10 0477855b-caeb-... fc80bd89-4488-... 2024-03-28 18:26:20 2024-03-28 18:34:40            1 2024-03-28 00:00:00
+11 0477855b-caeb-... fc80bd89-4488-... 2024-03-28 20:53:50 2024-03-28 20:54:36            1 2024-03-28 00:00:00
+12 0477855b-caeb-... cbee884e-f940-... 2024-03-29 16:13:44 2024-03-29 16:14:15            1 2024-03-29 00:00:00
+13 0477855b-caeb-... fc80bd89-4488-... 2024-03-29 18:16:10 2024-03-29 20:43:52            1 2024-03-29 00:00:00
+14 0477855b-caeb-... 3dc75833-f6c2-... 2024-04-11 00:36:00 2024-04-11 00:36:59            1 2024-04-11 00:00:00
 ```
 
 The output above can be plotted for a historical perspective on content usage. An example is included in the Quarto dashboard code at the end of this recipe.
@@ -284,6 +256,52 @@ The code samples below yield by-user content usage data as a data frame.
 
 ## Python
 
+```{python}
+### Get user details to cross reference `user_guid` with usernames
+all_users = pl.DataFrame(client.users.find())
+
+### Make a table of a user's total visits
+user_tot_usage = (
+  usage.group_by("user_guid")
+  .agg(pl.len().alias("tot_visits"))
+  # change any `nan` user_guid to "anonymous"
+  .with_columns(pl.coalesce(pl.col("user_guid"), pl.lit("anonymous")).alias("user_guid")) 
+)
+
+### Make a table of a user's daily visits and combine with total visits
+user_daily_usage = (
+...   usage.group_by(["user_guid","day"])
+...   .agg(pl.len()
+...   .alias("daily_visits"))
+...   .join(all_users, left_on="user_guid", right_on="guid", how="left")
+...   .with_columns(pl.coalesce(pl.col("username"), pl.lit("anonymous")).alias("username"))
+...   .with_columns(pl.coalesce(pl.col("user_guid"), pl.lit("anonymous")).alias("user_guid"))
+...   # join with total visits table
+...   .join(user_tot_usage, on="user_guid", how="left")
+...   .select(["username", "day","tot_visits", "daily_visits"])
+...   .sort("tot_visits",descending=True)
+... )
+
+```
+
+Sample output:
+```
+shape: (11, 4)
+ username	       day	tot_visits	daily_visits
+      str	      date	       u32	         u32
+"lisa"	    2024-03-20	         4	           2
+"katie"    	2024-03-28	         4	           2
+"katie"	    2024-03-29	         4	           1
+"lisa"	    2024-03-19	         4	           2
+"katie"	    2024-03-25	         4	           1
+         …	         …	         …	           …         
+"andrie"  	2024-03-21	         2	           1
+"ryan"	    2024-04-11	         1	           1
+"rika"	    2024-03-28	         1	           1
+"jonathan"	2024-03-29	         1	           1
+"connor"	2024-03-26	         1	           1
+
+```
 
 ## R
 
@@ -316,18 +334,20 @@ by_user_usage
 
 Sample output:
 ```
-# A tibble: 9 × 4
-  username       day                 total_visits daily_visits
-  <chr>          <dttm>                     <int>        <int>
-1 lisa           2024-03-19 00:00:00            4            2
-2 lisa           2024-03-20 00:00:00            4            2
-3 daniel         2024-03-08 00:00:00            2            1
-4 daniel         2024-03-12 00:00:00            2            1
-5 andrie         2024-03-20 00:00:00            2            1
-6 andrie         2024-03-21 00:00:00            2            1
-7 sam            2024-03-14 00:00:00            1            1
-8 katie          2024-03-25 00:00:00            1            1
-9 connor         2024-03-26 00:00:00            1            1
+# A tibble: 11 × 4
+   username  day                 total_visits daily_visits
+   <chr>    <dttm>                     <int>        <int>
+ 1 lisa     2024-03-19 00:00:00            4            2
+ 2 lisa     2024-03-20 00:00:00            4            2
+ 3 katie    2024-03-25 00:00:00            4            1
+ 4 katie    2024-03-28 00:00:00            4            2
+ 5 katie    2024-03-29 00:00:00            4            1
+ 6 andrie   2024-03-20 00:00:00            2            1
+ 7 andrie   2024-03-21 00:00:00            2            1
+ 8 connor   2024-03-26 00:00:00            1            1
+ 9 rika     2024-03-28 00:00:00            1            1
+10 jonathan 2024-03-29 00:00:00            1            1
+11 ryan     2024-04-11 00:00:00            1            1
 ```
 
 The output above can be plotted for a historical perspective on content usage. An example is included in the Quarto dashboard code at the end of this recipe.
@@ -346,12 +366,14 @@ The Quarto document below builds visualizations around the data frames retrieved
 ::: {.panel-tabset group="language"}
 ## Python
 
-Tab content
+<!-- TODO: Make this embed work -->
+
+{{ < include _usage-dashboard-py.qmd > }}
 
 ## R
 
 <!-- TODO: Make this embed work -->
 
-{{ < include _usage-dashboard.qmd > }}
+{{ < include _usage-dashboard-r.qmd > }}
 
 :::

@@ -4,8 +4,8 @@ numpy==1.26.4
 pandas==2.2.1
 plotnine==0.13.3
 polars==0.20.18
-posit-sdk==0.1.0
+# posit-sdk==0.1.0
+git+https://github.com/posit-dev/posit-sdk-py@073c01d41bd14c64531d2f7dc0b730226a3b3ef9
 pyarrow==15.0.2
 PyYAML==6.0.1
-requests==2.31.0
 setuptools==69.2.0
