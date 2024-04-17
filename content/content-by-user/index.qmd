@@ -118,7 +118,7 @@ username <- "SPECIFY USERNAME"
 
 ### Establish connection to Connect server
 # Note `connectapi::connect` automatically detects the environment variables CONNECT_SERVER and CONNECT_API_KEY. They do not need to be specified as arguments to this function, however, if these environment variables are not set, the code will fail.
-client <- connectapi::connect(url="https://wonderful-galago.staging.eval.posit.co/pub", api_key = "RaDYs1FoIIeVoKbtrcKkSrsZhzamucgS")
+client <- connectapi::connect()
 
 ### Get user's `guid` from specified username
 user_guid <- connectapi::user_guid_from_username(client, username)
