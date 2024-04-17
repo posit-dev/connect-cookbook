@@ -66,13 +66,11 @@ env_var <- "TESTVAR"
 # TODO: replace with the new value for the environment variable
 new_value <- ""
 
-env_var_update <- glue::glue("{env_var}={new_value}")
-
 for (p in content$guid) {
   en <- get_environment(content_item(client,p))
   for (i in en$env_vars){
    if (i == env_var){
-     set_environment_new(en,TESTVAR=new_value)
+     set_environment_new(en,"{env_var}" := new_value)
      print(paste0("Updated ",env_var,"in Content ",p))
    }
   }
