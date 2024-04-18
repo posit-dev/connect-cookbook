@@ -66,15 +66,15 @@ env_var <- "TESTVAR"
 # TODO: replace with the new value for the environment variable
 new_value <- ""
 
-for (p in content$guid) {
-  en <- get_environment(content_item(client,p))
-  for (i in en$env_vars){
-   if (i == env_var){
-     set_environment_new(en,"{env_var}" := new_value)
-     print(paste0("Updated ",env_var,"in Content ",p))
-   }
+purrr::walk(content$guid, ~ {
+  en <- get_environment(content_item(client, .x))
+  if (env_var %in% en$env_vars) {
+    set_environment_new(en, "{env_var}" := new_value)
+    print(paste("Updated", env_var, "in Content", .x))
+  } else {
+    print(paste("Environment variable", env_var, "not found in Content", .x))
   }
-}
+})
 
 ```
 
