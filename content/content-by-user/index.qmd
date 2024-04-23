@@ -6,62 +6,12 @@ execute:
 
 This recipe generates a data frame identifying all content owned by a specified user. 
 
-## Requirements
-
-- `CONNECT_SERVER` environment variable
-- `CONNECT_API_KEY` environment variable for an administrator or publisher^[the publisher must have access to the content item to retrieve usage statistics]
-- Username for the user of interest
-<!-- TODO: respecify the footnote for API key scoping relative to this recipe -->
 
 ## Method 
 
 Content information, including ownership information, is available at the `/v1/content` endpoint of the Connect Server API. We can filter the response from this endpoint by specifying the owner's `guid`, the unique identifier for that user. 
 
 User `guid` can be retrieved from the `/v1/users/{guid}` endpoint, which provides user details. 
-
-### Setup
-
-Install the required packages.
-
-::: {.panel-tabset group="language"}
-## Python
-
-We strongly recommend the use of virtual environments to manage project-level dependencies. The code below uses `venv` for this purpose.
-
-```{.bash}
-# In your project directory
-
-# create virtual environment and activate it
-python -m venv .venv && source .venv/bin/activate
-
-# upgrade `pip` and install `setuptools`, `wheel`
-python -m pip install -U pip setuptools wheel
-
-# install the `posit-sdk` package
-pip install posit-sdk
-```
-
-## R
-
-We strongly recommend the use of virtual environments to manage project-level dependencies. The code below uses `renv` for this purpose.
-
-```{r}
-# In your project directory
-
-# install `renv` package
-install.packages(renv)
-
-# initialize the project-level environment
-renv::init()
-
-# install required packages
-install.packages(c("connectapi", "tidyverse"))
-
-```
-
-
-:::
-
 
 ### Identify content owned by a user
 
@@ -85,8 +35,7 @@ client = connect.Client()
 
 ### Get user's `guid` from specified username
 user_guid = client.users.find_one(prefix = username).guid
-#TODO: update `prefix` per https://github.com/posit-dev/posit-sdk-py/issues/173 
-
+#TODO: change method to `client.users.find_one(prefix=username).content.find()` per https://github.com/posit-dev/posit-sdk-py/issues/180
 ### Get list of content owned by specified user
 content = pl.DataFrame(client.content.find(owner_guid=user_guid))
 content
