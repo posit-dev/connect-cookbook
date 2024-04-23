@@ -1,3 +1,67 @@
 ---
 title: Connect Cookbook
+execute: 
+  eval: false
 ---
+
+Welcome
+
+These recipes are organized according to tasks surrounding:
+
+1.  Server-level tasks: management of the server, processes, and resources
+2.  Content-level tasks: management of content and content settings
+3.  User- and group-level tasks: management and visibility of users and groups
+
+## Getting started
+
+### Set required environment variables
+
+The recipes in this cookbook utilize the Python package `posit-sdk` or the R package `connectapi` to interact with the Connect server API. To interact with the Connect server API, the following environment variables must be set:
+
+| Environment Variable | Recommended place to set                            | Note                                                                                                                                                                                                                                           |
+|------------|------------|------------------------------------------------------|
+| `CONNECT_SERVER`     | `.env` file in your local or project directory      | Your Connect server URL is the same URL you use to access the Connect dashboard, minus the `connect` path. If you access the dashboard at `https://posit-connect.company.com/connect/`, the server URL is `https://posit-connect.company.com/` |
+| `CONNECT_API_KEY`    | `.Renviron` file in your local or project directory | The [API Keys](https://docs.posit.co/connect/user/api-keys/) section of the Posit Connect [User Guide](https://docs.posit.co/connect/user/) explains how to provision a Connect API Key                                                        |
+
+Storing your server URL and API key as environment variables keep the literal values out of your source code, making your secrets more secure and your code easier to share or reuse in different environments. *Do not hard-code your API key into your code.*
+
+### Install required packages
+
+Install the `posit-sdk` or `connectapi` package, dependent upon your language preference. Additionally, individual recipes may have additional packages used for data tidying, manipulation, or presentation. These package requirements will be identified in the recipe with either an `import` (Python) or `library()` (R) function call.
+
+::: {.panel-tabset group="language"}
+## Python
+
+We strongly recommend the use of virtual environments to manage project-level dependencies. The code below uses `venv` for this purpose.
+
+``` bash
+# In your project directory
+
+# create virtual environment and activate it
+python -m venv .venv && source .venv/bin/activate
+
+# upgrade `pip` and install `setuptools`, `wheel`
+python -m pip install -U pip setuptools wheel
+
+# install the `posit-sdk` package
+pip install posit-sdk
+```
+
+## R
+
+We strongly recommend the use of virtual environments to manage project-level dependencies. The code below uses `renv` for this purpose.
+
+```{r}
+# In your project directory
+
+# install `renv` package
+install.packages(renv)
+
+# initialize the project-level environment
+renv::init()
+
+# install required packages
+install.packages("connectapi")
+
+```
+:::
