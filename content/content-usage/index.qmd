@@ -6,12 +6,6 @@ execute:
 
 This recipe yields summary usage statistics for a content item deployed on Connect.
 
-## Requirements
-
-- CONNECT_SERVER environment variable
-- CONNECT_API_KEY environment variable for an administrator or publisher^[the publisher must have access to the content item to retrieve usage statistics]
-- Content guid for content of interest
-
 
 ## Method 
 
@@ -26,7 +20,7 @@ Content usage data includes the `user_guid` (or `NA` for anonymous viewers), and
 Review the [Operational Metrics](https://docs.posit.co/connect/admin/operational-metrics/#content-visit-events) section of the Connect Administration Guide for details of how content visit events are logged. 
 
 ::: {.callout-note}
-Note that if your Connect version is prior to 2023.10, content visits for Plumber, Voila, Streamlit, Dash, and Bokeh were over-counted in instrumentation metics. Metrics collected after upgrading to version 2023.10 or greater are accurate.
+Note that if your Connect version is prior to 2023.10, content visits for Plumber, Voila, Streamlit, Dash, and Bokeh were over-counted in instrumentation metrics. Metrics collected after upgrading to version 2023.10 or greater are accurate.
 ::: 
 
 This recipe provides methods for:
@@ -34,50 +28,6 @@ This recipe provides methods for:
 1. Retrieving overall historical content usage
 2. Identifying usage by user
 3. Deploying a sample Quarto dashboard using these methods 
-
-
-### Setup
-
-Install the required packages.
-
-::: {.panel-tabset group="language"}
-## Python
-
-We strongly recommend the use of virtual environments to manage project-level dependencies. The code below uses `venv` for this purpose.
-
-```{.bash}
-# In your project directory
-
-# create virtual environment and activate it
-python -m venv .venv && source .venv/bin/activate
-
-# upgrade `pip` and install `setuptools`, `wheel`
-python -m pip install -U pip setuptools wheel
-
-# install the `posit-sdk` package
-pip install posit-sdk
-```
-
-## R
-
-We strongly recommend the use of virtual environments to manage project-level dependencies. The code below uses `renv` for this purpose.
-
-```{r}
-# In your project directory
-
-# install `renv` package
-install.packages(renv)
-
-# initialize the project-level environment
-renv::init()
-
-# install required packages
-install.packages(c("connectapi", "tidyverse"))
-
-```
-
-
-:::
 
 
 ### Retrieve historical content usage data
