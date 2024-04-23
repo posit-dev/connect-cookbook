@@ -1,10 +1,12 @@
 ---
-title: Remove all users from content
+title: Remove all viewers from a content item
 execute: 
   eval: false
 ---
 
-This recipe removes all users except the content owner from a piece of content and changes the permissivity of access to "acl" so that only specified users/groups can access the content. 
+This recipe removes all viewers from a piece of content and ensures the permissivity of access is set to "acl" so that only specified users/groups can access the content. 
+
+Optionally, the recipe can be modified to remove all users and groups from the content so that only the content publisher will have access.
 
 ## Requirements
 
@@ -14,9 +16,9 @@ This recipe removes all users except the content owner from a piece of content a
 
 ## Method 
 
-Content permissions are available at the `/v1/content/{guid}/permissions/{id}` endpoint of the Connect Server API. This recipe removes all users except the owner from a piece of content.
+Content permissions are available at the `/v1/content/{guid}/permissions/{id}` endpoint of the Connect Server API. This recipe removes all viewers (or optionally all viewers and collaborators) from a piece of content.
 
-Additionally, the content access type is available from the `/v1/content/{guid}` endpoint. If the access type is either "all" or "logged_in", this is changed to "acl" to ensure that only the owner has access. 
+Additionally, the content access type is available from the `/v1/content/{guid}` endpoint. If the access type is either "all" or "logged_in", this is changed to "acl" to ensure that only the owner, and optionally, collaborators, have access. 
 
 ### Setup
 
@@ -76,18 +78,31 @@ content_guid = "f55cdaed-c13e-4838-b466-c288e021f5ee"
 # content_guid = "INSERT_CONTENT_GUID"
 
 
+# 2. Remove only viewers or also remove collaborators, leaving only the publisher? Default is only viewers (`also_remove_collabs = False`).
+also_remove_collabs = False
+
+
+
 ### Establish connection to Connect server
 # Note `connect.Client()` automatically detects the environment variables CONNECT_SERVER and CONNECT_API_KEY. They do not need to be specified as arguments to this function, however, if these environment variables are not set, the code will fail
 client = connect.Client() 
 
 
-### For the specified content item, iterate over all set permissions and remove them. All that will remain will be the publisher.
-for perm in client.content.get(content_guid).permissions.find():
-    # if perm.role != "owner":
+### For the specified content item, iteratively adjust permissions.
+if also_remove_collabs == True:
+    # Remove all viewers and collaborators.
+    for perm in client.content.get(content_guid).permissions.find():
         perm.delete()
 
+else:
+    # Remove all viewers.
+    for perm in client.content.get(content_guid).permissions.find():
+        if perm.role == "viewer":
+            perm.delete()
 
-### Confirm that all permissions have been removed
+
+
+### Confirm new permissions
 client.content.get(content_guid).permissions.find()
 
 
@@ -109,25 +124,36 @@ library(tidyverse)
 
 ### User-defined inputs
 # 1. specify the guid for the content
-# 1. specify the guid for the content
 content_guid <- "f55cdaed-c13e-4838-b466-c288e021f5ee"
 # content_guid <- "INSERT_CONTENT_GUID"
+
+# 2. Remove only viewers or also remove collaborators, leaving only the publisher? Default is only viewers (`also_remove_collabs = FALSE`).
+also_remove_collabs <- FALSE
 
 ### Establish connection to Connect server
 # Note `connectapi::connect` automatically detects the environment variables CONNECT_SERVER and CONNECT_API_KEY. They do not need to be specified as arguments to this function, however, if these environment variables are not set, the code will fail.
 client <- connectapi::connect()
 
-### For the specified content item, list all permissions and remove them. All that will remain will be the publisher.
+### Adjust permissions for the specified content item.
 content <- content_item(client, content_guid)
 
-permissions <- get_content_permissions(content)
-users_to_remove <- permissions |> filter(principal_type == "user") |> pull(principal_guid)
-groups_to_remove <- permissions |> filter(principal_type == "group") |> pull(principal_guid)
+# get permissions
+perms <- content$permissions()
 
-content_delete_user(content, users_to_remove)
-content_delete_group(content, groups_to_remove)
+# get id of each viewer and owner (collaborator)
+viewer_ids <- map(perms, ~.x$id[.x$role == "viewer"]) |> unlist()
+collab_ids <- map(perms, ~.x$id[.x$role == "owner"]) |> unlist()
 
-### Confirm that all permissions have been removed (the publisher will remain)
+if (also_remove_collabs == TRUE) {
+  # remove all viewers and collaborators
+  walk(viewer_ids, ~content$permissions_delete(.x))
+  walk(collab_ids, ~content$permissions_delete(.x))
+} else {
+  # remove all viewers
+  walk(viewer_ids, ~content$permissions_delete(.x))
+}
+
+### Confirm new permissions
 get_content_permissions(content)
 
 ### If the access type for the content is either "all" or "logged_in", modify this to "acl" to ensure that only the owner has access
