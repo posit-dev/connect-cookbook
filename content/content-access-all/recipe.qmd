@@ -18,60 +18,6 @@ Running the following code will generate a table of all content that is set with
 
 ::: {.panel-tabset group="language"}
 
-## R
-
-```{r identify_content_r}
-#| eval: true
-#| warning: false
-#| code-fold: false
-#| output: false
-
-library(connectapi)
-library(dplyr)
-library(httr)
-library(tidyr)
-library(gt)
-library(htmlwidgets)
-
-# get Server URL and API Key from the environment
-CONNECT_SERVER <- Sys.getenv('CONNECT_SERVER')
-CONNECT_API_KEY <-Sys.getenv('CONNECT_API_KEY')
-
-# check if API Key is valid
-if (is.null(CONNECT_API_KEY) || is.na(CONNECT_API_KEY) || nchar(CONNECT_API_KEY) == 0) {
-        stop("ERROR: valid CONNECT API key is required")
-      }
-
-# check if Server URL is valid
-if (is.null(CONNECT_SERVER) || is.na(CONNECT_SERVER) || nchar(CONNECT_SERVER) == 0) {
-        stop("ERROR: valid CONNECT server URL is required")
-      }
-
-# get content from Connect API
-client <- connectapi::connect()
-
-content <- connectapi::get_content(client)
-content <- unnest_wider(content,col = c('owner'),names_sep = '$')
-
-
-content[['Last Updated']] = as.Date(content[['last_deployed_time']])
-tbl <- content |>
-  rename( "Owner" = "owner$username",
-         "App Name" = "title",
-         "URL" = "content_url") |>
-  filter(access_type=='all') |>
-  select(c("App Name","Owner","URL","Last Updated"))
-
-# Build a table
-gt(tbl) |>
-  fmt_url(columns = c("URL")) |> 
-    opt_interactive(use_search = TRUE)
-
-```
-
-Example output:
-
-![](./images/example-r.png)
 
 ## Python
 
@@ -80,14 +26,9 @@ Example output:
 #| output: false
 #| eval: false
 
-import requests
-import os
-import pandas as pd
+from posit.connect import Client  
+import pandas as pd  
 import itables
-from dotenv import load_dotenv
-load_dotenv()
-
-from posit.connect import Client
 
 def make_clickable(val):
     return f'<a target="_blank" href="{val}">{val}</a>'
@@ -111,6 +52,46 @@ itables.show(content)
 Example output:
 
 ![](./images/example-py.png)
+
+## R
+
+```{r identify_content_r}
+#| eval: true
+#| warning: false
+#| code-fold: false
+#| output: false
+
+library(connectapi)
+library(dplyr)
+library(tidyr)
+library(gt)
+
+
+# get content from Connect API
+client <- connect()
+
+content <- get_content(client)
+content <- unnest_wider(content,col = c('owner'),names_sep = '$')
+
+
+content[['Last Updated']] = as.Date(content[['last_deployed_time']])
+tbl <- content |>
+  rename( "Owner" = "owner$username",
+         "App Name" = "title",
+         "URL" = "content_url") |>
+  filter(access_type=='all') |>
+  select(c("App Name","Owner","URL","Last Updated"))
+
+# Build a table
+gt(tbl) |>
+  fmt_url(columns = c("URL")) |> 
+    opt_interactive(use_search = TRUE)
+
+```
+
+Example output:
+
+![](./images/example-r.png)
 
 :::
 
