@@ -6,9 +6,8 @@ execute:
 
 ## Environments in use
 
-This recipe contains an R Markdown document that presents a table detailing
+This recipe presents a table detailing
 the images used by content deployed to a Posit Connect server.
-
 Use this recipe only when your Connect installation uses the off-host
 execution model, where content is executed in containers using Kubernetes.
 
@@ -17,8 +16,8 @@ endpoint to obtain information about content. This API call returns every
 content item visible to your [API key](../../user/api-keys/index.md).
 Content reported with a missing value is either incomplete or static (needing no runtime).
 
-Use the **[`GET /v1/environments`](../../api/#get-/v1/environments)** endpoint
-to determine the environments available on your server.
+To see all environments available on your server, you could query the
+**[`GET /v1/environments`](../../api/#get-/v1/environments)** endpoint.
 
 ::: {.panel-tabset group="language"}
 ## Python
