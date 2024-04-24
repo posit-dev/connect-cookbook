@@ -40,6 +40,7 @@ library(connectapi)
 library(dplyr)
 library(tidyr)
 library(glue)
+library(gt)
 
 # get Server URL and API Key from the environment
 CONNECT_SERVER <- Sys.getenv('CONNECT_SERVER')
