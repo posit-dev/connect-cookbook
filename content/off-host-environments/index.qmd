@@ -1,0 +1,48 @@
+---
+title: Identify images used in off-host execution
+execute:
+  eval: false
+---
+
+## Environments in use
+
+This recipe contains an R Markdown document that presents a table detailing
+the images used by content deployed to a Posit Connect server.
+
+Use this recipe only when your Connect installation uses the off-host
+execution model, where content is executed in containers using Kubernetes.
+
+The document uses the **[`GET /v1/content`](../../api/#get-/v1/content)**
+endpoint to obtain information about content. This API call returns every
+content item visible to your [API key](../../user/api-keys/index.md).
+Content reported with a missing value is either incomplete or static (needing no runtime).
+
+Use the **[`GET /v1/environments`](../../api/#get-/v1/environments)** endpoint
+to determine the environments available on your server.
+
+::: {.panel-tabset group="language"}
+## Python
+
+```{python}
+import polars as pl
+from posit import connect
+
+con = connect.Client()
+df = pl.DataFrame(con.content.find())
+df.group_by("image_name").count().sort("count", descending=True)
+```
+
+## R
+
+```{r}
+library(connectapi)
+library(dplyr)
+
+# Find all content, group by image_name and count,
+# sorting by most frequently used image
+
+connect() |>
+  get_content() |>
+  count(image_name) |>
+  arrange(desc(n))
+```
