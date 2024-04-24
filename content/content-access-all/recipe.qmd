@@ -69,6 +69,10 @@ gt(tbl) |>
 
 ```
 
+Example output:
+
+![](./images/example-r.png)
+
 ## Python
 
 ```{python identify_content_python}
@@ -106,7 +110,7 @@ itables.show(content)
 
 Example output:
 
-![](./images/example.png)
+![](./images/example-py.png)
 
 :::
 
