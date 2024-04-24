@@ -3,24 +3,18 @@ title: "Recipe: Identify content set to No Login Required"
 format:
   html:
     toc: true
+execute: 
+  eval: false
 ---
 
 This recipe provides details on how to identify any content published on Connect with permissions set to `no login required`. 
 
 This recipe would come in handy while performing an audit of all content published on Posit Connect and there is a need to identify any content with open access. It also helps identify which URL is associated with such content and who the publisher is.
 
-## Ingredients
-
-Running this recipe requires administrator privileges on Posit Connect.
-You would need the following information in your environment to run this report:
-
-- CONNECT_SERVER
-- CONNECT_API_KEY
-
 
 ## Method
 
-Running the following code will generate a table of all content that is set without restriction. The information includes URL of the content on Connect and the user name. 
+Running the following code will generate a table of all content that is set without restriction. The information includes URL of the content on Connect and the username. 
 
 ::: {.panel-tabset group="language"}
 
@@ -110,6 +104,9 @@ itables.show(content)
 
 ```
 
+Example output:
+
+![](./images/example.png)
 
 :::
 
@@ -117,10 +114,10 @@ itables.show(content)
 
 There can be many ways to take further action based on the content list generated above. 
 
-If the objective was the generate a list of the content, the above code block provides that information
+If the objective was the generate a list of the content, the above code block provides that information.
 
-The URLs provided can be used to audit the access within networks,i.e., you can check if the URL is reachable outside your organization's network or not.
+The URLs provided can be used to audit the access within networks, i.e., you can check if the URL is reachable outside your organization's network or not.
 
 The usage of each content listed above can be checked using the content usage recipe.
 
-The list above also identifies the users who published the content who can be reached out to if there is a need to modify the access.
+The list above also identifies the content publisher, who can be reached out to if there is a need to modify the access.
