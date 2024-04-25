@@ -1,19 +1,19 @@
 ---
-title: Retrieve Content Usage Statistics
+title: Retrieve Content Views 
 execute: 
   eval: false
 ---
 
-This recipe yields summary usage statistics for a content item deployed on Connect.
+This recipe yields summary statistics for views of a content item deployed on Connect.
 
 
 ## Method 
 
-Connect records content visits (or hits) for all content types. These may be user visits to the content or programmatic requests to content or APIs hosted on Connect. 
+Connect records content views (or hits) for all content types. These may be user views to the content or programmatic requests to content or APIs hosted on Connect. 
 
-Content usage data includes the `user_guid` (or `NA` for anonymous viewers), and access timestamp. Shiny for Python and Shiny for R content usage data also includes session duration.
+Content view data includes the `user_guid` (or `NA` for anonymous viewers), and access timestamp. Shiny for Python and Shiny for R content usage data also includes session duration.
 
-- For all content *except Shiny for Python and Shiny for R*, the usage data is exposed at the [`/v1/instrumentation/content/visits` endpoint](https://docs.posit.co/connect/api/#get-/v1/instrumentation/content/visits)
+- For all content *except Shiny for Python and Shiny for R*, the content visits data is exposed at the [`/v1/instrumentation/content/visits` endpoint](https://docs.posit.co/connect/api/#get-/v1/instrumentation/content/visits)
 
 - Shiny for Python and Shiny for R usage data is exposed at the [`/v1/instrumentation/shiny/usage` endpoint](https://docs.posit.co/connect/api/#get-/v1/instrumentation/shiny/usage)
 
@@ -25,14 +25,14 @@ Note that if your Connect version is prior to 2023.10, content visits for Plumbe
 
 This recipe provides methods for:
 
-1. Retrieving overall historical content usage
+1. Retrieving overall historical content views
 2. Identifying usage by user
 3. Deploying a sample Quarto dashboard using these methods 
 
 
-### Retrieve historical content usage data
+### Retrieve historical content views data
 
-The code samples below yields content usage data as a data frame.
+The code samples below yields content views data as a data frame.
 
 :::{.panel-tabset group="language"}
 
