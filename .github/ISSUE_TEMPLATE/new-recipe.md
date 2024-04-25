@@ -1,7 +1,7 @@
 ---
 name: New Recipe
 about: template for new recipe
-title: ''
+title: 'Recipe: '
 labels: 'recipe'
 assignees: ''
 ---
