@@ -1,5 +1,5 @@
 ---
-title: Content Usage Dashboard
+title: Historical Content Visits
 format:
   dashboard:
      theme: default
@@ -24,7 +24,11 @@ from great_tables import GT, nanoplot_options, style, loc, system_fonts, md
 #| label: user-defined inputs 
 
 # 1. specify the guid for the content
-content_guid = "INSERT_CONTENT_GUID" 
+# content_guid = "INSERT_CONTENT_GUID" 
+# content_guid = "0477855b-caeb-43e8-b3d9-28e0965e6230" #shiny
+content_guid = "8b765054-16a6-4c87-8c49-91b54b5e47bb" #quarto site
+# content_guid = "e33879ca-e251-49fa-b9bf-a56db9997048" #streamlit
+
 
 # 2. Specify timeframe for the report. Default is 30 days prior to today
 as_of_date = date.today()
@@ -34,7 +38,7 @@ days_back = 30
 top_n = 20
 top_n = np.nan
 
-# Note: The CONNECT_SERVER and CONNECT_API_KEY environment variables are required for this report to pull usage data. Use environment variables for added security; do not hard-code your API key or other secrets.
+# Note: The CONNECT_SERVER and CONNECT_API_KEY environment variables are required for this report to pull visits data. Use environment variables for added security; do not hard-code your API key or other secrets.
 
 ```
 
@@ -56,48 +60,31 @@ client = connect.Client()
 ```
 
 ```{python}
-#| label: Get content info and usage details
+# | label: Get content info and visits
 
-### Determine if the desired content is Shiny or not. This will dictate which telemetry endpoint to use
+### Get content visits data
+df = client.metrics.views.find(
+    content_guid=content_guid,
+    start=report_from.strftime("%Y-%m-%dT%H:%M:%SZ"),
+    end=as_of_date.strftime("%Y-%m-%dT%H:%M:%SZ"))
+    
+visits = (pl.DataFrame(df, infer_schema_length=len(df))
+        .with_columns(pl.col("started").str.to_datetime("%Y-%m-%dT%H:%M:%SZ"))
+        .with_columns(pl.col("started").cast(pl.Date).alias("day")))
 
-# Retrieve content details
+
+### Get content details
 content_info = client.content.get(content_guid)
 
-# Determine type from the `app_mode`
-type = content_info.app_mode
 
-### Query appropriate telemetry endpoint for usage data
-if type == "shiny" or type == "python-shiny":
-
-  # Request visit records for the given content GUID
-  usage = (
-    pl.DataFrame(client.usage.find(content_guid=content_guid, start=report_from.strftime("%Y-%m-%dT%H:%M:%SZ"),
-      end=as_of_date.strftime("%Y-%m-%dT%H:%M:%SZ")))
-    .with_columns(
-      pl.col("started").str.to_datetime("%Y-%m-%dT%H:%M:%SZ"))
-    .with_columns(
-      pl.col("started").cast(pl.Date).alias("day"))
-    )
-
-else:
-  # Request visit records for the given content GUID
-  
-  usage = (
-    pl.DataFrame(client.visits.find(content_guid=content_guid, start=report_from.strftime("%Y-%m-%dT%H:%M:%SZ"),
-    end=as_of_date.strftime("%Y-%m-%dT%H:%M:%SZ")))
-    .with_columns(
-      pl.col("time").str.to_datetime("%Y-%m-%dT%H:%M:%SZ"))
-    .with_columns(
-      pl.col("time").cast(pl.Date).alias("day"))
-    )
-
-### Fetch all user details to cross reference user_guids with usernames
+### Get all user details to cross reference user_guids with usernames
 all_users = pl.DataFrame(client.users.find())
 
 ### Count total visits and unique visitors
-total_visits_in_period = usage.height
-unique_visitors = usage.filter(pl.col("user_guid").is_not_null()).select("user_guid").n_unique()
-
+total_visits_in_period = visits.height
+unique_visitors = (
+    visits.filter(pl.col("user_guid").is_not_null()).select("user_guid").n_unique()
+)
 ```
 
 ## Row
@@ -133,14 +120,14 @@ dict(
 ```{python}
 # plot content visits over time
 
-usage_plot_data = (usage.group_by("day")
+visits_plot_data = (visits.group_by("day")
   .agg(pl.len().alias("visits"))
   .sort("visits", descending=True)
   .select("day", "visits")
 ) 
 
 # generate plot
-p9.ggplot(usage_plot_data, p9.aes(x="day", y="visits")) + \
+p9.ggplot(visits_plot_data, p9.aes(x="day", y="visits")) + \
     p9.geom_point(color="#AE929F", size=1) + \
     p9.geom_smooth(se=False, color="#546A7B") + \
     p9.theme_minimal() + \
@@ -159,51 +146,59 @@ if np.isnan(top_n):
   # have to define a very high number to feed into `head` below
   truncation_rows = 99999
 else:
-  title = "Top {} content users".format(top_n)
+  title = "Top {} content visitors".format(top_n)
   truncation_rows = top_n
 
 ### Make a table of a user's total visits
-user_tot_usage = (
-  usage.group_by("user_guid")
+user_tot_visits = (
+  visits.group_by("user_guid")
   .agg(pl.len().alias("tot_visits"))
   # change any `nan` user_guid to "anonymous"
   .with_columns(pl.coalesce(pl.col("user_guid"), pl.lit("anonymous")).alias("user_guid")) 
 )
 
+### In the specified time period, when was each user's first and last visit?
+user_first_last_visit = (
+  visits.group_by("user_guid")
+  .agg(pl.min("day").alias("first_visit"), pl.max("day").alias("last_visit"))
+  .with_columns(pl.coalesce(pl.col("user_guid"), pl.lit("anonymous")).alias("user_guid"))
+)
+
 ### Make a table of a user's daily visits
-user_daily_usage = (
-  usage.group_by(["user_guid","day"])
-  .agg(pl.len()
-  .alias("daily_visits"))
+user_daily_visits = (
+  visits.group_by(["user_guid","day"])
+  .agg(pl.len().alias("daily_visits"))
+  .join(user_first_last_visit, on="user_guid", how="left")
   .join(all_users, left_on="user_guid", right_on="guid", how="left")
   .with_columns(pl.coalesce(pl.col("username"), pl.lit("anonymous")).alias("username"))
   .with_columns(pl.coalesce(pl.col("user_guid"), pl.lit("anonymous")).alias("user_guid"))
-  .select(["username", "user_guid", "day", "daily_visits"])
+  .select(["username", "user_guid", "day", "daily_visits", "first_visit", "last_visit"])
   .sort("day")
-  .pivot(index=["username","user_guid"], values="daily_visits", columns="day")
-  .join(user_tot_usage, on="user_guid", how="left")
+  .pivot(index=["username","user_guid", "first_visit", "last_visit"], values="daily_visits", columns="day")
+  .join(user_tot_visits, on="user_guid", how="left")
   .sort("tot_visits", descending=True)
   .drop("user_guid")
   .head(truncation_rows)
-  .select("username","tot_visits",pl.col("*").exclude("username","tot_visits"))
+  .select("username","tot_visits","first_visit","last_visit",pl.col("*").exclude("username","tot_visits","first_visit","last_visit"))
 )
 
 ### combine all access data columns into one column for nanoplot
-nanoplot_columns = user_daily_usage.drop("tot_visits","username").columns
+nanoplot_columns = user_daily_visits.drop("tot_visits","username","first_visit","last_visit").columns
 
 ### format the usage data for `great_tables` and nanoplot
-user_daily_usage_concatenated = (user_daily_usage
+user_daily_visits_concatenated = (user_daily_visits
   .fill_null(0)
   .with_columns(pl.concat_str([pl.col(nanoplot_columns)], separator=" ").alias("combined"))
-  .select("username", "tot_visits", "combined")
+  .select("username", "tot_visits", "first_visit","last_visit", "combined")
 )
 
 ### Create table
 (
-  GT(user_daily_usage_concatenated, rowname_col="username")
+  GT(user_daily_visits_concatenated, rowname_col="username")
   .tab_header(title=title)
   .tab_stubhead(label="username")
   .cols_label(tot_visits = "total visits")
+  .tab_source_note("First and last visits reported within the specified timeframe")
   .fmt_nanoplot(
     columns="combined",
     autoscale=False,
@@ -238,8 +233,8 @@ wide_info = (
   # reorder columns
   .select("content_owner","owner_email",pl.col("*").exclude("content_owner","owner_email"))
   # format the urls TODO: this will be unnecessary when great_tables adds fmt_url. ADD GH Issue link here for tracking
-  .with_columns(pl.col(["content_url","dashboard_url"]).apply(lambda x: f"<{x}>"))
-  .with_columns(pl.col(["owner_email"]).apply(lambda x: f"[{x}](mailto:{x})"))
+  .with_columns(pl.col(["content_url","dashboard_url"]).map_elements(lambda x: f"<{x}>", return_dtype=pl.String))
+  .with_columns(pl.col(["owner_email"]).map_elements(lambda x: f"[{x}](mailto:{x})", return_dtype=pl.String))
   # remove timestamp from date fields
   .with_columns(pl.col(["created_time","last_deployed_time"]).str.replace(r"T.*", "")
   )
@@ -260,6 +255,7 @@ long_info = (
   .tab_style(style=style.text(decorate="underline"),locations=loc.body(rows=["content_url","dashboard_url","owner_email"], columns="value"))
 )
 
+# TODO: Add vanity URL to content details. 
   
 ```
 
