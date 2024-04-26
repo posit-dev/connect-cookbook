@@ -65,44 +65,21 @@ report_from = as_of_date - timedelta(days=days_back)
 # Note `connect.Client()` automatically detects the environment variables CONNECT_SERVER and CONNECT_API_KEY. They do not need to be specified as arguments to this function, however, if these environment variables are not set, the code will fail
 client = connect.Client() 
 
-### Determine if the desired content is Shiny or not. This will dictate which telemetry endpoint to use
-# Retrieve content details
-content_info = client.content.get(content_guid)
+### Get content visits data
+df = client.metrics.views.find(
+    content_guid=content_guid,
+    start=report_from.strftime("%Y-%m-%dT%H:%M:%SZ"),
+    end=as_of_date.strftime("%Y-%m-%dT%H:%M:%SZ"))
+    
+visits = (pl.DataFrame(df, infer_schema_length=len(df))
+        .with_columns(pl.col("started").str.to_datetime("%Y-%m-%dT%H:%M:%SZ"))
+        .with_columns(pl.col("started").cast(pl.Date).alias("day")))
 
-# Determine type from the `app_mode`
-type = content_info.app_mode
 
-### Query appropriate telemetry endpoint for usage data
-if type == "shiny" or type == "python-shiny":
-
-  # Request visit records for the given content GUID
-  usage = (
-    pl.DataFrame(client.usage.find(content_guid=content_guid, start=report_from.strftime("%Y-%m-%dT%H:%M:%SZ"),
-      end=as_of_date.strftime("%Y-%m-%dT%H:%M:%SZ")))
-    .with_columns(
-      pl.col("started").str.to_datetime("%Y-%m-%dT%H:%M:%SZ"))
-    .with_columns(
-      pl.col("started").cast(pl.Date).alias("day"))
-    )
-
-else:
-  # Request visit records for the given content GUID
-  
-  usage = (
-    pl.DataFrame(client.visits.find(content_guid=content_guid, start=report_from.strftime("%Y-%m-%dT%H:%M:%SZ"),
-    end=as_of_date.strftime("%Y-%m-%dT%H:%M:%SZ")))
-    .with_columns(
-      pl.col("time").str.to_datetime("%Y-%m-%dT%H:%M:%SZ"))
-    .with_columns(
-      pl.col("time").cast(pl.Date).alias("day"))
-    )
-
-### View usage data as a data frame
-usage
+visits
 
 ```
 
-<!-- TODO: can this be formatted better? -->
 Sample output for a Shiny app:
 ```
 shape: (14, 6)
@@ -121,55 +98,60 @@ str	                str	                datetime[μs]	    str	               i64
 "0477855b-caeb-…	"3dc75833-f6c2-…	2024-04-11 00:36:00	"2024-04-11T00:…	 1	2024-04-11
 
 ```
+Visits data for non-Shiny content will also include columns identifying `variant_key`, `rendering_id`, `bundle_id`, and `path`. These columns are not used for this recipe.
+
+The output above can be plotted for a historical perspective on content usage. An example is included in the Quarto dashboard code at the end of this recipe.
 
 ## R
 
 ```{r}
 ### Load required packages
 library(connectapi)
-library(tidyverse)
+library(dplyr)
+library(lubridate)
 
 ### User-defined inputs
 # 1. specify the guid for the content
-content_guid <- "INSERT_CONTENT_GUID" 
+content_guid <- "INSERT_CONTENT_GUID"
 
 # 2. Specify timeframe for the report. Default is 30 days prior to today
-as_of_date <- lubridate::today()
+as_of_date <- today()
 days_back <- 30
 
-report_from <- as_of_date - lubridate::ddays(days_back)
+report_from <- as_of_date - ddays(days_back)
 
 ### Establish connection to Connect server
 # Note `connectapi::connect` automatically detects the environment variables CONNECT_SERVER and CONNECT_API_KEY. They do not need to be specified as arguments to this function, however, if these environment variables are not set, the code will fail.
-client <- connectapi::connect()
+client <- connect()
 
 ### Determine if the desired content is Shiny or not. This will dictate which telemetry endpoint to use
 # Retrive content details
-content_info <- connectapi::get_content(client, guid = content_guid)
+content_info <- get_content(client, guid = content_guid)
 
 # Determine type from the `app_mode`
 type <- content_info$app_mode
 
-### Query appropriate telemetry endpoint for usage data
+### Query appropriate telemetry endpoint for visits data
 if (type == "shiny" || type == "python-shiny") {
-  usage <- connectapi::get_usage_shiny(client, 
-                                       content_guid = content_guid, 
-                                       from = report_from, 
-                                       to = as_of_date,
-                                       limit = Inf) |>
-            dplyr::mutate(day = lubridate::floor_date(started, "day"))
+  visits <- get_usage_shiny(client,
+    content_guid = content_guid,
+    from = report_from,
+    to = as_of_date,
+    limit = Inf
+  ) |>
+    mutate(day = floor_date(started, "day"))
 } else {
-  usage <- connectapi::get_usage_static(client, 
-                                        content_guid = content_guid, 
-                                        from = report_from,
-                                        to = as_of_date,
-                                        limit = Inf) |>
-            dplyr::mutate(day = lubridate::floor_date(time, "day"))
-  
+  visits <- get_usage_static(client,
+    content_guid = content_guid,
+    from = report_from,
+    to = as_of_date,
+    limit = Inf
+  ) |>
+    mutate(day = floor_date(time, "day"))
 }
 
-### View usage data as a data frame
-usage
+### View visits data as a data frame
+visits
 
 ```
 
@@ -193,6 +175,7 @@ Sample output for a Shiny app:
 13 0477855b-caeb-... fc80bd89-4488-... 2024-03-29 18:16:10 2024-03-29 20:43:52            1 2024-03-29 00:00:00
 14 0477855b-caeb-... 3dc75833-f6c2-... 2024-04-11 00:36:00 2024-04-11 00:36:59            1 2024-04-11 00:00:00
 ```
+Visits data for non-Shiny content will also include columns identifying `variant_key`, `rendering_id`, `bundle_id`, and `path`. These columns are not used for this recipe.
 
 The output above can be plotted for a historical perspective on content usage. An example is included in the Quarto dashboard code at the end of this recipe.
 
@@ -200,7 +183,7 @@ The output above can be plotted for a historical perspective on content usage. A
 
 ### Identifying usage by user
 
-The code samples below yield by-user content usage data as a data frame. 
+The code samples below yield by-user content visits data as a data frame. 
 
 ::: {.panel-tabset group="language"}
 
@@ -211,23 +194,23 @@ The code samples below yield by-user content usage data as a data frame.
 all_users = pl.DataFrame(client.users.find())
 
 ### Make a table of a user's total visits
-user_tot_usage = (
-  usage.group_by("user_guid")
+user_tot_visits = (
+  visits.group_by("user_guid")
   .agg(pl.len().alias("tot_visits"))
   # change any `nan` user_guid to "anonymous"
   .with_columns(pl.coalesce(pl.col("user_guid"), pl.lit("anonymous")).alias("user_guid")) 
 )
 
 ### Make a table of a user's daily visits and combine with total visits
-user_daily_usage = (
-...   usage.group_by(["user_guid","day"])
+user_daily_visits = (
+...   visits.group_by(["user_guid","day"])
 ...   .agg(pl.len()
 ...   .alias("daily_visits"))
 ...   .join(all_users, left_on="user_guid", right_on="guid", how="left")
 ...   .with_columns(pl.coalesce(pl.col("username"), pl.lit("anonymous")).alias("username"))
 ...   .with_columns(pl.coalesce(pl.col("user_guid"), pl.lit("anonymous")).alias("user_guid"))
 ...   # join with total visits table
-...   .join(user_tot_usage, on="user_guid", how="left")
+...   .join(user_tot_visits, on="user_guid", how="left")
 ...   .select(["username", "day","tot_visits", "daily_visits"])
 ...   .sort("tot_visits",descending=True)
 ... )
@@ -252,15 +235,16 @@ shape: (11, 4)
 "connor"	2024-03-26	         1	           1
 
 ```
+The output above can be plotted for a historical perspective on content views. An example is included in the Quarto dashboard code at the end of this recipe.
 
 ## R
 
 ```{r}
 ### Get user details to cross reference `user_guid` with usernames
-all_users <- connectapi::get_users(client, limit = Inf)
+all_users <- get_users(client, limit = Inf)
 
-### Join user data with usage data
-by_user_usage <- usage |>
+### Join user data with visits data
+by_user_visits <- visits |>
                   select(user_guid, day) |> 
                   group_by(user_guid) |> 
                   # add a column for total visits/hits by that user
@@ -278,8 +262,8 @@ by_user_usage <- usage |>
                   distinct() |> 
                   arrange(desc(total_visits))
 
-### View by-user usage data as a data frame
-by_user_usage
+### View by-user visits data as a data frame
+by_user_visits
 ```
 
 Sample output:
@@ -300,7 +284,7 @@ Sample output:
 11 ryan     2024-04-11 00:00:00            1            1
 ```
 
-The output above can be plotted for a historical perspective on content usage. An example is included in the Quarto dashboard code at the end of this recipe.
+The output above can be plotted for a historical perspective on content views. An example is included in the Quarto dashboard code at the end of this recipe.
 
 :::
 
