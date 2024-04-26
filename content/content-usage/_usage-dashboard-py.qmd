@@ -89,7 +89,7 @@ unique_visitors = (
 
 ## Row
 
-Content usage report for **`{python} content_info.title`**, for the period of **`{python} report_from.strftime("%Y-%m-%d")`** to **`{python} as_of_date.strftime("%Y-%m-%d")`**
+Visits to **`{python} content_info.title`**, for the period of **`{python} report_from.strftime("%Y-%m-%d")`** to **`{python} as_of_date.strftime("%Y-%m-%d")`**
 
 
 ## Row 
@@ -168,10 +168,10 @@ user_first_last_visit = (
 user_daily_visits = (
   visits.group_by(["user_guid","day"])
   .agg(pl.len().alias("daily_visits"))
+  .with_columns(pl.coalesce(pl.col("user_guid"), pl.lit("anonymous")).alias("user_guid"))
   .join(user_first_last_visit, on="user_guid", how="left")
   .join(all_users, left_on="user_guid", right_on="guid", how="left")
   .with_columns(pl.coalesce(pl.col("username"), pl.lit("anonymous")).alias("username"))
-  .with_columns(pl.coalesce(pl.col("user_guid"), pl.lit("anonymous")).alias("user_guid"))
   .select(["username", "user_guid", "day", "daily_visits", "first_visit", "last_visit"])
   .sort("day")
   .pivot(index=["username","user_guid", "first_visit", "last_visit"], values="daily_visits", columns="day")
@@ -197,7 +197,7 @@ user_daily_visits_concatenated = (user_daily_visits
   GT(user_daily_visits_concatenated, rowname_col="username")
   .tab_header(title=title)
   .tab_stubhead(label="username")
-  .cols_label(tot_visits = "total visits")
+  .cols_label(tot_visits = "total visits", first_visit = "first visit", last_visit = "last visit")
   .tab_source_note("First and last visits reported within the specified timeframe")
   .fmt_nanoplot(
     columns="combined",
