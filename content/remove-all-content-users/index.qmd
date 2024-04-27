@@ -1,0 +1,142 @@
+---
+title: Remove all viewers from a content item
+execute: 
+  eval: false
+---
+
+This recipe removes all viewers from a piece of content and ensures the permissivity of access is set to "acl" so that only specified users/groups can access the content. 
+
+Optionally, the recipe can be modified to remove all users and groups from the content so that only the content publisher will have access.
+
+
+## Method 
+
+Content permissions are available at the `/v1/content/{guid}/permissions/{id}` endpoint of the Connect Server API. This recipe removes all viewers (or optionally all viewers and collaborators) from a piece of content.
+
+Additionally, the content access type is available from the `/v1/content/{guid}` endpoint. If the access type is either "all" or "logged_in", this is changed to "acl" to ensure that only the owner, and optionally, collaborators, have access. 
+
+
+### Remove all users and groups from content and restrict access type
+
+::: {.panel-tabset group="language"}
+## Python
+
+```{python}
+### Load required packages
+from posit import connect
+
+### User-defined inputs
+# 1. specify the guid for the content
+content_guid = "f55cdaed-c13e-4838-b466-c288e021f5ee"
+# content_guid = "INSERT_CONTENT_GUID"
+
+
+# 2. Remove only viewers or also remove collaborators, leaving only the publisher? Default is only viewers (`also_remove_collabs = False`).
+also_remove_collabs = False
+
+# if the value of also_remove_collabs is not a boolean, print a message and set it to False as a fail-safe
+if type(also_remove_collabs) != bool:
+    print("The value of `also_remove_collabs` must be a boolean. Setting it to False to be safe.")
+    also_remove_collabs = False
+
+### Establish connection to Connect server
+# Note `connect.Client()` automatically detects the environment variables CONNECT_SERVER and CONNECT_API_KEY. They do not need to be specified as arguments to this function, however, if these environment variables are not set, the code will fail
+client = connect.Client() 
+
+
+### For the specified content item, iteratively adjust permissions.
+for perm in client.content.get(content_guid).permissions.find():
+    if also_remove_collabs or perm.role == "viewer":
+        perm.delete()
+
+
+### Confirm new permissions
+client.content.get(content_guid).permissions.find()
+
+
+### If the access type for the content is not set to an Access Control List ("acl"), modify this to ensure that only the owner has access
+access_type = client.content.get(content_guid).access_type
+
+if access_type != "acl":
+    client.content.get(content_guid).update(access_type="acl")
+
+```
+
+
+## R
+
+```{r}
+### Load required packages
+library(connectapi)
+library(purrr)
+
+### User-defined inputs
+# 1. specify the guid for the content
+content_guid <- "f55cdaed-c13e-4838-b466-c288e021f5ee"
+# content_guid <- "INSERT_CONTENT_GUID"
+
+# 2. Remove only viewers or also remove collaborators, leaving only the publisher? Default is only viewers (`also_remove_collabs = FALSE`).
+also_remove_collabs <- FALSE
+
+# if the value of also_remove_collabs is not a boolean, print a message and set it to False as a fail-safe
+if (!is.logical(also_remove_collabs)) {
+  message("The value of `also_remove_collabs` must be a boolean. Setting it to FALSE to be safe.")
+  also_remove_collabs <- FALSE
+}
+
+### Establish connection to Connect server
+# Note `connectapi::connect` automatically detects the environment variables CONNECT_SERVER and CONNECT_API_KEY. They do not need to be specified as arguments to this function, however, if these environment variables are not set, the code will fail.
+client <- connect()
+
+### Adjust permissions for the specified content item.
+content <- content_item(client, content_guid)
+
+# get permissions
+perms <- content$permissions()
+
+#TODO: this can be cleaned up per GH issue https://github.com/rstudio/connectapi/issues/253
+# get id of each viewer and owner (collaborator)
+viewer_ids <- map(perms, ~.x$id[.x$role == "viewer"]) |> unlist()
+collab_ids <- map(perms, ~.x$id[.x$role == "owner"]) |> unlist()
+
+# remove all viewers
+walk(viewer_ids, ~content$permissions_delete(.x))
+if (also_remove_collabs) {
+  # remove collaborators too
+  walk(collab_ids, ~content$permissions_delete(.x))
+}
+
+### Confirm new permissions
+get_content_permissions(content)
+
+### If the access type for the content is not set to an Access Control List ("acl"), modify this to ensure that only the owner has access
+access_type <- content$content$access_type
+
+if (access_type != "acl") {
+  content_update_access_type(content, access_type = "acl")
+}
+
+```
+
+
+:::
+
+Sample results:
+
+:::: {.columns}
+
+::: {.column width="50%"}
+
+Before removing permissions:
+![](./images/before.png)
+
+:::
+
+::: {.column width="50%"}
+
+After removing permissions:
+![](./images/after.png)
+
+:::
+
+:::: 
