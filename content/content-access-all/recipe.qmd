@@ -14,7 +14,7 @@ This recipe would come in handy while performing an audit of all content publish
 
 ## Method
 
-Running the following code will generate a table of all content that is set without restriction. The information includes URL of the content on Connect and the username. 
+Running the following code will generate a table of all content that is set without restriction. The information includes URL of the content on Connect and the username of the content owner. 
 
 ::: {.panel-tabset group="language"}
 
@@ -56,7 +56,6 @@ Example output:
 ## R
 
 ```{r identify_content_r}
-#| eval: true
 #| warning: false
 #| code-fold: false
 #| output: false
@@ -99,7 +98,7 @@ Example output:
 
 There can be many ways to take further action based on the content list generated above. 
 
-If the objective was the generate a list of the content, the above code block provides that information.
+If the objective is to generate a list of the content, the above code block provides that information.
 
 The URLs provided can be used to audit the access within networks, i.e., you can check if the URL is reachable outside your organization's network or not.
 
