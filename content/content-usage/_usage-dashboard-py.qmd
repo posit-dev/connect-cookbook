@@ -1,5 +1,5 @@
 ---
-title: Historical Content Visits
+title: Historical Content Usage
 format:
   dashboard:
      theme: default
@@ -25,7 +25,7 @@ from great_tables import GT, nanoplot_options, style, loc, system_fonts, md
 
 # 1. specify the guid for the content
 # content_guid = "INSERT_CONTENT_GUID" 
-# content_guid = "0477855b-caeb-43e8-b3d9-28e0965e6230" #shiny
+content_guid = "0477855b-caeb-43e8-b3d9-28e0965e6230" #shiny
 content_guid = "8b765054-16a6-4c87-8c49-91b54b5e47bb" #quarto site
 # content_guid = "e33879ca-e251-49fa-b9bf-a56db9997048" #streamlit
 
@@ -38,7 +38,7 @@ days_back = 30
 top_n = 20
 top_n = np.nan
 
-# Note: The CONNECT_SERVER and CONNECT_API_KEY environment variables are required for this report to pull visits data. Use environment variables for added security; do not hard-code your API key or other secrets.
+# Note: The CONNECT_SERVER and CONNECT_API_KEY environment variables are required for this report to pull usage data. Use environment variables for added security; do not hard-code your API key or other secrets.
 
 ```
 
@@ -60,15 +60,15 @@ client = connect.Client()
 ```
 
 ```{python}
-# | label: Get content info and visits
+# | label: Get content info and usage
 
-### Get content visits data
-df = client.metrics.views.find(
+### Get content usage data
+df = client.metrics.usage.find(
     content_guid=content_guid,
     start=report_from.strftime("%Y-%m-%dT%H:%M:%SZ"),
     end=as_of_date.strftime("%Y-%m-%dT%H:%M:%SZ"))
     
-visits = (pl.DataFrame(df, infer_schema_length=len(df))
+usage = (pl.DataFrame(df, infer_schema_length=len(df))
         .with_columns(pl.col("started").str.to_datetime("%Y-%m-%dT%H:%M:%SZ"))
         .with_columns(pl.col("started").cast(pl.Date).alias("day")))
 
@@ -80,33 +80,33 @@ content_info = client.content.get(content_guid)
 ### Get all user details to cross reference user_guids with usernames
 all_users = pl.DataFrame(client.users.find())
 
-### Count total visits and unique visitors
-total_visits_in_period = visits.height
+### Count total hits and unique visitors
+total_hits_in_period = usage.height
 unique_visitors = (
-    visits.filter(pl.col("user_guid").is_not_null()).select("user_guid").n_unique()
+    usage.filter(pl.col("user_guid").is_not_null()).select("user_guid").n_unique()
 )
 ```
 
 ## Row
 
-Visits to **`{python} content_info.title`**, for the period of **`{python} report_from.strftime("%Y-%m-%d")`** to **`{python} as_of_date.strftime("%Y-%m-%d")`**
+Usage of **`{python} content_info.title`**, for the period of **`{python} report_from.strftime("%Y-%m-%d")`** to **`{python} as_of_date.strftime("%Y-%m-%d")`**
 
 
 ## Row 
 
 ```{python}
 #| content: valuebox
-#| title: "Total content visits in period"
+#| title: "Total content hits in period"
 #| icon: binoculars
 #| color: "success"
 dict(
-  value = total_visits_in_period
+  value = total_hits_in_period
 )
 ```
 
 ```{python}
 #| content: valuebox
-#| title: "Unique viewers in period"
+#| title: "Unique visitors in period"
 #| icon: people
 #| color: "success"
 dict(
@@ -118,87 +118,87 @@ dict(
 ## Row 
 
 ```{python}
-# plot content visits over time
+# plot content usage over time
 
-visits_plot_data = (visits.group_by("day")
-  .agg(pl.len().alias("visits"))
-  .sort("visits", descending=True)
-  .select("day", "visits")
+usage_plot_data = (usage.group_by("day")
+  .agg(pl.len().alias("usage"))
+  .sort("usage", descending=True)
+  .select("day", "usage")
 ) 
 
 # generate plot
-p9.ggplot(visits_plot_data, p9.aes(x="day", y="visits")) + \
+p9.ggplot(usage_plot_data, p9.aes(x="day", y="usage")) + \
     p9.geom_point(color="#AE929F", size=1) + \
     p9.geom_smooth(se=False, color="#546A7B") + \
     p9.theme_minimal() + \
-    p9.labs(y=None, x=None, title="Content visits for " + content_info["title"])
+    p9.labs(y=None, x=None, title="Content usage for " + content_info["title"])
 
 ```
 
 
 ```{python}
 #| html-table-processing: none
-# Create table of content visits by user
+# Create table of content usage by user
 
 ### Define table title and whether to truncate rows based on `top_n`
 if np.isnan(top_n):
-  title = "Content visits by user"
+  title = "Content usage by user"
   # have to define a very high number to feed into `head` below
   truncation_rows = 99999
 else:
   title = "Top {} content visitors".format(top_n)
   truncation_rows = top_n
 
-### Make a table of a user's total visits
-user_tot_visits = (
-  visits.group_by("user_guid")
-  .agg(pl.len().alias("tot_visits"))
+### Make a table of a user's total usage
+user_tot_usage = (
+  usage.group_by("user_guid")
+  .agg(pl.len().alias("tot_usage"))
   # change any `nan` user_guid to "anonymous"
   .with_columns(pl.coalesce(pl.col("user_guid"), pl.lit("anonymous")).alias("user_guid")) 
 )
 
 ### In the specified time period, when was each user's first and last visit?
 user_first_last_visit = (
-  visits.group_by("user_guid")
+  usage.group_by("user_guid")
   .agg(pl.min("day").alias("first_visit"), pl.max("day").alias("last_visit"))
   .with_columns(pl.coalesce(pl.col("user_guid"), pl.lit("anonymous")).alias("user_guid"))
 )
 
-### Make a table of a user's daily visits
-user_daily_visits = (
-  visits.group_by(["user_guid","day"])
-  .agg(pl.len().alias("daily_visits"))
+### Make a table of a user's daily usage
+user_daily_usage = (
+  usage.group_by(["user_guid","day"])
+  .agg(pl.len().alias("daily_usage"))
   .with_columns(pl.coalesce(pl.col("user_guid"), pl.lit("anonymous")).alias("user_guid"))
   .join(user_first_last_visit, on="user_guid", how="left")
   .join(all_users, left_on="user_guid", right_on="guid", how="left")
   .with_columns(pl.coalesce(pl.col("username"), pl.lit("anonymous")).alias("username"))
-  .select(["username", "user_guid", "day", "daily_visits", "first_visit", "last_visit"])
+  .select(["username", "user_guid", "day", "daily_usage", "first_visit", "last_visit"])
   .sort("day")
-  .pivot(index=["username","user_guid", "first_visit", "last_visit"], values="daily_visits", columns="day")
-  .join(user_tot_visits, on="user_guid", how="left")
-  .sort("tot_visits", descending=True)
+  .pivot(index=["username","user_guid", "first_visit", "last_visit"], values="daily_usage", columns="day")
+  .join(user_tot_usage, on="user_guid", how="left")
+  .sort("tot_usage", descending=True)
   .drop("user_guid")
   .head(truncation_rows)
-  .select("username","tot_visits","first_visit","last_visit",pl.col("*").exclude("username","tot_visits","first_visit","last_visit"))
+  .select("username","tot_usage","first_visit","last_visit",pl.col("*").exclude("username","tot_usage","first_visit","last_visit"))
 )
 
 ### combine all access data columns into one column for nanoplot
-nanoplot_columns = user_daily_visits.drop("tot_visits","username","first_visit","last_visit").columns
+nanoplot_columns = user_daily_usage.drop("tot_usage","username","first_visit","last_visit").columns
 
 ### format the usage data for `great_tables` and nanoplot
-user_daily_visits_concatenated = (user_daily_visits
+user_daily_usage_concatenated = (user_daily_usage
   .fill_null(0)
   .with_columns(pl.concat_str([pl.col(nanoplot_columns)], separator=" ").alias("combined"))
-  .select("username", "tot_visits", "first_visit","last_visit", "combined")
+  .select("username", "tot_usage", "first_visit","last_visit", "combined")
 )
 
 ### Create table
 (
-  GT(user_daily_visits_concatenated, rowname_col="username")
+  GT(user_daily_usage_concatenated, rowname_col="username")
   .tab_header(title=title)
   .tab_stubhead(label="username")
-  .cols_label(tot_visits = "total visits", first_visit = "first visit", last_visit = "last visit")
-  .tab_source_note("First and last visits reported within the specified timeframe")
+  .cols_label(tot_usage = "total usage", first_visit = "first visit", last_visit = "last visit")
+  .tab_source_note("First and last usage reported within the specified timeframe")
   .fmt_nanoplot(
     columns="combined",
     autoscale=False,

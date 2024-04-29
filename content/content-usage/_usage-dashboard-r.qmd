@@ -1,5 +1,5 @@
 ---
-title: Historical Content Visits
+title: Historical Content Usage
 format:
   dashboard:
      theme: default
@@ -32,7 +32,7 @@ days_back <- 30
 # 3. Specify if the summary should show only the Top N users for the content (e.g., `top_n = 10`). Default is `Inf` so that all users are shown.
 top_n <- Inf
 
-# Note: The CONNECT_SERVER and CONNECT_API_KEY environment variables are required for this report to pull visits data. Use environment variables for added security; do not hard-code your API key or other secrets.
+# Note: The CONNECT_SERVER and CONNECT_API_KEY environment variables are required for this report to pull usage data. Use environment variables for added security; do not hard-code your API key or other secrets.
 
 ```
 
@@ -53,7 +53,7 @@ client <- connect()
 ```
 
 ```{r}
-#| label: Get content info and visits
+#| label: Get content info and usage
 
 ### Determine if the desired content is Shiny or not. This will dictate which telemetry endpoint to use
 # Retrieve content details
@@ -62,16 +62,16 @@ content_info <- connectapi::get_content(client, guid = content_guid)
 # Determine type from the `app_mode`
 type <- content_info$app_mode
 
-### Query appropriate telemetry endpoint for visits data
+### Query appropriate telemetry endpoint for usage data
 if (type == "shiny" || type == "python-shiny"){
-  visits <- connectapi::get_usage_shiny(client, 
+  usage <- connectapi::get_usage_shiny(client, 
                                        content_guid = content_guid, 
                                        from = report_from, 
                                        to = as_of_date,
                                        limit = Inf) |>
             dplyr::mutate(day = lubridate::floor_date(started, "day"))
 } else {
-  visits <- connectapi::get_usage_static(client, 
+  usage <- connectapi::get_usage_static(client, 
                                         content_guid = content_guid, 
                                         from = report_from,
                                         to = as_of_date,
@@ -83,26 +83,26 @@ if (type == "shiny" || type == "python-shiny"){
 ### Get all user details to cross reference user_guids with usernames
 all_users <- connectapi::get_users(client, limit = Inf)
 
-### Count total visits and unique visitors
-total_visits_in_period <- nrow(visits)
-unique_visitors <- visits |> filter(!is.na(user_guid)) |>pull(user_guid) |> unique() |> length()
+### Count total usage and unique visitors
+total_hits_in_period <- nrow(usage)
+unique_visitors <- usage |> filter(!is.na(user_guid)) |>pull(user_guid) |> unique() |> length()
 
 ```
 
 ## Row
 
-Visits to **`r content_info$title`**, for the period of **`r report_from`** to **`r as_of_date`**
+Usage of **`r content_info$title`**, for the period of **`r report_from`** to **`r as_of_date`**
 
 
 ## Row 
 
 ```{r}
 #| content: valuebox
-#| title: "Total content visits in period"
+#| title: "Total content hits in period"
 #| icon: binoculars
 #| color: "success"
 list (
-  value = total_visits_in_period
+  value = total_hits_in_period
 )
 ```
 
@@ -120,22 +120,22 @@ list (
 ## Row 
 
 ```{r}
-#| label: plot content visits over time
+#| label: plot content usage over time
 
-visits_plot_data <- visits |>
+usage_plot_data <- usage |>
     group_by(day) |> 
-    summarise(visits = n()) |> 
-    arrange(desc(visits)) 
+    summarise(usage = n()) |> 
+    arrange(desc(usage)) 
   
  # generate plot
- {ggplot(visits_plot_data, aes(day, visits)) + 
+ {ggplot(usage_plot_data, aes(day, usage)) + 
      geom_point(color = "#AE929F", size = 1) +
      geom_smooth(se = FALSE, color = "#546A7B") +
      theme_minimal() +
      labs(
        y = NULL,
        x = NULL,
-       title = glue::glue("Content visits for {content_info$title}"),
+       title = glue::glue("Content usage for {content_info$title}"),
      )} |> 
       ggplotly(tooltip = c("y")) |> 
       config(displayModeBar = FALSE)
@@ -144,40 +144,40 @@ visits_plot_data <- visits |>
 
 
 ```{r}
-#| label: Create table of content visits by user
+#| label: Create table of content usage by user
 #| html-table-processing: none
 
-### Make a table of a user's daily visits
+### Make a table of a user's daily usage
 
-visits |> 
+usage |> 
   select(user_guid, day) |> 
   group_by(user_guid) |> 
-  mutate(tot_visits = n()) |> 
+  mutate(tot_usage = n()) |> 
   mutate(first_visit = min(day)) |>
   mutate(last_visit = max(day)) |>
   ungroup() |> 
   group_by(user_guid, day) |> 
-  mutate(daily_visits = n()) |> 
+  mutate(daily_usage = n()) |> 
   ungroup() |> 
   left_join(all_users, by = c(user_guid = "guid")) |> 
   mutate(username = coalesce(username, "anonymous")) |> 
-  select(username, day, tot_visits, first_visit, last_visit, daily_visits) |> 
+  select(username, day, tot_usage, first_visit, last_visit, daily_usage) |> 
   distinct() |> 
-  arrange(desc(tot_visits)) |> 
-  pivot_wider(names_from = day, values_from = daily_visits) |> 
+  arrange(desc(tot_usage)) |> 
+  pivot_wider(names_from = day, values_from = daily_usage) |> 
   head(top_n) |> 
   gt(rowname_col = "username") |> 
     tab_header(
   title = if(top_n == Inf){
-    paste("Content visits by user")
+    paste("Content usage by user")
     }else{
     paste("Top", top_n, "content users")})  |> 
   tab_stubhead(label = "username") |>
-  cols_label(tot_visits = "total visits", first_visit ="first visit", last_visit="last visit") |> 
-  tab_footnote(footnote=glue::glue("First and last visits in the period {report_from} to {as_of_date}"), locations=cells_column_labels(columns=c("first_visit", last_visit)) ) |>
+  cols_label(tot_usage = "total usage", first_visit ="first visit", last_visit="last visit") |> 
+  tab_footnote(footnote=glue::glue("First and last usage in the period {report_from} to {as_of_date}"), locations=cells_column_labels(columns=c("first_visit", last_visit)) ) |>
   cols_nanoplot(
-      columns = -c(tot_visits, first_visit, last_visit),
-      new_col_name = "daily visits",
+      columns = -c(tot_usage, first_visit, last_visit),
+      new_col_name = "daily usage",
       missing_vals = "zero",
       autoscale = FALSE,
       options = nanoplot_options(
