@@ -1,12 +1,11 @@
 ---
 title: Connect Cookbook
-execute: 
+execute:
   eval: false
 ---
 
-Welcome
-
-These recipes are organized according to tasks surrounding:
+The Posit Connect Cookbook provides recipes in Python and R that enable you to get more out of your Connect instance through the server API.
+The recipes fall into three general categories:
 
 1.  Server-level tasks: management of the server, processes, and resources
 2.  Content-level tasks: management of content and content settings
@@ -14,34 +13,20 @@ These recipes are organized according to tasks surrounding:
 
 ## Getting started
 
-### Set required environment variables
-
-The recipes in this cookbook utilize the Python package `posit-sdk` or the R package `connectapi` to interact with the Connect server API. To interact with the Connect server API, the following environment variables must be set:
-
-| Environment Variable | Recommended place to set                            | Note                                                                                                                                                                                                                                           |
-|------------|------------|------------------------------------------------------|
-| `CONNECT_SERVER`     | `.env` file in your local or project directory      | Your Connect server URL is the same URL you use to access the Connect dashboard, minus the `connect` path. If you access the dashboard at `https://posit-connect.company.com/connect/`, the server URL is `https://posit-connect.company.com/` |
-| `CONNECT_API_KEY`    | `.Renviron` file in your local or project directory | The [API Keys](https://docs.posit.co/connect/user/api-keys/) section of the Posit Connect [User Guide](https://docs.posit.co/connect/user/) explains how to provision a Connect API Key                                                        |
-
-Storing your server URL and API key as environment variables keep the literal values out of your source code, making your secrets more secure and your code easier to share or reuse in different environments. *Do not hard-code your API key into your code.*
-
 ### Install required packages
 
-Install the `posit-sdk` or `connectapi` package, dependent upon your language preference. Additionally, individual recipes may have additional packages used for data tidying, manipulation, or presentation. These package requirements will be identified in the recipe with either an `import` (Python) or `library()` (R) function call.
+The recipes in this cookbook use packages that we maintain that wrap API functionality and provide a natural interface for getting stuff done.
+In Python, the package is [`posit-sdk`](), and in R, [`connectapi`]().
 
 ::: {.panel-tabset group="language"}
 ## Python
 
-We strongly recommend the use of virtual environments to manage project-level dependencies. The code below uses `venv` for this purpose.
+We strongly recommend the use of virtual environments to manage project-level dependencies.
+The code below uses `venv` for this purpose.
 
 ``` bash
-# In your project directory
-
-# create virtual environment and activate it
+# In your project directory, create virtual environment and activate it
 python -m venv .venv && source .venv/bin/activate
-
-# upgrade `pip` and install `setuptools`, `wheel`
-python -m pip install -U pip setuptools wheel
 
 # install the `posit-sdk` package
 pip install posit-sdk
@@ -49,19 +34,69 @@ pip install posit-sdk
 
 ## R
 
-We strongly recommend the use of virtual environments to manage project-level dependencies. The code below uses `renv` for this purpose.
+We strongly recommend the use of virtual environments to manage project-level dependencies.
+The code below uses `renv` for this purpose.
 
 ```{r}
-# In your project directory
-
 # install `renv` package
 install.packages(renv)
 
-# initialize the project-level environment
+# In your project directory, initialize the project-level environment
 renv::init()
 
 # install required packages
 install.packages("connectapi")
+
+```
+:::
+
+Some recipes use additional packages for data tidying, manipulation, or presentation.
+These package requirements will be identified in the recipe with either an `import` (Python) or `library()` (R) function call.
+You will need to install them separately.
+
+### Set environment variables
+
+To use the Connect API, you need to provide your Connect server URL along with your API key.
+We recommend storing your server URL and API key as environment variables to keep the literal values out of your source code, making your secrets more secure and your code easier to share or reuse in different environments.
+*Do not hard-code your API key into your code.*
+
+The `posit-sdk` and `connectapi` packages look for the following environment variables:
+
+* `CONNECT_SERVER`: Your Connect server URL is the same URL you use to access the Connect dashboard, minus the `connect` path.
+If you access the dashboard at `https://posit-connect.company.com/connect/`, the server URL is `https://posit-connect.company.com/`
+
+* `CONNECT_API_KEY`: The [API Keys](https://docs.posit.co/connect/user/api-keys/) section of the Posit Connect [User Guide](https://docs.posit.co/connect/user/) explains how to obtain a Connect API Key.
+
+For convenience, you can set them in a `.env` file and use the Python `dotenv` package to load them, or in R, a local `.Renviron` file will be automatically picked up by R.
+
+Both of these environment variables are present on Connect as well, so by following this convention, you can work with the recipes locally and then publish content based on them to Connect and they will just work.
+
+### Connect to Connect
+
+When these variables are set, you don't have to pass any arguments to the library functions that establish a connection to the API, they just get picked up:
+
+::: {.panel-tabset group="language"}
+## Python
+
+```{python}
+# If you're using a .env file locally, do this:
+from dotenv import load_dotenv
+
+load_dotenv()
+
+# Now load the posit-sdk
+from posit import connect
+
+con = connect.Client()
+
+```
+
+## R
+
+```{r}
+library(connectapi)
+
+con <- connect()
 
 ```
 :::
