@@ -1,0 +1,84 @@
+---
+title: Render static content on demand
+execute: 
+  eval: false
+---
+
+This recipe shows how to render static content programmatically, on demand. This can be helpful when you want to trigger a static report to re-render and the content scheduling options of Connect are not a good fit.
+
+## Method
+
+
+::: {.panel-tabset group="language"}
+
+## Python
+
+
+
+## R
+
+```{r}
+### Load required packages
+library(connectapi)
+
+### User-defined inputs
+# 1. specify the content guid for the item to be redeployed
+# content_guid <- "SPECIFY CONTENT GUID"
+# content_guid <- "24d2f5d9-a930-4345-8c30-17717b9d8d8d"
+content_guid <- "a804cb4f-7b93-4bd9-ad29-e1969df902c8"
+
+
+# 2. Send an email after the content renders? Options are: ( "none" | "me" | "collaborators" | "collaborators_viewers" )
+email_rendered_report <-  "me"
+
+# verify thht email_rendered_report is a valid option and if not, set to "none"
+if(email_rendered_report %in% c("none", "to_me", "to_collabs", "to_collabs_viewers")){
+  email_rendered_report <- email_rendered_report
+} else {
+  email_rendered_report <- "none"
+}
+
+### Establish connection to Connect server
+# Note `connectapi::connect` automatically detects the environment variables CONNECT_SERVER and CONNECT_API_KEY. They do not need to be specified as arguments to this function, however, if these environment variables are not set, the code will fail.
+con <- connect()
+
+### Get content item from server
+content <- content_item(con, content_guid)
+
+### select the default variant to re-render
+content_variant <- get_variant_default(content)
+
+### trigger the variant to render
+new_render <- variant_render(content_variant)
+
+info <- poll_task(variant_render(content_variant))
+
+### trigger email of rendered content, if applicable
+new_render$send_mail("me")
+
+if(email_rendered_report != "none"){
+  httr::POST(
+    url = paste0(con$server, "/__api__/variants/3/sender",
+    add_params(
+      email = email_rendered_report,
+      rendering_id = get_variants(content)$rendering_id
+    ),
+    add_headers(Authorization = paste("Key", con$api_key)
+}
+
+
+# Get details about a specific content item we want to trigger and any variants that already exist 
+rmd_content <- content_item(client, "caffdf48-1f24-43c1-93a9-d0da6765abf1")
+rmd_content_variant <- get_variant_default(rmd_content)
+
+# Create object that will execute a variant on demand
+my_rendering <- variant_render(rmd_content_variant)
+
+# Trigger render, poll task while waiting for information about a deployment and message out the result. 
+poll_task(my_rendering)
+
+# Returns all renderings / content for a particular variant.
+variant_history <- get_variant_renderings(rmd_content_variant)
+```
+
+:::
