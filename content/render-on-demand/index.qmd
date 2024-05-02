@@ -12,7 +12,8 @@ This recipe shows how to render static content programmatically, on demand. This
 ::: {.panel-tabset group="language"}
 
 ## Python
-
+ 
+ <!-- TODO: not implemented in posit-sdk yet. see https://github.com/posit-dev/posit-sdk-py/issues/189 -->
 
 
 ## R
@@ -66,19 +67,9 @@ if(email_rendered_report != "none"){
     add_headers(Authorization = paste("Key", con$api_key)
 }
 
+# TODO: this is broken. see https://github.com/rstudio/connectapi/issues/257
 
-# Get details about a specific content item we want to trigger and any variants that already exist 
-rmd_content <- content_item(client, "caffdf48-1f24-43c1-93a9-d0da6765abf1")
-rmd_content_variant <- get_variant_default(rmd_content)
 
-# Create object that will execute a variant on demand
-my_rendering <- variant_render(rmd_content_variant)
-
-# Trigger render, poll task while waiting for information about a deployment and message out the result. 
-poll_task(my_rendering)
-
-# Returns all renderings / content for a particular variant.
-variant_history <- get_variant_renderings(rmd_content_variant)
 ```
 
 :::
