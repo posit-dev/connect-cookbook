@@ -12,6 +12,7 @@ format:
 library(connectapi)
 library(tidyverse)
 library(gt)
+library(apexcharter)
 # library(plotly)
 ```
 
@@ -91,18 +92,25 @@ Last **`r days_back`** days of content usage on Connect
 usage_plot_data <- usage |>
     group_by(day) |> 
     summarise(usage = n()) |> 
-    arrange(desc(usage)) 
+    arrange(day) 
   
 # generate plot
-ggplot(usage_plot_data, aes(day, usage)) + 
-     geom_point(color = "#AE929F", size = 1) +
-     geom_smooth(se = FALSE, color = "#546A7B") +
-     theme_minimal() +
-     labs(
-       y = NULL,
-       x = NULL,
-       title = glue::glue("Total usage for the last {days_back} days"),
-     )
+# ggplot(usage_plot_data, aes(day, usage)) + 
+#      geom_point(color = "#AE929F", size = 1) +
+#      geom_smooth(se = FALSE, color = "#546A7B") +
+#      theme_minimal() +
+#      labs(
+#        y = NULL,
+#        x = NULL,
+#        title = glue::glue("Total usage for the last {days_back} days"),
+#      )
+
+# generate plot using apexcharter
+apex(usage_plot_data, type = "line", mapping = aes(x = day, y = usage)) |> 
+  ax_labs(
+    title = glue::glue("Total usage for the last {days_back} days")
+  ) 
+
 
 ```
 
@@ -121,15 +129,24 @@ top_n_content <- usage |>
   mutate(title = coalesce(title, name)) 
 
 # generate plot
-ggplot(top_n_content, aes(x = reorder(title, tot_usage), y = tot_usage)) + 
-  geom_col(fill = "#AE929F") +
-  coord_flip() +
-  theme_minimal() +
-  labs(
-    x = NULL,
-    y = NULL,
-    title = glue::glue("By content (top {top_n})")
-  )
+# ggplot(top_n_content, aes(x = reorder(title, tot_usage), y = tot_usage)) + 
+#   geom_col(fill = "#AE929F") +
+#   coord_flip() +
+#   theme_minimal() +
+#   labs(
+#     x = NULL,
+#     y = NULL,
+#     title = glue::glue("By content (top {top_n})")
+#   )
+# generate plot using apexcharter
+apex(top_n_content, type = "bar", mapping = aes(title, tot_usage)) |> 
+  ax_labs(
+    title = glue::glue("Total usage for the last {days_back} days")
+  ) |> 
+    ax_tooltip(
+  # TODO: add owner_username to tooltip
+    )
+
 
 ```
 
@@ -145,16 +162,24 @@ top_n_users <- usage |>
   mutate(username = coalesce(username, "anonymous"))
 
 # generate plot
-ggplot(top_n_users, aes(x = reorder(username, tot_usage), y = tot_usage)) + 
-  geom_col(fill = "#AE929F") +
-  coord_flip() +
-  theme_minimal() +
-  labs(
-    x = NULL,
-    y = NULL,
-    title = glue::glue("By viewer (top {top_n})")
-  )
+# ggplot(top_n_users, aes(x = reorder(username, tot_usage), y = tot_usage)) + 
+#   geom_col(fill = "#AE929F") +
+#   coord_flip() +
+#   theme_minimal() +
+#   labs(
+#     x = NULL,
+#     y = NULL,
+#     title = glue::glue("By viewer (top {top_n})")
+#   )
 
+# generate plot using apexcharter
+apex(top_n_users, type = "bar", mapping = aes(username, tot_usage)) |> 
+  ax_labs(
+    title = glue::glue("By viewer (top {top_n})")
+  ) |> 
+    ax_tooltip(
+  # TODO: add top content to tooltip
+    )
 
 ```
 
@@ -170,14 +195,24 @@ top_n_publishers <- usage |>
   head(top_n)
 
 # generate plot
-ggplot(top_n_publishers, aes(x = reorder(owner_username, tot_usage), y = tot_usage)) + 
-  geom_col(fill = "#AE929F") +
-  coord_flip() +
-  theme_minimal() +
-  labs(
-    x = NULL,
-    y = NULL,
+# ggplot(top_n_publishers, aes(x = reorder(owner_username, tot_usage), y = tot_usage)) + 
+#   geom_col(fill = "#AE929F") +
+#   coord_flip() +
+#   theme_minimal() +
+#   labs(
+#     x = NULL,
+#     y = NULL,
+#     title = glue::glue("By publisher (top {top_n})")
+#   )
+
+# generate plot using apexcharter
+apex(top_n_publishers, type = "bar", mapping = aes(owner_username, tot_usage)) |> 
+  ax_labs(
     title = glue::glue("By publisher (top {top_n})")
-  )
+  ) |> 
+    ax_tooltip(
+  # TODO: add top content titles to tooltip
+    )
+
 
 ```
