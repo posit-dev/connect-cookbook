@@ -1,0 +1,183 @@
+---
+title: Most Popular Content on Connect
+format:
+  dashboard:
+     theme: default
+     orientation: rows
+---
+
+```{r}
+#| label: setup
+
+library(connectapi)
+library(tidyverse)
+library(gt)
+# library(plotly)
+```
+
+
+```{r}
+#| label: user-defined inputs 
+
+### User-defined inputs
+# 1. Specify timeframe for the report. Default is 90 days prior to today
+as_of_date <- today()
+days_back <- 20
+report_from <- as_of_date - ddays(days_back)
+
+# 2. Specify the number of content items to report as the Top N pieces of content. Default is to show the `top_n=20` pieces of content. 
+top_n <- 20
+
+
+# Note: The CONNECT_SERVER and CONNECT_API_KEY environment variables are required for this report to pull usage data. Use environment variables for added security; do not hard-code your API key or other secrets.
+
+```
+
+
+```{r}
+#| label: Establish connection to Connect server
+
+# Note `connectapi::connect` automatically detects the environment variables CONNECT_SERVER and CONNECT_API_KEY. They do not need to be specified as arguments to this function, however, if these environment variables are not set, the code will fail
+client <- connect()
+
+```
+
+```{r}
+#| label: Get content info and usage
+
+### Retrieve content details and select relevant columns
+content_info <- connectapi::get_content(client) |> 
+  hoist(owner, owner_username = "username") |> 
+  select(guid, name, title, owner_username, dashboard_url)
+
+### Query for both shiny and non-shiny usage data
+
+usage_shiny <- get_usage_shiny(client,
+    from = report_from,
+    to = as_of_date,
+    limit = Inf
+  )
+
+usage_non_shiny <- get_usage_static(client,
+    from = report_from,
+    to = as_of_date,
+    limit = Inf
+  ) |> 
+    rename(started = time) |> 
+    mutate(ended = started) 
+
+
+usage <- bind_rows(usage_shiny, usage_non_shiny) |> 
+  mutate(day = as.Date(started)) |>
+  select(content_guid, user_guid, day)
+
+### Get all user details to cross reference user_guids with usernames
+all_users <- connectapi::get_users(client, limit = Inf) |> 
+  select(guid, username, email) |> rename(user_guid = guid)
+
+
+```
+
+## Row
+
+Last **`r days_back`** days of content usage on Connect
+
+
+## Row 
+
+```{r}
+#| label: plot total content usage over time
+
+usage_plot_data <- usage |>
+    group_by(day) |> 
+    summarise(usage = n()) |> 
+    arrange(desc(usage)) 
+  
+# generate plot
+ggplot(usage_plot_data, aes(day, usage)) + 
+     geom_point(color = "#AE929F", size = 1) +
+     geom_smooth(se = FALSE, color = "#546A7B") +
+     theme_minimal() +
+     labs(
+       y = NULL,
+       x = NULL,
+       title = glue::glue("Total usage for the last {days_back} days"),
+     )
+
+```
+
+## Row
+
+```{r}
+#| label: bar graph of top N by content 
+
+top_n_content <- usage |> 
+  group_by(content_guid) |> 
+  summarise(tot_usage = n()) |> 
+  arrange(desc(tot_usage)) |> 
+  head(top_n) |> 
+  left_join(content_info, by = c(content_guid = "guid")) |> 
+  # if title is NA then substitute with name
+  mutate(title = coalesce(title, name)) 
+
+# generate plot
+ggplot(top_n_content, aes(x = reorder(title, tot_usage), y = tot_usage)) + 
+  geom_col(fill = "#AE929F") +
+  coord_flip() +
+  theme_minimal() +
+  labs(
+    x = NULL,
+    y = NULL,
+    title = glue::glue("By content (top {top_n})")
+  )
+
+```
+
+```{r}
+#| label: bar graph of top N by content users
+
+top_n_users <- usage |> 
+  group_by(user_guid) |> 
+  summarise(tot_usage = n()) |> 
+  arrange(desc(tot_usage)) |> 
+  head(top_n) |> 
+  left_join(all_users, by = "user_guid") |> 
+  mutate(username = coalesce(username, "anonymous"))
+
+# generate plot
+ggplot(top_n_users, aes(x = reorder(username, tot_usage), y = tot_usage)) + 
+  geom_col(fill = "#AE929F") +
+  coord_flip() +
+  theme_minimal() +
+  labs(
+    x = NULL,
+    y = NULL,
+    title = glue::glue("By viewer (top {top_n})")
+  )
+
+
+```
+
+
+```{r}
+#| label: bar graph of top N by publishers
+
+top_n_publishers <- usage |> 
+  left_join(content_info, by = c(content_guid = "guid")) |> 
+  group_by(owner_username) |> 
+  summarise(tot_usage = n()) |> 
+  arrange(desc(tot_usage)) |> 
+  head(top_n)
+
+# generate plot
+ggplot(top_n_publishers, aes(x = reorder(owner_username, tot_usage), y = tot_usage)) + 
+  geom_col(fill = "#AE929F") +
+  coord_flip() +
+  theme_minimal() +
+  labs(
+    x = NULL,
+    y = NULL,
+    title = glue::glue("By publisher (top {top_n})")
+  )
+
+```
