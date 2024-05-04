@@ -12,8 +12,7 @@ format:
 library(connectapi)
 library(tidyverse)
 library(gt)
-library(apexcharter)
-# library(plotly)
+library(plotly)
 ```
 
 
@@ -81,7 +80,7 @@ all_users <- connectapi::get_users(client, limit = Inf) |>
 
 ## Row
 
-Last **`r days_back`** days of content usage on Connect
+Content usage on Connect for the period of **`r report_from`** to **`r as_of_date`**
 
 
 ## Row 
@@ -95,21 +94,18 @@ usage_plot_data <- usage |>
     arrange(day) 
   
 # generate plot
-# ggplot(usage_plot_data, aes(day, usage)) + 
-#      geom_point(color = "#AE929F", size = 1) +
-#      geom_smooth(se = FALSE, color = "#546A7B") +
-#      theme_minimal() +
-#      labs(
-#        y = NULL,
-#        x = NULL,
-#        title = glue::glue("Total usage for the last {days_back} days"),
-#      )
+gg <- ggplot(usage_plot_data, aes(day, usage)) + 
+     geom_line(color = "#AE929F", linewidth = 1) +
+     theme_minimal() +
+     labs(
+       y = NULL,
+       x = NULL,
+       title = glue::glue("Total usage for the last {days_back} days"),
+     )
 
-# generate plot using apexcharter
-apex(usage_plot_data, type = "line", mapping = aes(x = day, y = usage)) |> 
-  ax_labs(
-    title = glue::glue("Total usage for the last {days_back} days")
-  ) 
+# make interactive with plotly
+ggplotly(gg) |> 
+      config(displayModeBar = FALSE)
 
 
 ```
@@ -117,7 +113,7 @@ apex(usage_plot_data, type = "line", mapping = aes(x = day, y = usage)) |>
 ## Row
 
 ```{r}
-#| label: bar graph of top N by content 
+#| label: bar graph of top N content items 
 
 top_n_content <- usage |> 
   group_by(content_guid) |> 
@@ -129,90 +125,119 @@ top_n_content <- usage |>
   mutate(title = coalesce(title, name)) 
 
 # generate plot
-# ggplot(top_n_content, aes(x = reorder(title, tot_usage), y = tot_usage)) + 
-#   geom_col(fill = "#AE929F") +
-#   coord_flip() +
-#   theme_minimal() +
-#   labs(
-#     x = NULL,
-#     y = NULL,
-#     title = glue::glue("By content (top {top_n})")
-#   )
-# generate plot using apexcharter
-apex(top_n_content, type = "bar", mapping = aes(title, tot_usage)) |> 
-  ax_labs(
-    title = glue::glue("Total usage for the last {days_back} days")
-  ) |> 
-    ax_tooltip(
-  # TODO: add owner_username to tooltip
-    )
+gg <- ggplot(top_n_content, aes(x = reorder(title, tot_usage), y = tot_usage,
+text=paste("owner username:",owner_username))) + 
+  geom_col(fill = "#16565A") +
+  coord_flip() +
+  theme_minimal() +
+  labs(
+    x = NULL,
+    y = NULL,
+    title = glue::glue("Top {top_n} content items)")
+  )
+
+# make interactive with plotly and include the owner_username and tot_usage in the tooltip
+ggplotly(gg, tooltip = c("y", "text")) |> 
+      config(displayModeBar = FALSE)
 
 
 ```
 
 ```{r}
-#| label: bar graph of top N by content users
+#| label: bar graph of top N content users
 
-top_n_users <- usage |> 
-  group_by(user_guid) |> 
-  summarise(tot_usage = n()) |> 
-  arrange(desc(tot_usage)) |> 
-  head(top_n) |> 
-  left_join(all_users, by = "user_guid") |> 
-  mutate(username = coalesce(username, "anonymous"))
+# identify top N content users and identify their most-frequently used content item
+top_n_users <- usage |>
+  select(-day) |>
+  group_by(user_guid, content_guid) |>
+  # count a user's usage of a content item
+  mutate(content_hits = n()) |>
+  ungroup() |>
+  group_by(user_guid) |>
+  # count a user's total usage of all content
+  mutate(users_tot_usage = n()) |>
+  arrange(desc(content_hits)) |>
+  # slice to save only each user's most frequently accessed content item
+  slice(1) |>
+  ungroup() |>
+  # what fraction of a user's total usage is their most frequently accessed content item
+  mutate(top_item_percent_of_usage = content_hits / users_tot_usage) |>
+  # select only the top N users
+  arrange(desc(users_tot_usage)) |>
+  head(top_n) |>
+  left_join(all_users, by = "user_guid") |>
+  mutate(username = coalesce(username, "anonymous")) |>
+  left_join(content_info, by = c(content_guid = "guid")) |>
+  # if title is NA then substitute with name
+  mutate(title = coalesce(title, name)) |>
+  rename(users_most_frequent_content = title) |>
+  select(username, users_most_frequent_content, users_tot_usage, top_item_percent_of_usage)
+
 
 # generate plot
-# ggplot(top_n_users, aes(x = reorder(username, tot_usage), y = tot_usage)) + 
-#   geom_col(fill = "#AE929F") +
-#   coord_flip() +
-#   theme_minimal() +
-#   labs(
-#     x = NULL,
-#     y = NULL,
-#     title = glue::glue("By viewer (top {top_n})")
-#   )
+gg <- ggplot(top_n_users, aes(
+  x = reorder(username, users_tot_usage), y = users_tot_usage,
+  # text=paste("most used content:",users_most_frequent_content)
+  text = glue::glue("total usage: {users_tot_usage} \nmost frequently accessed content: {users_most_frequent_content} \n% of total usage used for accessing \'{users_most_frequent_content}\': {scales::percent(top_item_percent_of_usage,1)}")
+)) +
+  geom_col(fill = "#16565A") +
+  coord_flip() +
+  theme_minimal() +
+  labs(
+    x = NULL,
+    y = NULL,
+    title = glue::glue("Top {top_n} content users")
+  )
 
-# generate plot using apexcharter
-apex(top_n_users, type = "bar", mapping = aes(username, tot_usage)) |> 
-  ax_labs(
-    title = glue::glue("By viewer (top {top_n})")
-  ) |> 
-    ax_tooltip(
-  # TODO: add top content to tooltip
-    )
+
+# make interactive with plotly and include the owner_username and tot_usage in the tooltip
+ggplotly(gg, tooltip = c("text")) |>
+  config(displayModeBar = FALSE)
 
 ```
 
 
 ```{r}
-#| label: bar graph of top N by publishers
+#| label: bar graph of top N publishers
 
-top_n_publishers <- usage |> 
-  left_join(content_info, by = c(content_guid = "guid")) |> 
-  group_by(owner_username) |> 
-  summarise(tot_usage = n()) |> 
-  arrange(desc(tot_usage)) |> 
-  head(top_n)
+top_n_publishers <- usage |>
+    left_join(content_info, by = c(content_guid = "guid")) |>
+    select(content_guid, name, title, owner_username) |>
+    group_by(content_guid) |>
+    mutate(content_hits = n()) |>
+    ungroup() |>
+    group_by(owner_username) |>
+    # number of owner's distinct content items accessed in the period
+    mutate(num_owners_items_accessed = n_distinct(content_guid)) |>
+    mutate(owners_tot_usage = n()) |>
+    arrange(desc(content_hits)) |>
+    slice(1) |>
+    arrange(desc(owners_tot_usage)) |>
+    head(top_n) |>
+    # if title is NA then substitute with name
+    mutate(title = coalesce(title, name)) |>
+    rename(owners_most_frequent_content = title, owners_most_frequent_content_hits = content_hits) |>
+    select(-content_guid, -name)
+
 
 # generate plot
-# ggplot(top_n_publishers, aes(x = reorder(owner_username, tot_usage), y = tot_usage)) + 
-#   geom_col(fill = "#AE929F") +
-#   coord_flip() +
-#   theme_minimal() +
-#   labs(
-#     x = NULL,
-#     y = NULL,
-#     title = glue::glue("By publisher (top {top_n})")
-#   )
+gg <- ggplot(top_n_publishers, aes(
+  x = reorder(owner_username, owners_tot_usage), y = owners_tot_usage,
+  text = glue::glue("all content hits: {owners_tot_usage} \nnumber of distinct content items accessed in period: {num_owners_items_accessed} \nmost frequently accessed content: {owners_most_frequent_content} \nhits for \'{owners_most_frequent_content}\': {owners_most_frequent_content_hits}")
+)) +
+  geom_col(fill = "#16565A") +
+  coord_flip() +
+  theme_minimal() +
+  labs(
+    x = NULL,
+    y = NULL,
+    title = glue::glue("Top {top_n} publishers")
+  )
 
-# generate plot using apexcharter
-apex(top_n_publishers, type = "bar", mapping = aes(owner_username, tot_usage)) |> 
-  ax_labs(
-    title = glue::glue("By publisher (top {top_n})")
-  ) |> 
-    ax_tooltip(
-  # TODO: add top content titles to tooltip
-    )
+
+# make interactive with plotly and include the owner_username and tot_usage in the tooltip
+ggplotly(gg, tooltip = c("text")) |>
+  config(displayModeBar = FALSE)
 
 
 ```
