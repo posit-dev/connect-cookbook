@@ -25,7 +25,7 @@ as_of_date <- today()
 days_back <- 20
 report_from <- as_of_date - ddays(days_back)
 
-# 2. Specify the number of content items to report as the Top N pieces of content. Default is to show the `top_n=20` pieces of content. 
+# 2. Specify the number of content items to report as the Top N pieces of content. Default is to show the `top_n <- 20` pieces of content. 
 top_n <- 20
 
 
@@ -100,7 +100,7 @@ gg <- ggplot(usage_plot_data, aes(day, usage)) +
      labs(
        y = NULL,
        x = NULL,
-       title = glue::glue("Total usage for the last {days_back} days"),
+       title = glue::glue("Total usage for the {days_back} day period"),
      )
 
 # make interactive with plotly
@@ -178,7 +178,7 @@ top_n_users <- usage |>
 gg <- ggplot(top_n_users, aes(
   x = reorder(username, users_tot_usage), y = users_tot_usage,
   # text=paste("most used content:",users_most_frequent_content)
-  text = glue::glue("total usage: {users_tot_usage} \nmost frequently accessed content: {users_most_frequent_content} \n% of total usage used for accessing \'{users_most_frequent_content}\': {scales::percent(top_item_percent_of_usage,1)}")
+  text = glue::glue("total usage: {users_tot_usage} \nmost frequently accessed content: {users_most_frequent_content} \n% of all content hits spent on \'{users_most_frequent_content}\': {scales::percent(top_item_percent_of_usage,1)}")
 )) +
   geom_col(fill = "#16565A") +
   coord_flip() +

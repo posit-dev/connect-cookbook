@@ -1,0 +1,257 @@
+---
+title: Most Popular Content on Connect
+format:
+  dashboard:
+     theme: default
+     orientation: rows
+---
+
+```{python}
+#| label: setup
+from posit import connect
+from datetime import date, timedelta
+import polars as pl
+import plotly.express as px
+import plotly.graph_objects as go
+
+```
+
+
+```{python}
+#| label: user-defined inputs 
+
+# 1. Specify timeframe for the report. Default is 90 days prior to today
+as_of_date = date.today()
+days_back = 20
+report_from = as_of_date - timedelta(days=days_back)
+
+
+# 2. Specify the number of content items to report as the Top N pieces of content. Default is to show the `top_n=20` pieces of content.  
+top_n = 20
+
+# Note: The CONNECT_SERVER and CONNECT_API_KEY environment variables are required for this report to pull usage data. Use environment variables for added security; do not hard-code your API key or other secrets.
+
+```
+
+
+```{python}
+#| label: Establish connection to Connect server
+
+# Note `connect.Client()` automatically detects the environment variables CONNECT_SERVER and CONNECT_API_KEY. They do not need to be specified as arguments to this function, however, if these environment variables are not set, the code will fail
+client = connect.Client() 
+```
+
+```{python}
+# | label: Get content info and usage
+
+### Retrieve content details and select relevant columns
+df_content = client.content.find()
+content_info = (pl.DataFrame(df_content, infer_schema_length=len(df_content))
+                # unnest struct column "owner" to get owner username
+                .with_columns(pl.col("owner").map_elements(lambda x: x["username"], return_dtype=pl.String).alias("owner_username"))
+                # select relevant columns
+                .select(["guid", "name", "title", "owner_username"])
+)
+
+### Get usage data
+df = client.metrics.usage.find(
+    start=report_from.strftime("%Y-%m-%dT%H:%M:%SZ"),
+    end=as_of_date.strftime("%Y-%m-%dT%H:%M:%SZ"))
+    
+usage = (pl.DataFrame(df, infer_schema_length=len(df))
+        .with_columns(pl.col("started").str.to_datetime("%Y-%m-%dT%H:%M:%SZ"))
+        .with_columns(pl.col("started").cast(pl.Date).alias("day"))
+        .select(["content_guid", "user_guid", "day"]))
+
+
+### Get all user details to cross reference user_guids with usernames
+all_users = (pl.DataFrame(client.users.find())
+             .select(["guid", "username"])
+             #rename guid to user_guid
+              .rename({"guid": "user_guid"}))
+
+
+```
+
+## Row
+
+Content usage on Connect for the period of **`{python} report_from.strftime("%Y-%m-%d")`** to **`{python} as_of_date.strftime("%Y-%m-%d")`**
+
+
+## Row 
+
+
+```{python}
+# plot total content usage over time
+
+usage_plot_data = (usage.group_by("day")
+  .agg(pl.len().alias("usage"))
+  .sort("day")
+  .select("day", "usage")
+) 
+# TODO: fix title so it's not days back but the report period
+# plot usage_plot_data using plotly 
+fig = px.line(usage_plot_data.to_pandas(), x="day", y="usage", title=f"Total usage for the last {days_back} days", template="plotly_white")
+fig.update_traces(line_color='#AE929F', line_width=4)
+
+
+
+```
+
+
+## Row
+
+```{python}
+# bar graph of top N content items
+
+# identify top N content users and identify their most-frequently used content item
+top_n_content = (
+  usage.group_by("content_guid")
+  .agg(pl.len().alias("tot_usage"))
+  .join(content_info, left_on="content_guid", right_on="guid", how="left")
+  .select(["name", "title", "tot_usage","owner_username"])
+  .sort("tot_usage", descending=True)
+  .head(top_n)
+)
+
+# make a bar plot of top_n_content and have the tooltip show the owner_username and tot_usage
+fig = (
+  px.bar(top_n_content.to_pandas(), x="tot_usage", y="title", 
+              orientation='h', title=f"Top {top_n} Content Items by Usage", template="plotly_white",
+              hover_data=[top_n_content["tot_usage"], top_n_content["owner_username"]])
+        .update_layout(yaxis=dict(autorange="reversed"),
+                  title=f"Top {top_n} Content Items")
+        .update_traces(marker_color='#16565A',
+                  hovertemplate="total usage: %{x}<br>owner username: %{customdata[1]}")
+        .update_yaxes(title_text="")
+        .show()
+        )
+
+```
+
+
+```{python}
+# bar graph of top N content users
+
+# identify top N content users and identify their most-frequently used content item
+
+# make a table of a user's usage of each content item
+user_content_hits = (
+  usage.group_by(["user_guid", "content_guid"])
+  .agg(pl.len().alias("content_hits"))
+  # for each user_guid return the content_guid for the most content_hits
+  .group_by("user_guid")
+  .map_groups(lambda group: group.sort("content_hits", descending=True))
+  .group_by("user_guid")
+  .head(1)
+  # if user_guid is null then replace with "anonymous"
+  .with_columns(pl.coalesce(pl.col("user_guid"), pl.lit("anonymous")).alias("user_guid")) 
+)
+
+# make a table of a user's total usage of all content
+user_tot_usage = (
+  usage.group_by("user_guid")
+  .agg(pl.len().alias("users_tot_usage"))
+  # if user_guid is null then replace with "anonymous"
+  .with_columns(pl.coalesce(pl.col("user_guid"), pl.lit("anonymous")).alias("user_guid")) 
+)
+
+
+top_n_users = (
+  user_content_hits
+  .join(user_tot_usage, left_on="user_guid", right_on="user_guid", how="left")
+  # what percent of a user's total usage is their most frequently accessed content item
+  .with_columns((100*pl.col("content_hits") / pl.col("users_tot_usage")).alias("top_item_percent_of_usage"))
+  .sort("users_tot_usage", descending=True)
+  .head(top_n)
+  .join(all_users, left_on="user_guid", right_on="user_guid", how="left")
+  # if username is null then replace with "anonymous"
+  .with_columns(pl.coalesce(pl.col("username"), pl.lit("anonymous")).alias("username")) 
+  .join(content_info, left_on="content_guid", right_on="guid", how="left")
+  # if title is null then replace with name column
+  .with_columns(pl.coalesce(pl.col("title"), pl.col("name")).alias("title"))
+  .select(["username", "title", "top_item_percent_of_usage", "users_tot_usage"])
+  .rename({"title": "users_most_frequent_content"})
+)
+
+# make interactive plot 
+fig = (
+  px.bar(top_n_users.to_pandas(), x="users_tot_usage", y="username", 
+              orientation="h", template="plotly_white",
+              hover_data=[top_n_users["users_tot_usage"], top_n_users["users_most_frequent_content"], top_n_users["top_item_percent_of_usage"]]) 
+    .update_layout(yaxis=dict(autorange="reversed"),
+                  title=f"Top {top_n} users")
+    .update_traces(marker_color='#16565A',
+                  hovertemplate="total usage: %{x}<br>most frequently accessed content: %{customdata[1]}<br>% of all content hits spent on \'%{customdata[1]}\': %{customdata[2]:.0f}%")
+    .update_yaxes(title_text="")
+    .show()
+)
+
+
+```
+
+
+```{python}
+# bar graph of top N publishers
+
+# table of most frequent content_hits with content info
+content_hits = (
+  usage.group_by("content_guid")
+  .agg(pl.len().alias("content_hits"))
+  .join(content_info, left_on="content_guid", right_on="guid", how="left")
+  .select(["content_guid","name", "title", "content_hits","owner_username"])
+  .group_by("owner_username")
+  .map_groups(lambda group: group.sort("content_hits", descending=True))
+  .group_by("owner_username")
+  .head(1)
+  .sort("content_hits", descending=True)
+ )
+
+# table of how many of an owner's content items were accessed in the period
+owners_distinct_content = (
+  content_hits.group_by("owner_username")
+  # count number of distinct content_guids
+  .agg(pl.n_unique("content_guid").alias("num_owners_items_accessed"))
+ )
+
+# table of total content_hits for each owner
+owner_total_hits = (
+  usage.join(content_info, left_on="content_guid", right_on="guid", how="left")
+  .group_by("owner_username")
+  .agg(pl.len().alias("owners_tot_usage"))
+ )
+
+# build table of top N publishers
+top_n_publishers = (
+  content_hits
+  .join(owners_distinct_content, left_on="owner_username", right_on="owner_username", how="left")
+  .join(owner_total_hits, left_on="owner_username", right_on="owner_username", how="left")
+  .sort("owners_tot_usage", descending=True, nulls_last=True)
+  .head(top_n)
+  # if title is NA then substitute with name
+  .with_columns(pl.coalesce(pl.col("title"), pl.col("name")).alias("title"))
+  .rename({"title": "owners_most_frequent_content"})
+  .rename({"content_hits": "owners_most_frequent_content_hits"})
+  # remove name column
+  .drop(["name","content_guid"])
+)
+
+# make interactive plot
+fig = (
+  px.bar(top_n_publishers.to_pandas(), x="owners_tot_usage", y="owner_username", 
+              orientation="h", title=f"Top {top_n} publishers", template="plotly_white",
+              hover_data=[top_n_publishers["owners_tot_usage"], 
+              top_n_publishers["num_owners_items_accessed"],
+              top_n_publishers["owners_most_frequent_content"], 
+              top_n_publishers["owners_most_frequent_content_hits"]]) 
+      .update_layout(yaxis=dict(autorange="reversed"))
+      .update_traces(marker_color='#16565A',
+                  hovertemplate="all content hits: %{x}<br>number of distinct content items accessed in period: %{customdata[1]}<br>most frequently accessed content: %{customdata[2]}<br> hits for \'%{customdata[2]}\': %{customdata[3]}")
+      .update_yaxes(title_text="")
+      .show()
+)
+
+
+
+
+```
