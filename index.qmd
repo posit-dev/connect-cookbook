@@ -4,7 +4,7 @@ execute:
   eval: false
 ---
 
-The Posit Connect Cookbook provides recipes in Python and R that enable you to get more out of your Connect instance through the server API.
+The Posit Connect Cookbook provides recipes in Python and R that enable you to get more out of your Connect instance through the Connect server API.
 The recipes fall into three general categories:
 
 1.  Server-level tasks: management of the server, processes, and resources
@@ -15,7 +15,7 @@ The recipes fall into three general categories:
 
 ### Install required packages
 
-The recipes in this cookbook use packages that we maintain that wrap API functionality and provide a natural interface for getting stuff done.
+The recipes in this cookbook use packages that wrap API functionality and provide a natural interface for getting stuff done.
 In Python, the package is [`posit-sdk`](), and in R, [`connectapi`]().
 
 ::: {.panel-tabset group="language"}
@@ -46,7 +46,6 @@ renv::init()
 
 # install required packages
 install.packages("connectapi")
-
 ```
 :::
 
@@ -67,13 +66,13 @@ If you access the dashboard at `https://posit-connect.company.com/connect/`, the
 
 * `CONNECT_API_KEY`: The [API Keys](https://docs.posit.co/connect/user/api-keys/) section of the Posit Connect [User Guide](https://docs.posit.co/connect/user/) explains how to obtain a Connect API Key.
 
-For convenience, you can set them in a `.env` file and use the Python `dotenv` package to load them, or in R, a local `.Renviron` file will be automatically picked up by R.
+For convenience, you can set them in a `.env` file and use the Python `dotenv` package to load them, or in R, a local `.Renviron` file is automatically picked up by R.
 
 Both of these environment variables are present on Connect when your content is rendered as well, so by following this convention, you can work with the recipes locally and then publish content based on them to Connect and they will just work.
 
 ### Connect to Connect
 
-When these variables are set, you don't have to pass any arguments to the library functions that establish a connection to the API, they just get picked up:
+With these variables set, you don't have to pass any arguments to the library functions that establish a connection to the API, they just get picked up:
 
 ::: {.panel-tabset group="language"}
 ## Python
@@ -87,8 +86,7 @@ load_dotenv()
 # Now load the posit-sdk
 from posit import connect
 
-con = connect.Client()
-
+client = connect.Client()
 ```
 
 ## R
@@ -96,7 +94,6 @@ con = connect.Client()
 ```{r}
 library(connectapi)
 
-con <- connect()
-
+client <- connect()
 ```
 :::
