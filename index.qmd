@@ -28,7 +28,7 @@ The code below uses `venv` for this purpose.
 # In your project directory, create virtual environment and activate it
 python -m venv .venv && source .venv/bin/activate
 
-# install the `posit-sdk` package
+# install the `posit-sdk` package from PyPI
 pip install posit-sdk
 ```
 
@@ -51,8 +51,8 @@ install.packages("connectapi")
 :::
 
 Some recipes use additional packages for data tidying, manipulation, or presentation.
-These package requirements will be identified in the recipe with either an `import` (Python) or `library()` (R) function call.
-You will need to install them separately.
+These package requirements are identified in the recipe with either an `import` (Python) or `library()` (R) function call.
+You need to install them separately.
 
 ### Set environment variables
 
@@ -69,7 +69,7 @@ If you access the dashboard at `https://posit-connect.company.com/connect/`, the
 
 For convenience, you can set them in a `.env` file and use the Python `dotenv` package to load them, or in R, a local `.Renviron` file will be automatically picked up by R.
 
-Both of these environment variables are present on Connect as well, so by following this convention, you can work with the recipes locally and then publish content based on them to Connect and they will just work.
+Both of these environment variables are present on Connect when your content is rendered as well, so by following this convention, you can work with the recipes locally and then publish content based on them to Connect and they will just work.
 
 ### Connect to Connect
 
