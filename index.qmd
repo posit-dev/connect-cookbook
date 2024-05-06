@@ -16,7 +16,7 @@ The recipes fall into three general categories:
 ### Install required packages
 
 The recipes in this cookbook use packages that wrap API functionality and provide a natural interface for getting stuff done.
-In Python, the package is [`posit-sdk`](), and in R, [`connectapi`]().
+In Python, the package is [`posit-sdk`](https://github.com/posit-dev/posit-sdk-py), and in R, [`connectapi`](https://pkgs.rstudio.com/connectapi/).
 
 ::: {.panel-tabset group="language"}
 ## Python
@@ -57,7 +57,6 @@ You need to install them separately.
 
 To use the Connect API, you need to provide your Connect server URL along with your API key.
 We recommend storing your server URL and API key as environment variables to keep the literal values out of your source code, making your secrets more secure and your code easier to share or reuse in different environments.
-*Do not hard-code your API key into your code.*
 
 The `posit-sdk` and `connectapi` packages look for the following environment variables:
 
@@ -66,9 +65,11 @@ If you access the dashboard at `https://posit-connect.company.com/connect/`, the
 
 * `CONNECT_API_KEY`: The [API Keys](https://docs.posit.co/connect/user/api-keys/) section of the Posit Connect [User Guide](https://docs.posit.co/connect/user/) explains how to obtain a Connect API Key.
 
-For convenience, you can set them in a `.env` file and use the Python `dotenv` package to load them, or in R, a local `.Renviron` file is automatically picked up by R.
-
 Both of these environment variables are present on Connect when your content is rendered as well, so by following this convention, you can work with the recipes locally and then publish content based on them to Connect and they will just work.
+
+For convenience when working locally, you can set them in a `.env` file and use the Python `dotenv` package to load them, or in R, a local `.Renviron` file is automatically picked up by R.
+Be sure to add those files to your `.gitignore` file if they're not already there so that you don't accidentally publish them.
+*Do not hard-code your API key into your code.* Treat it like your password.
 
 ### Connect to Connect
 
