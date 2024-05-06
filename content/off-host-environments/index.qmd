@@ -12,7 +12,7 @@ The document uses the **[`GET /v1/content`](../../api/#get-/v1/content)** endpoi
 This API call returns every content item visible to your [API key](../../user/api-keys/index.md).
 Content reported with a missing value is either incomplete or static (needing no runtime).
 
-To see all environments available on your server, you could query the **[`GET /v1/environments`](../../api/#get-/v1/environments)** endpoint.
+To see all environments available on your server, you can query the **[`GET /v1/environments`](../../api/#get-/v1/environments)** endpoint.
 
 ### See which images are used
 
