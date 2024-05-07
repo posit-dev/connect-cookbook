@@ -1,0 +1,381 @@
+---
+title: Identify most used content on Connect 
+execute: 
+  eval: false
+---
+
+This recipe identifies the most used content deployed on the Connect server.
+
+
+
+::: {.callout-note}
+Note that if your Connect version is prior to 2023.10, content usage for Plumber, Voila, Streamlit, Dash, and Bokeh were over-counted in instrumentation metrics. Metrics collected after upgrading to version 2023.10 or greater are accurate.
+::: 
+
+This recipe provides methods for:
+
+1. Identify top N most used content
+2. Identify top N content users
+3. Identify the top N most publishers, based on useage of content
+
+
+## Identify top N most used content
+
+The code sample below yields the top N content items, based on usage over a selected time period.
+
+:::{.panel-tabset group="language"}
+
+## Python 
+
+```{python}
+### Load required packages
+from posit import connect
+from datetime import date, timedelta
+import polars as pl
+import numpy as np
+
+
+### User-defined inputs
+# 1. Specify timeframe for the report. Default is 90 days prior to today
+as_of_date = date.today()
+days_back = 90
+report_from = as_of_date - timedelta(days=days_back)
+
+
+# 2. Specify the number of content items to report as the Top N pieces of content. Default is to show the `top_n=20` pieces of content.  
+top_n = 20
+
+### Establish connection to Connect server
+client = connect.Client() 
+
+### Retrieve content details and select relevant columns
+df_content = client.content.find()
+content_info = (pl.DataFrame(df_content, infer_schema_length=len(df_content))
+                # unnest struct column "owner" to get owner username
+                .with_columns(pl.col("owner").map_elements(lambda x: x["username"], return_dtype=pl.String).alias("owner_username"))
+                # select relevant columns
+                .select(["guid", "name", "title", "owner_username"])
+)
+
+### Get usage data
+df = client.metrics.usage.find(
+    start=report_from.strftime("%Y-%m-%dT%H:%M:%SZ"),
+    end=as_of_date.strftime("%Y-%m-%dT%H:%M:%SZ"))
+    
+usage = (pl.DataFrame(df, infer_schema_length=len(df))
+        .with_columns(pl.col("started").str.to_datetime("%Y-%m-%dT%H:%M:%SZ"))
+        .with_columns(pl.col("started").cast(pl.Date).alias("day"))
+        .select(["content_guid", "user_guid", "day"]))
+
+
+### Identify the top N most used content
+top_n_content = (
+  usage.group_by("content_guid")
+  .agg(pl.len().alias("tot_usage"))
+  .join(content_info, left_on="content_guid", right_on="guid", how="left")
+  .select(["name", "title", "tot_usage","owner_username"])
+  .sort("tot_usage", descending=True)
+  # if title is null then replace with name column
+  .with_columns(pl.coalesce(pl.col("title"), pl.col("name")).alias("title"))
+  .head(top_n)
+)
+
+
+```
+
+Sample output:
+```
+<!-- TODO: Add this. But from what demo environment? -->
+
+```
+An example bar graph visualizing this data is included in the Quarto dashboard code at the end of this recipe.
+
+## R
+
+```{r}
+### Load required packages
+library(connectapi)
+library(dplyr)
+library(lubridate)
+
+### User-defined inputs
+# 1. Specify timeframe for the report. Default is 90 days prior to today
+as_of_date <- today()
+days_back <- 90
+report_from <- as_of_date - ddays(days_back)
+
+# 2. Specify the number of content items to report as the Top N pieces of content. Default is to show the `top_n <- 20` pieces of content. 
+top_n <- 20
+
+### Establish connection to Connect server
+client <- connect()
+
+### Retrieve content details and select relevant columns
+content_info <- connectapi::get_content(client) |> 
+  hoist(owner, owner_username = "username") |> 
+  select(guid, name, title, owner_username, dashboard_url)
+
+
+### Query for both shiny and non-shiny usage data
+
+usage_shiny <- get_usage_shiny(client,
+    from = report_from,
+    to = as_of_date,
+    limit = Inf
+  )
+
+usage_non_shiny <- get_usage_static(client,
+    from = report_from,
+    to = as_of_date,
+    limit = Inf
+  ) |> 
+    rename(started = time) |> 
+    mutate(ended = started) 
+
+
+usage <- bind_rows(usage_shiny, usage_non_shiny) |> 
+  mutate(day = as.Date(started)) |>
+  select(content_guid, user_guid, day)
+
+top_n_content <- usage |> 
+  group_by(content_guid) |> 
+  summarise(tot_usage = n()) |> 
+  arrange(desc(tot_usage)) |> 
+  head(top_n) |> 
+  left_join(content_info, by = c(content_guid = "guid")) |> 
+  # if title is NA then substitute with name
+  mutate(title = coalesce(title, name)) 
+
+
+```
+
+Sample output:
+```
+<!-- TODO: Add this. But from what demo environment? -->
+```
+
+An example bar graph visualizing this data is included in the Quarto dashboard code at the end of this recipe.
+
+:::
+
+## Identify top N content users
+
+The code sample below yields the top N content users, based on usage over a selected time period.
+
+::: {.panel-tabset group="language"}
+
+## Python
+
+```{python}
+### Get user details to cross reference `user_guid` with usernames
+all_users = pl.DataFrame(client.users.find())
+
+# identify top N content users and identify their most-frequently used content item
+
+# make a table of a user's usage of each content item
+user_content_hits = (
+  usage.group_by(["user_guid", "content_guid"])
+  .agg(pl.len().alias("content_hits"))
+  # for each user_guid return the content_guid for the most content_hits
+  .group_by("user_guid")
+  .map_groups(lambda group: group.sort("content_hits", descending=True))
+  .group_by("user_guid")
+  .head(1)
+  # if user_guid is null then replace with "anonymous"
+  .with_columns(pl.coalesce(pl.col("user_guid"), pl.lit("anonymous")).alias("user_guid")) 
+)
+
+# make a table of a user's total usage of all content
+user_tot_usage = (
+  usage.group_by("user_guid")
+  .agg(pl.len().alias("users_tot_usage"))
+  # if user_guid is null then replace with "anonymous"
+  .with_columns(pl.coalesce(pl.col("user_guid"), pl.lit("anonymous")).alias("user_guid")) 
+)
+
+
+top_n_users = (
+  user_content_hits
+  .join(user_tot_usage, left_on="user_guid", right_on="user_guid", how="left")
+  # what percent of a user's total usage is their most frequently accessed content item
+  .with_columns((100*pl.col("content_hits") / pl.col("users_tot_usage")).alias("top_item_percent_of_usage"))
+  .sort("users_tot_usage", descending=True)
+  .head(top_n)
+  .join(all_users, left_on="user_guid", right_on="user_guid", how="left")
+  # if username is null then replace with "anonymous"
+  .with_columns(pl.coalesce(pl.col("username"), pl.lit("anonymous")).alias("username")) 
+  .join(content_info, left_on="content_guid", right_on="guid", how="left")
+  # if title is null then replace with name column
+  .with_columns(pl.coalesce(pl.col("title"), pl.col("name")).alias("title"))
+  .select(["username", "title", "top_item_percent_of_usage", "users_tot_usage"])
+  .rename({"title": "users_most_frequent_content"})
+)
+
+```
+
+Sample output:
+```
+<!-- TODO: add sample, but from what demo environment? -->
+
+```
+An example bar graph visualizing this data is included in the Quarto dashboard code at the end of this recipe.
+
+## R
+
+```{r}
+### Get user details to cross reference `user_guid` with usernames
+all_users <- get_users(client, limit = Inf)
+
+# identify top N content users and identify their most-frequently used content item
+top_n_users <- usage |>
+  select(-day) |>
+  group_by(user_guid, content_guid) |>
+  # count a user's usage of a content item
+  mutate(content_hits = n()) |>
+  ungroup() |>
+  group_by(user_guid) |>
+  # count a user's total usage of all content
+  mutate(users_tot_usage = n()) |>
+  arrange(desc(content_hits)) |>
+  # slice to save only each user's most frequently accessed content item
+  slice(1) |>
+  ungroup() |>
+  # what fraction of a user's total usage is their most frequently accessed content item
+  mutate(top_item_percent_of_usage = content_hits / users_tot_usage) |>
+  # select only the top N users
+  arrange(desc(users_tot_usage)) |>
+  head(top_n) |>
+  left_join(all_users, by = "user_guid") |>
+  mutate(username = coalesce(username, "anonymous")) |>
+  left_join(content_info, by = c(content_guid = "guid")) |>
+  # if title is NA then substitute with name
+  mutate(title = coalesce(title, name)) |>
+  rename(users_most_frequent_content = title) |>
+  select(username, users_most_frequent_content, users_tot_usage, top_item_percent_of_usage)
+
+```
+
+Sample output:
+```
+<!-- TODO: add sample, but from what demo environment? -->
+
+```
+
+An example bar graph visualizing this data is included in the Quarto dashboard code at the end of this recipe.
+
+:::
+
+
+## Identify the top N most publishers
+
+The code sample below yields the top N most publishers, based on usage over a selected time period.
+
+::: {.panel-tabset group="language"}
+
+## Python
+
+```{python}
+# table of most frequent content_hits with content info
+content_hits = (
+  usage.group_by("content_guid")
+  .agg(pl.len().alias("content_hits"))
+  .join(content_info, left_on="content_guid", right_on="guid", how="left")
+  .select(["content_guid","name", "title", "content_hits","owner_username"])
+  .group_by("owner_username")
+  .map_groups(lambda group: group.sort("content_hits", descending=True))
+  .group_by("owner_username")
+  .head(1)
+  .sort("content_hits", descending=True)
+ )
+
+# table of how many of an owner's content items were accessed in the period
+owners_distinct_content = (
+  content_hits.group_by("owner_username")
+  # count number of distinct content_guids
+  .agg(pl.n_unique("content_guid").alias("num_owners_items_accessed"))
+ )
+
+# table of total content_hits for each owner
+owner_total_hits = (
+  usage.join(content_info, left_on="content_guid", right_on="guid", how="left")
+  .group_by("owner_username")
+  .agg(pl.len().alias("owners_tot_usage"))
+ )
+
+# build table of top N publishers
+top_n_publishers = (
+  content_hits
+  .join(owners_distinct_content, left_on="owner_username", right_on="owner_username", how="left")
+  .join(owner_total_hits, left_on="owner_username", right_on="owner_username", how="left")
+  .sort("owners_tot_usage", descending=True, nulls_last=True)
+  .head(top_n)
+  # if title is NA then substitute with name
+  .with_columns(pl.coalesce(pl.col("title"), pl.col("name")).alias("title"))
+  .rename({"title": "owners_most_frequent_content"})
+  .rename({"content_hits": "owners_most_frequent_content_hits"})
+  # remove name column
+  .drop(["name","content_guid"])
+)
+```
+
+Sample output:
+```
+TODO: Add this. But from what demo environment?
+```
+An example bar graph visualizing this data is included in the Quarto dashboard code at the end of this recipe.
+
+## R
+
+```{r}
+top_n_publishers <- usage |>
+    left_join(content_info, by = c(content_guid = "guid")) |>
+    select(content_guid, name, title, owner_username) |>
+    group_by(content_guid) |>
+    mutate(content_hits = n()) |>
+    ungroup() |>
+    group_by(owner_username) |>
+    # number of owner's distinct content items accessed in the period
+    mutate(num_owners_items_accessed = n_distinct(content_guid)) |>
+    mutate(owners_tot_usage = n()) |>
+    arrange(desc(content_hits)) |>
+    slice(1) |>
+    arrange(desc(owners_tot_usage)) |>
+    head(top_n) |>
+    # if title is NA then substitute with name
+    mutate(title = coalesce(title, name)) |>
+    rename(owners_most_frequent_content = title, owners_most_frequent_content_hits = content_hits) |>
+    select(-content_guid, -name)
+```
+
+Sample output:
+```
+TODO: Add this. But from what demo environment?
+```
+
+An example bar graph visualizing this data is included in the Quarto dashboard code at the end of this recipe.
+
+:::
+
+
+## Deploy a sample Quarto dashboard with these metrics
+
+The Quarto document below builds visualizations around the data frames retrieved above. This can be deployed in your own environment, or customized to your needs.
+
+<!-- TODO: Add github repo and manifest.json link -->
+
+
+
+::: {.panel-tabset group="language"}
+## Python
+
+<!-- TODO: Make this embed work -->
+<!-- TODO: Add a screenshot -->
+{{ < include _most-used-dashboard-py.qmd > }}
+
+## R
+
+<!-- TODO: Make this embed work -->
+<!-- TODO: Add a screenshot -->
+{{ < include _most-used-dashboard-r.qmd > }}
+
+:::
