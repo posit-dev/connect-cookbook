@@ -65,7 +65,10 @@ df = client.metrics.usage.find(
 usage = (pl.DataFrame(df, infer_schema_length=len(df))
         .with_columns(pl.col("started").str.to_datetime("%Y-%m-%dT%H:%M:%SZ"))
         .with_columns(pl.col("started").cast(pl.Date).alias("day"))
-        .select(["content_guid", "user_guid", "day"]))
+        .select(["content_guid", "user_guid", "day"])
+        # filter out any content items that may have been deleted
+        .filter(pl.col("content_guid").is_in(content_info["guid"]))
+)
 
 
 ### Identify the top N most used content
@@ -135,7 +138,9 @@ usage_non_shiny <- get_usage_static(client,
 
 usage <- bind_rows(usage_shiny, usage_non_shiny) |> 
   mutate(day = as.Date(started)) |>
-  select(content_guid, user_guid, day)
+  select(content_guid, user_guid, day) |> 
+  # filter out any content items that may have been deleted
+  filter(content_guid %in% content_info$guid)
 
 top_n_content <- usage |> 
   group_by(content_guid) |> 

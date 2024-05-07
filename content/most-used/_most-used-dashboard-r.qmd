@@ -22,7 +22,7 @@ library(plotly)
 ### User-defined inputs
 # 1. Specify timeframe for the report. Default is 90 days prior to today
 as_of_date <- today()
-days_back <- 20
+days_back <- 90
 report_from <- as_of_date - ddays(days_back)
 
 # 2. Specify the number of content items to report as the Top N pieces of content. Default is to show the `top_n <- 20` pieces of content. 
@@ -69,7 +69,9 @@ usage_non_shiny <- get_usage_static(client,
 
 usage <- bind_rows(usage_shiny, usage_non_shiny) |> 
   mutate(day = as.Date(started)) |>
-  select(content_guid, user_guid, day)
+  select(content_guid, user_guid, day) |> 
+  # filter out any content items that may have been deleted
+  filter(content_guid %in% content_info$guid)
 
 ### Get all user details to cross reference user_guids with usernames
 all_users <- connectapi::get_users(client, limit = Inf) |> 
@@ -132,7 +134,7 @@ text=paste("owner username:",owner_username))) +
   theme_minimal() +
   labs(
     x = NULL,
-    y = NULL,
+    y = "content hits",
     title = glue::glue("Top {top_n} content items)")
   )
 
@@ -185,7 +187,7 @@ gg <- ggplot(top_n_users, aes(
   theme_minimal() +
   labs(
     x = NULL,
-    y = NULL,
+    y = "content hits",
     title = glue::glue("Top {top_n} content users")
   )
 
@@ -230,7 +232,7 @@ gg <- ggplot(top_n_publishers, aes(
   theme_minimal() +
   labs(
     x = NULL,
-    y = NULL,
+    y = "content hits",
     title = glue::glue("Top {top_n} publishers")
   )
 
