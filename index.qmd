@@ -56,7 +56,7 @@ You need to install them separately.
 ### Set environment variables
 
 To use the Connect API, you need to provide your Connect server URL along with your API key.
-We recommend storing your server URL and API key as environment variables to keep the literal values out of your source code, making your secrets more secure and your code easier to share or reuse in different environments.
+We recommend storing your server URL and API key as environment variables to keep the literal values out of your source code. This makes your secrets more secure, and your code easier to share or reuse in different environments.
 
 The `posit-sdk` and `connectapi` packages look for the following environment variables:
 
@@ -65,7 +65,7 @@ If you access the dashboard at `https://posit-connect.company.com/connect/`, the
 
 * `CONNECT_API_KEY`: The [API Keys](https://docs.posit.co/connect/user/api-keys/) section of the Posit Connect [User Guide](https://docs.posit.co/connect/user/) explains how to obtain a Connect API Key.
 
-Both of these environment variables are present on Connect when your content is rendered as well, so by following this convention, you can work with the recipes locally and then publish content based on them to Connect and they will just work.
+Both of these environment variables are present on Connect when your content is rendered as well. By following this convention, you can work with the recipes locally and then publish content based on them to Connect and they will just work.
 
 For convenience when working locally, you can set them in a `.env` file and use the Python `dotenv` package to load them, or in R, a local `.Renviron` file is automatically picked up by R.
 Be sure to add those files to your `.gitignore` file if they're not already there so that you don't accidentally publish them.
