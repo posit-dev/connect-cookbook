@@ -1,4 +1,6 @@
 ---
-title: Recipes for management of the server, processes, and resources
+title: Overview of recipes
+listing: grid
 ---
 
+## Recipes for management of the server, processes, and resources

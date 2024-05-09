@@ -1,5 +1,5 @@
 ---
-title: "Recipe: Identify content set to No Login Required"
+title: "Identify content set to \"No Login Required\""
 format:
   html:
     toc: true
