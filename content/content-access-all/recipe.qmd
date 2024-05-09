@@ -1,30 +1,34 @@
 ---
 title: "Identify content set to \"No Login Required\""
-format:
-  html:
-    toc: true
 execute: 
   eval: false
 ---
 
+## Description
 This recipe provides details on how to identify any content published on Connect with permissions set to `no login required`. 
 
 This recipe would come in handy while performing an audit of all content published on Posit Connect and there is a need to identify any content with open access. It also helps identify which URL is associated with such content and who the publisher is.
 
+## Output
+This recipe yields a table of all content that is set without restriction. The information includes URL of the content on Connect and the username of the content owner. 
 
-## Method
+## Workflow
 
-Running the following code will generate a table of all content that is set without restriction. The information includes URL of the content on Connect and the username of the content owner. 
+This recipe does the following:
+
+1. Retrieves all content from Connect.
+2. Filters the content to include only those with `access_type` set to `all`.
+3. Formats the output as a table with clickable URLs.
+
+## Recipe
 
 ::: {.panel-tabset group="language"}
 
 
 ## Python
 
-```{python identify_content_python}
-#| code-fold: false
-#| output: false
-#| eval: false
+```{python}
+#| label: identify_content_python
 
 from posit.connect import Client  
 import pandas as pd  
@@ -37,9 +41,10 @@ connect = Client()
 
 content = pd.DataFrame(connect.content.find())
 
+content = content[content['access_type']=='all']
+
 content["Owner"] = (pd.json_normalize(content["owner"]))["username"]
 content["Last Updated"] = pd.to_datetime(content["last_deployed_time"]).dt.date
-content = content[content['access_type']=='all']
 content = content[["title","Owner","content_url","Last Updated"]]
 content = content.rename(columns={"title": "App Name", "content_url": "URL"})
 content = content.style.format({'URL': make_clickable})
@@ -49,16 +54,14 @@ itables.show(content)
 
 ```
 
-Example output:
+### Example output:
 
 ![](./images/example-py.png)
 
 ## R
 
-```{r identify_content_r}
-#| warning: false
-#| code-fold: false
-#| output: false
+```{r}
+#| label: identify_content_r
 
 library(connectapi)
 library(dplyr)
@@ -70,15 +73,14 @@ library(gt)
 client <- connect()
 
 content <- get_content(client)
-content <- unnest_wider(content,col = c('owner'),names_sep = '$')
+content <- unnest_wider(content, col = c('owner'),names_sep = '$')
 
-
-content[['Last Updated']] = as.Date(content[['last_deployed_time']])
 tbl <- content |>
+  filter(access_type=='all') |>
   rename( "Owner" = "owner$username",
          "App Name" = "title",
          "URL" = "content_url") |>
-  filter(access_type=='all') |>
+  mutate('Last Deployed' = as.Date(last_deployed_time)) |>
   select(c("App Name","Owner","URL","Last Updated"))
 
 # Build a table
@@ -88,13 +90,13 @@ gt(tbl) |>
 
 ```
 
-Example output:
+### Example output:
 
 ![](./images/example-r.png)
 
 :::
 
-## Further Action
+## Extending the recipe
 
 There can be many ways to take further action based on the content list generated above. 
 
