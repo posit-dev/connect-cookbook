@@ -1,0 +1,49 @@
+---
+title: "title"
+---
+
+## Description 
+When would you use this recipe?
+
+## Output
+What is the output? e.g., a data frame with user information, a particular action takes place, a sample dashboard that you can deploy is included, etc.
+
+## Workflow
+Numbered list of the high level operations the recipe performs.
+
+## Recipe
+
+:::{.panel-tabset group="language"}
+
+## Python
+
+```{.python}
+# Notes: Add comments. Include a requirements.txt file in this repo.
+
+# use this for making the connection
+
+from posit import connect
+client = connect.Client() 
+
+
+```
+### Sample output
+
+## R
+
+```{.r}
+# Notes: Add comments. Include a renv.lock file in this repo.
+
+# use this for making the connection
+library(connectapi)
+client <- connect()
+
+```
+
+### Sample output
+
+:::
+
+## (Optional) Extending the recipe
+
+Here's a dashboard or something else that deploy or do.

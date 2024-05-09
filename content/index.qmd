@@ -1,4 +1,11 @@
 ---
-title: Recipes for management of content and content settings 
+title: Content management recipes 
+listing:
+    - id: section-1
+      template: ../ejs/recipe-list.ejs
 ---
 
+## Section 1 recipes
+
+::: {#section-1}
+:::
