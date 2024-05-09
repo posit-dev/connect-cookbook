@@ -4,44 +4,53 @@ execute:
   eval: false
 ---
 
-This recipe generates a data frame identifying all content owned by a specified user. 
+## Description
+This recipe identifies all content owned by a specified user.
+
+This may be useful for auditing purposes, changing content ownership when an employee leaves the company, or creating a list of content that would be the input for another recipe in this guide.
+
+## Output
+This recipe generates both a raw data frame identifying all content owned by a specified user, as well as a formatted table suitable for incorporating into a report or application. 
 
 
-## Method 
+## Workflow 
 
-Content information, including ownership information, is available at the `/v1/content` endpoint of the Connect Server API. We can filter the response from this endpoint by specifying the owner's `guid`, the unique identifier for that user. 
+This recipe requires the following inputs:
+1. The username of the user whose content you want to identify
 
-User `guid` can be retrieved from the `/v1/users/{guid}` endpoint, which provides user details. 
+This recipe then does the following:
 
-### Identify content owned by a user
+1. Retrieves all content owned by the specified user
+2. Formats the output into a table for easier readability
+
+## Recipe
+
+### Dataframe of content owned by user
 
 ::: {.panel-tabset group="language"}
 ## Python
 
 ```{python}
-### Load required packages
 from posit import connect
 import polars as pl
 
 
-### User-defined inputs
+### User-defined inputs ###
 # 1. specify the username for the user of interest
 username = "SPECIFY USERNAME"
+###########################
 
-
-### Establish connection to Connect server
-# Note `connect.Client()` automatically detects the environment variables CONNECT_SERVER and CONNECT_API_KEY. They do not need to be specified as arguments to this function, however, if these environment variables are not set, the code will fail
 client = connect.Client() 
 
-### Get user's `guid` from specified username
+# Get user's `guid` from specified username
 user_guid = client.users.find_one(prefix = username).guid
 #TODO: change method to `client.users.find_one(prefix=username).content.find()` per https://github.com/posit-dev/posit-sdk-py/issues/180
-### Get list of content owned by specified user
+# Get list of content owned by specified user
 content = pl.DataFrame(client.content.find(owner_guid=user_guid))
 content
 ```
 
-Sample output:
+### Sample output:
 
 ```
 shape: (3, 45)
@@ -56,27 +65,24 @@ shape: (3, 45)
 ## R
 
 ```{r}
-### Load required packages
 library(connectapi)
 
-### User-defined inputs
+### User-defined inputs ###
 # 1. specify the username for the user of interest
 username <- "SPECIFY USERNAME"
+###########################
 
-
-### Establish connection to Connect server
-# Note `connectapi::connect` automatically detects the environment variables CONNECT_SERVER and CONNECT_API_KEY. They do not need to be specified as arguments to this function, however, if these environment variables are not set, the code will fail.
 client <- connect()
 
-### Get user's `guid` from specified username
+# Get user's `guid` from specified username
 user_guid <- user_guid_from_username(client, username)
 
-### Get list of content owned by specified user
+# Get list of content owned by specified user
 content <- get_content(client, owner_guid = user_guid)
 
 ```
 
-Sample output:
+### Sample output:
 
 ```
 # A tibble: 3 × 45
@@ -119,8 +125,7 @@ You may modify this code to add or remove other fields to suit your requirements
 from great_tables import GT, style, loc, system_fonts, md
 
 
-### Clean content info 
-# Select only the columns of interest
+# Select and format the columns of interest
 
 content_info = (
   content
@@ -129,7 +134,7 @@ content_info = (
   .with_columns(pl.col(["dashboard_url"]).map_elements(lambda x: f"<{x}>", return_dtype=pl.String))
 )
 
-### Create table
+# Create table
 (
   GT(content_info)
   .tab_header(title="Content owned by " + username)
@@ -148,7 +153,7 @@ content_info = (
 
 ```
 
-Sample output: 
+### Sample output: 
 
 <div>
 <div id="wzunztfnpm" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
@@ -262,6 +267,7 @@ Sample output:
 library(dplyr)
 library(gt)
 
+# Select and format the columns of interest in a table
 content |> 
   select("title", "description", "access_type", "created_time", "last_deployed_time", "bundle_id", "app_mode", "content_category", "r_version", "py_version", "quarto_version", "content_url", "dashboard_url") |>
   gt() |> 
@@ -271,7 +277,7 @@ content |>
               columns=c(created_time, last_deployed_time))
 ```
 
-Sample output: 
+### Sample output: 
 
 <div>
 <div id="tithrumycv" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
