@@ -4,22 +4,33 @@ execute:
   eval: false
 ---
 
-This recipe identifies the most used content deployed on the Connect server.
+## Description
+This recipe identifies the most used content deployed on the Connect server, the users with the highest viewing history, and the publishers with the most content usage during the selected time period. 
 
-
+This recipe is useful for overall usage analysis, and can identify the content and users that would be most impacted by changes to the server or content.
 
 ::: {.callout-note}
 Note that if your Connect version is prior to 2023.10, content usage for Plumber, Voila, Streamlit, Dash, and Bokeh were over-counted in instrumentation metrics. Metrics collected after upgrading to version 2023.10 or greater are accurate.
 ::: 
 
-This recipe provides methods for:
+## Output
+This recipe yields: 
+- A dataframe with historical content usage of all content on the server during a period
+- A dataframe with top N content usage during a period
+- A dataframe with top N content viewers during a period
+- A dataframe with top N publishers, based on usage, during a period
+- A Quarto dashboard with visualizations of the above dataframes
 
-1. Identify top N most used content
-2. Identify top N content users
-3. Identify the top N most publishers, based on useage of content
+## Workflow
+This recipe requires the following inputs:
+1. The desired timeframe for the report, defined by:
+  - the `as_of_date`
+  - the number of `days_back` from the `as_of_date` to include in the report
+2. The number of top N items and users include in the report, defined by `top_n`. 
 
+## Recipe 
 
-## Identify top N most used content
+### Identify top N most used content
 
 The code sample below yields the top N content items, based on usage over a selected time period.
 
@@ -28,27 +39,25 @@ The code sample below yields the top N content items, based on usage over a sele
 ## Python 
 
 ```{python}
-### Load required packages
 from posit import connect
 from datetime import date, timedelta
 import polars as pl
 import numpy as np
 
-
-### User-defined inputs
+### User-defined inputs ###
 # 1. Specify timeframe for the report. Default is 90 days prior to today
 as_of_date = date.today()
 days_back = 90
+
+# 2. Specify the number of content items and users to report as the Top N pieces of content, users, and publishers. Default is to show the `top_n=20`.  
+top_n = 20
+###########################
+
 report_from = as_of_date - timedelta(days=days_back)
 
-
-# 2. Specify the number of content items to report as the Top N pieces of content. Default is to show the `top_n=20` pieces of content.  
-top_n = 20
-
-### Establish connection to Connect server
 client = connect.Client() 
 
-### Retrieve content details and select relevant columns
+# Retrieve content details and select relevant columns
 df_content = client.content.find()
 content_info = (pl.DataFrame(df_content, infer_schema_length=len(df_content))
                 # unnest struct column "owner" to get owner username
@@ -57,7 +66,7 @@ content_info = (pl.DataFrame(df_content, infer_schema_length=len(df_content))
                 .select(["guid", "name", "title", "owner_username"])
 )
 
-### Get usage data
+# Get usage data
 df = client.metrics.usage.find(
     start=report_from.strftime("%Y-%m-%dT%H:%M:%SZ"),
     end=as_of_date.strftime("%Y-%m-%dT%H:%M:%SZ"))
@@ -71,7 +80,7 @@ usage = (pl.DataFrame(df, infer_schema_length=len(df))
 )
 
 
-### Identify the top N most used content
+# Identify the top N most used content
 top_n_content = (
   usage.group_by("content_guid")
   .agg(pl.len().alias("tot_usage"))
@@ -83,10 +92,9 @@ top_n_content = (
   .head(top_n)
 )
 
-
 ```
 
-Sample output:
+### Sample output:
 ```
 <!-- TODO: Add this. But from what demo environment? -->
 
@@ -96,31 +104,30 @@ An example bar graph visualizing this data is included in the Quarto dashboard c
 ## R
 
 ```{r}
-### Load required packages
 library(connectapi)
 library(dplyr)
 library(lubridate)
 
-### User-defined inputs
+### User-defined inputs ###
 # 1. Specify timeframe for the report. Default is 90 days prior to today
 as_of_date <- today()
 days_back <- 90
-report_from <- as_of_date - ddays(days_back)
 
 # 2. Specify the number of content items to report as the Top N pieces of content. Default is to show the `top_n <- 20` pieces of content. 
 top_n <- 20
+############################
 
-### Establish connection to Connect server
+report_from <- as_of_date - ddays(days_back)
+
 client <- connect()
 
-### Retrieve content details and select relevant columns
+# Retrieve content details and select relevant columns
 content_info <- connectapi::get_content(client) |> 
   hoist(owner, owner_username = "username") |> 
   select(guid, name, title, owner_username, dashboard_url)
 
 
-### Query for both shiny and non-shiny usage data
-
+# Query for both shiny and non-shiny usage data
 usage_shiny <- get_usage_shiny(client,
     from = report_from,
     to = as_of_date,
@@ -151,10 +158,9 @@ top_n_content <- usage |>
   # if title is NA then substitute with name
   mutate(title = coalesce(title, name)) 
 
-
 ```
 
-Sample output:
+### Sample output:
 ```
 <!-- TODO: Add this. But from what demo environment? -->
 ```
@@ -165,14 +171,14 @@ An example bar graph visualizing this data is included in the Quarto dashboard c
 
 ## Identify top N content users
 
-The code sample below yields the top N content users, based on usage over a selected time period.
+The code sample below yields the top N content users, based on usage over a selected time period. It builds from the previous code block.
 
 ::: {.panel-tabset group="language"}
 
 ## Python
 
 ```{python}
-### Get user details to cross reference `user_guid` with usernames
+# Get user details to cross reference `user_guid` with usernames
 all_users = pl.DataFrame(client.users.find())
 
 # identify top N content users and identify their most-frequently used content item
@@ -198,7 +204,6 @@ user_tot_usage = (
   .with_columns(pl.coalesce(pl.col("user_guid"), pl.lit("anonymous")).alias("user_guid")) 
 )
 
-
 top_n_users = (
   user_content_hits
   .join(user_tot_usage, left_on="user_guid", right_on="user_guid", how="left")
@@ -218,7 +223,7 @@ top_n_users = (
 
 ```
 
-Sample output:
+### Sample output:
 ```
 <!-- TODO: add sample, but from what demo environment? -->
 
@@ -228,7 +233,7 @@ An example bar graph visualizing this data is included in the Quarto dashboard c
 ## R
 
 ```{r}
-### Get user details to cross reference `user_guid` with usernames
+# Get user details to cross reference `user_guid` with usernames
 all_users <- get_users(client, limit = Inf)
 
 # identify top N content users and identify their most-frequently used content item
@@ -260,7 +265,7 @@ top_n_users <- usage |>
 
 ```
 
-Sample output:
+## Sample output:
 ```
 <!-- TODO: add sample, but from what demo environment? -->
 
@@ -271,9 +276,9 @@ An example bar graph visualizing this data is included in the Quarto dashboard c
 :::
 
 
-## Identify the top N most publishers
+### Identify the top N most publishers
 
-The code sample below yields the top N most publishers, based on usage over a selected time period.
+The code sample below yields the top N most publishers, based on usage over a selected time period. This builds from the previous code blocks.
 
 ::: {.panel-tabset group="language"}
 
@@ -321,9 +326,10 @@ top_n_publishers = (
   # remove name column
   .drop(["name","content_guid"])
 )
+
 ```
 
-Sample output:
+### Sample output:
 ```
 TODO: Add this. But from what demo environment?
 ```
@@ -352,7 +358,7 @@ top_n_publishers <- usage |>
     select(-content_guid, -name)
 ```
 
-Sample output:
+### Sample output:
 ```
 TODO: Add this. But from what demo environment?
 ```
@@ -362,7 +368,9 @@ An example bar graph visualizing this data is included in the Quarto dashboard c
 :::
 
 
-## Deploy a sample Quarto dashboard with these metrics
+## Extending the recipe
+
+### Deploy a sample Quarto dashboard with these metrics
 
 The Quarto document below builds visualizations around the data frames retrieved above. This can be deployed in your own environment, or customized to your needs.
 
