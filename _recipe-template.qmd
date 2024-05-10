@@ -9,7 +9,12 @@ When would you use this recipe?
 What is the output? e.g., a data frame with user information, a particular action takes place, a sample dashboard that you can deploy is included, etc.
 
 ## Workflow
-Numbered list of the high level operations the recipe performs.
+This recipe requires the following inputs:
+1. 
+
+This recipe then does the following:
+
+1.
 
 ## Recipe
 

@@ -24,11 +24,7 @@ from great_tables import GT, nanoplot_options, style, loc, system_fonts, md
 #| label: user-defined inputs 
 
 # 1. specify the guid for the content
-# content_guid = "INSERT_CONTENT_GUID" 
-content_guid = "0477855b-caeb-43e8-b3d9-28e0965e6230" #shiny
-content_guid = "8b765054-16a6-4c87-8c49-91b54b5e47bb" #quarto site
-# content_guid = "e33879ca-e251-49fa-b9bf-a56db9997048" #streamlit
-
+content_guid = "INSERT_CONTENT_GUID" 
 
 # 2. Specify timeframe for the report. Default is 30 days prior to today
 as_of_date = date.today()
@@ -55,14 +51,14 @@ report_from = as_of_date - timedelta(days=days_back)
 ```{python}
 #| label: Establish connection to Connect server
 
-# Note `connect.Client()` automatically detects the environment variables CONNECT_SERVER and CONNECT_API_KEY. They do not need to be specified as arguments to this function, however, if these environment variables are not set, the code will fail
 client = connect.Client() 
+
 ```
 
 ```{python}
 # | label: Get content info and usage
 
-### Get content usage data
+# Get content usage data
 df = client.metrics.usage.find(
     content_guid=content_guid,
     start=report_from.strftime("%Y-%m-%dT%H:%M:%SZ"),
@@ -73,14 +69,14 @@ usage = (pl.DataFrame(df, infer_schema_length=len(df))
         .with_columns(pl.col("started").cast(pl.Date).alias("day")))
 
 
-### Get content details
+# Get content details
 content_info = client.content.get(content_guid)
 
 
-### Get all user details to cross reference user_guids with usernames
+# Get all user details to cross reference user_guids with usernames
 all_users = pl.DataFrame(client.users.find())
 
-### Count total hits and unique visitors
+# Count total hits and unique visitors
 total_hits_in_period = usage.height
 unique_visitors = (
     usage.filter(pl.col("user_guid").is_not_null()).select("user_guid").n_unique()
@@ -140,7 +136,7 @@ p9.ggplot(usage_plot_data, p9.aes(x="day", y="usage")) + \
 #| html-table-processing: none
 # Create table of content usage by user
 
-### Define table title and whether to truncate rows based on `top_n`
+# Define table title and whether to truncate rows based on `top_n`
 if np.isnan(top_n):
   title = "Content usage by user"
   # have to define a very high number to feed into `head` below
@@ -149,7 +145,7 @@ else:
   title = "Top {} content visitors".format(top_n)
   truncation_rows = top_n
 
-### Make a table of a user's total usage
+# Make a table of a user's total usage
 user_tot_usage = (
   usage.group_by("user_guid")
   .agg(pl.len().alias("tot_usage"))
@@ -157,14 +153,14 @@ user_tot_usage = (
   .with_columns(pl.coalesce(pl.col("user_guid"), pl.lit("anonymous")).alias("user_guid")) 
 )
 
-### In the specified time period, when was each user's first and last visit?
+# In the specified time period, when was each user's first and last visit?
 user_first_last_visit = (
   usage.group_by("user_guid")
   .agg(pl.min("day").alias("first_visit"), pl.max("day").alias("last_visit"))
   .with_columns(pl.coalesce(pl.col("user_guid"), pl.lit("anonymous")).alias("user_guid"))
 )
 
-### Make a table of a user's daily usage
+# Make a table of a user's daily usage
 user_daily_usage = (
   usage.group_by(["user_guid","day"])
   .agg(pl.len().alias("daily_usage"))
@@ -182,17 +178,17 @@ user_daily_usage = (
   .select("username","tot_usage","first_visit","last_visit",pl.col("*").exclude("username","tot_usage","first_visit","last_visit"))
 )
 
-### combine all access data columns into one column for nanoplot
+# combine all access data columns into one column for nanoplot
 nanoplot_columns = user_daily_usage.drop("tot_usage","username","first_visit","last_visit").columns
 
-### format the usage data for `great_tables` and nanoplot
+# format the usage data for `great_tables` and nanoplot
 user_daily_usage_concatenated = (user_daily_usage
   .fill_null(0)
   .with_columns(pl.concat_str([pl.col(nanoplot_columns)], separator=" ").alias("combined"))
   .select("username", "tot_usage", "first_visit","last_visit", "combined")
 )
 
-### Create table
+# Create table
 (
   GT(user_daily_usage_concatenated, rowname_col="username")
   .tab_header(title=title)
@@ -209,7 +205,7 @@ user_daily_usage_concatenated = (user_daily_usage
     )
   )
 )
-# TODO: show nanoplot value as integer. ADD GH issue
+
 
 ```
 
@@ -220,7 +216,7 @@ user_daily_usage_concatenated = (user_daily_usage
 #| html-table-processing: none
 # make a table of content details
 
-### Clean content info
+# Clean content info
 wide_info = (
   pl.DataFrame(content_info)
   .select("created_time", "last_deployed_time", 
@@ -232,7 +228,7 @@ wide_info = (
   .drop("owner_guid")
   # reorder columns
   .select("content_owner","owner_email",pl.col("*").exclude("content_owner","owner_email"))
-  # format the urls TODO: this will be unnecessary when great_tables adds fmt_url. ADD GH Issue link here for tracking
+  # format the urls TODO: this will be unnecessary when great_tables adds fmt_url. See https://github.com/posit-dev/great-tables/issues/80
   .with_columns(pl.col(["content_url","dashboard_url"]).map_elements(lambda x: f"<{x}>", return_dtype=pl.String))
   .with_columns(pl.col(["owner_email"]).map_elements(lambda x: f"[{x}](mailto:{x})", return_dtype=pl.String))
   # remove timestamp from date fields
@@ -240,13 +236,13 @@ wide_info = (
   )
 )
 
-### Pivot content table for nicer viewing
+# Pivot content table for nicer viewing
 long_info = (
   wide_info  
   .melt(value_vars=wide_info.columns, variable_name="item", value_name="value")
 )
 
-### Create table
+# Create table
 (
   GT(long_info, rowname_col="item")
   .tab_options(column_labels_hidden=True)
