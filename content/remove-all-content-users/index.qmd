@@ -5,14 +5,17 @@ execute:
 ---
 
 ## Description
+
 This recipe removes all viewers, or optionally, all viewers and collaborators, from a piece of content. Additionally, if the access type is either "all" or "logged_in", this is changed to "acl" to ensure that only the owner, and optionally, collaborators, have access. 
 
 This recipe is useful when you want to take bulk action to restrict access to content.
 
 ## Output
+
 There is no generated output from this recipe, however the permissions for the specified content item are updated on the Connect server.
 
 ## Workflow
+
 This recipe requires the following inputs: 
 
 1. The `content_guid` for the content item from which you want to alter permissions.
@@ -120,9 +123,9 @@ if (access_type != "acl") {
 
 :::
 
-### Sample results:
+### Example
 
-The results below show the results when `also_remove_collabs` is set to `True`.
+The images below show the results when `also_remove_collabs` is set to `True`.
 
 :::: {.columns}
 

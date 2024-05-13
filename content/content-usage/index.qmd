@@ -1,37 +1,39 @@
 ---
-title: Retrieve content usage statistics for a content item 
+title: Retrieve Content Usage Statistics for a Content Item 
 execute: 
   eval: false
 ---
 
 ## Description
+
 This recipe yields summary usage statistics for a content item deployed on Connect. This is useful when seeking to understand overall usage trends for a content item, and understanding which users are most active in accessing the content.
 
 ::: {.callout-note}
+If your Connect version is prior to 2023.10, content usage for Plumber, Voila, Streamlit, Dash, and Bokeh were over-counted in instrumentation metrics. Metrics collected after upgrading to version 2023.10 or greater are accurate.
 Note that if your Connect version is prior to 2023.10, content usage for Plumber, Voila, Streamlit, Dash, and Bokeh were over-counted in instrumentation metrics. Metrics collected after upgrading to version 2023.10 or greater are accurate.
 ::: 
 
 ## Output
 
 This recipe yields: 
-- A dataframe with historical content usage for an item, including by-user identification and session duration for Shiny for Python and Shiny for R content
-- A summary table of content usage by user, including total usage and daily usage
-- A Quarto dashboard with visualizations of the content usage data
-
+- A dataframe with historical content usage for an item, including by-user identification and session duration for Shiny for Python and Shiny for R content.
+- A summary table of content usage by user, including total usage and daily usage.
+- A Quarto dashboard with visualizations of the content usage data.
 
 ## Workflow 
+
 This recipe requires the following inputs:
-1. The `content_guid` for the content item of interest
+1. The `content_guid` for the content item of interest.
 2. The desired timeframe for the report, defined by:
-  - the `as_of_date`
-  - the number of `days_back` from the `as_of_date` to include in the report
+  - the `as_of_date`.
+  - the number of `days_back` from the `as_of_date` to include in the report.
 3. The number of top users to include in the report, defined by `top_n`. If `top_n` is set to `np.nan` (Python), or , all users will be included in the report.
 
 This recipe provides methods for:
 
-1. Retrieving historical content usage
-2. Identifying usage by user
-3. Deploying a sample Quarto dashboard using these methods 
+1. Retrieving historical content usage.
+2. Identifying usage by user.
+3. Deploying a sample Quarto dashboard using these methods. 
 
 ## Recipe 
 
@@ -83,7 +85,8 @@ usage
 
 ```
 
-### Sample output:
+### Example output
+
 ```
 shape: (10, 10)
     content_guid	       user_guid	variant_key	rendering_id	bundle_id	            started	           ended	data_version	path	       day
@@ -126,7 +129,8 @@ report_from <- as_of_date - ddays(days_back)
 
 client <- connect()
 
-# Determine if the content type is Shiny or not. This will dictate which telemetry endpoint to use
+# Determine if the content type is Shiny or not. This dictates which telemetry endpoint to use
+
 # Retrive content details
 content_info <- get_content(client, guid = content_guid)
 
@@ -156,7 +160,8 @@ usage
 
 ```
 
-### Sample output for a Shiny app:
+### Example output for a Shiny app
+
 ```
 # A tibble: 14 × 6
    content_guid      user_guid         started             ended               data_version day                
@@ -230,7 +235,8 @@ by_user_usage
 
 ```
 
-### Sample output:
+### Example output
+
 ```
 shape: (11, 4)
  username	       day	tot_usage	daily_usage
@@ -279,7 +285,8 @@ by_user_usage
 
 ```
 
-### Sample output:
+### Example output
+
 ```
 # A tibble: 11 × 4
    username  day                 total_usage daily_usage
@@ -299,14 +306,11 @@ by_user_usage
 
 The output above can be plotted for a historical perspective on content views. An example is included in the Quarto dashboard code at the end of this recipe.
 
-:::
-
-
 ## Extending the recipe
 
 ### Deploy a sample Quarto dashboard with these metrics
 
-The Quarto document below builds visualizations around the data frames retrieved above. This can be deployed in your own environment, or customized to your needs.
+The Quarto document below builds visualizations around the data frames retrieved above. This can be deployed in your own environment as is, or customized to your needs.
 
 <!-- TODO: Add github repo and manifest.json link -->
 

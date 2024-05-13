@@ -5,23 +5,23 @@ execute:
 ---
 
 ## Description
+
 This recipe identifies all content owned by a specified user.
 
 This may be useful for auditing purposes, changing content ownership when an employee leaves the company, or creating a list of content that would be the input for another recipe in this guide.
 
 ## Output
-This recipe generates both a raw data frame identifying all content owned by a specified user, as well as a formatted table suitable for incorporating into a report or application. 
 
+This recipe generates both a raw data frame identifying all content owned by a specified user, as well as a formatted table suitable for incorporating into a report or application. 
 
 ## Workflow 
 
-This recipe requires the following inputs:
-1. The username of the user whose content you want to identify
+1. The username of the user whose content you want to identify.
 
 This recipe then does the following:
 
-1. Retrieves all content owned by the specified user
-2. Formats the output into a table for easier readability
+1. Retrieves all content owned by the specified user.
+2. Formats the output into a table for easier readability.
 
 ## Recipe
 
@@ -50,7 +50,7 @@ content = pl.DataFrame(client.content.find(owner_guid=user_guid))
 content
 ```
 
-### Sample output:
+### Example output
 
 ```
 shape: (3, 45)
@@ -82,7 +82,7 @@ content <- get_content(client, owner_guid = user_guid)
 
 ```
 
-### Sample output:
+### Example output
 
 ```
 # A tibble: 3 × 45
@@ -153,7 +153,7 @@ content_info = (
 
 ```
 
-### Sample output: 
+### Example output
 
 <div>
 <div id="wzunztfnpm" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
@@ -277,7 +277,7 @@ content |>
               columns=c(created_time, last_deployed_time))
 ```
 
-### Sample output: 
+### Example output
 
 <div>
 <div id="tithrumycv" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">

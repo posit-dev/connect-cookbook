@@ -5,12 +5,14 @@ execute:
 ---
 
 ## Description
-This recipe provides details on how to identify any content published on Connect with permissions set to `no login required`. 
 
+This recipe provides details on how to identify any content published on Connect with permissions set to `no login required`. 
+This recipe comes in handy while performing an audit of all content published on Posit Connect and there is a need to identify any content with open access. It also helps identify which URL is associated with such content and who the publisher is.
 This recipe would come in handy while performing an audit of all content published on Posit Connect and there is a need to identify any content with open access. It also helps identify which URL is associated with such content and who the publisher is.
 
-## Output
-This recipe yields a table of all content that is set without restriction. The information includes URL of the content on Connect and the username of the content owner. 
+This recipe yields a table of all content that is set without restriction. The information includes a URL of the content on Connect and the username of the content owner. 
+
+This recipe yields a table of all content that is set without access restriction. The information includes URL of the content on Connect and the username of the content owner. 
 
 ## Workflow
 
@@ -21,7 +23,6 @@ This recipe does the following:
 3. Formats the output as a table with clickable URLs.
 
 ## Recipe
-
 ::: {.panel-tabset group="language"}
 
 
@@ -90,7 +91,7 @@ gt(tbl) |>
 
 ```
 
-### Example output:
+### Example output
 
 ![](./images/example-r.png)
 
@@ -98,7 +99,7 @@ gt(tbl) |>
 
 ## Extending the recipe
 
-There can be many ways to take further action based on the content list generated above. 
+There are many ways to take further action based on the content list generated above. 
 
 If the objective is to generate a list of the content, the above code block provides that information.
 
