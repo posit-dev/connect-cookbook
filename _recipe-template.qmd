@@ -28,13 +28,21 @@ This recipe then does the following:
 ## Python
 
 ```{.python}
-# Notes: Add comments. Include a requirements.txt file in this repo.
+# Note to recipe writer: Add comments. Include a requirements.txt file in this repo.
 
-# use this for making the connection
+# Note to recipe writer: use this for making the connection
 
 from posit import connect
 client = connect.Client() 
 
+# Note to recipe writer: if user input is required, use this format:
+
+### User-defined inputs ###
+# 1. Specify xyz. Any clarifying text and what the default value is (if any).
+xyz = 
+# 2. Specify abc. Any clarifying text and what the default value is (if any).  
+abc = 
+###########################
 
 ```
 ### Example output
@@ -42,12 +50,21 @@ client = connect.Client()
 ## R
 
 ```{.r}
-# Notes: Add comments. Include a renv.lock file in this repo.
+# Note to recipe writer: Add comments. Include a renv.lock file in this repo.
 
-# use this for making the connection
+# Note to recipe writer: use this for making the connection
 
 library(connectapi)
 client <- connect()
+
+# Note to recipe writer: if user input is required, use this format:
+
+### User-defined inputs ###
+# 1. Specify xyz. Any clarifying text and what the default value is (if any).
+xyz <- 
+# 2. Specify abc. Any clarifying text and what the default value is (if any).  
+abc <- 
+###########################
 
 ```
 
