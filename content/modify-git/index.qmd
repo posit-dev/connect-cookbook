@@ -6,7 +6,7 @@ execute:
 
 ## Description 
 
-This recipe modifies the git repository URL and/or the branch of a git-backed content item. This is useful in situations where the git repository has migrated from one location or host to another, or if the branch of the repository has been renamed, deleted, or otherwise changed.
+This recipe modifies the git repository settings git-backed content item. This is useful in situations where the git repository has migrated from one location or host to another, or if the branch of the repository has been renamed, deleted, or otherwise changed.
 
 ## Output
 
