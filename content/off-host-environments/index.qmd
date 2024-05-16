@@ -9,7 +9,7 @@ execute:
 When Posit Connect is configured to use the off-host execution model, content is executed in containers using Kubernetes.
 This recipe shows how to find what images are used by content deployed to Connect.
 
-## 1. See which images are used
+## Recipe: See which images are used
 
 In this example, we query Connect for all content items visible to the current user and count how many items use which images.
 The result is a table, sorted by most commonly used images.
@@ -87,7 +87,7 @@ client |>
 
 :::
 
-## 2. Find all content using an image
+## Recipe: Find all content using an image
 
 In this version, we provide an image name and return a list of GUIDs of the content items using it.
 
