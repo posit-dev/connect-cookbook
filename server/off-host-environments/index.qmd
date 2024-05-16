@@ -18,6 +18,7 @@ Three independent code samples are provided below:
 2. What content uses a specific image.
 
 3. The versions of Python, R, and Quarto available in an image.
+
 Select the specific recipe(s) relevant to your needs.
 
 ## Output
@@ -152,7 +153,7 @@ client |>
 
 :::
 
-## 3. See what's in an image
+## Recipe: See what's in an image
 
 To see what versions of Python, R, and Quarto are included in an image, we can query the "environments" endpoint and filter to match the image name. This recipe finds the image and just prints it.
 
