@@ -7,7 +7,7 @@ execute:
 ## Description
 
 When Posit Connect is configured to use the off-host execution model, content is executed in containers using Kubernetes.
-This recipe shows how to find what images are used by content deployed to Connect.
+This recipe shows how to find what images are used by content deployed to Connect. Image environment details and also provided.
 
 ## Recipe: See which images are used
 
