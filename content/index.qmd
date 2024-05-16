@@ -1,5 +1,5 @@
 ---
-title: Content management recipes 
+title: Content management recipes
 listing:
     - id: content
       template: ../ejs/links.ejs
@@ -7,7 +7,7 @@ listing:
         - content-by-user
     - id: access
       template: ../ejs/links.ejs
-      contents: 
+      contents:
         - content-access-all
         - remove-all-content-users
     - id: usage
@@ -15,20 +15,19 @@ listing:
       contents:
         - content-usage
         - most-used
-    - id: rendering
-      template: ../ejs/links.ejs
-      contents:
-        - render-on-demand
-    - id: envs
-      template: ../ejs/links.ejs
-      contents:
-        - content-env-vars
-        - off-host-environments
+    # - id: rendering
+    #   template: ../ejs/links.ejs
+    #   contents:
+    #     - render-on-demand
+    # - id: envs
+    #   template: ../ejs/links.ejs
+    #   contents:
+    #     - content-env-vars
 ---
 
 The recipes in this section can help you to identify and manage content and content settings.
 
-## Content 
+## Content
 
 ::: {#content}
 :::
@@ -43,7 +42,7 @@ The recipes in this section can help you to identify and manage content and cont
 ::: {#usage}
 :::
 
-## Scheduling and rendering
+<!-- ## Scheduling and rendering
 
 ::: {#rendering}
 :::
@@ -52,4 +51,4 @@ The recipes in this section can help you to identify and manage content and cont
 ## Content environments
 
 ::: {#envs}
-:::
+::: -->
