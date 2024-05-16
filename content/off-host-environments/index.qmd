@@ -9,6 +9,22 @@ execute:
 When Posit Connect is configured to use the off-host execution model, content is executed in containers using Kubernetes.
 This recipe shows how to find what images are used by content deployed to Connect. Image environment details and also provided.
 
+## Workflow
+
+Three independent code samples are provided below:
+
+1. How to find what images are used by content deployed to Connect.
+
+2. What content uses a specific image.
+
+3. The versions of Python, R, and Quarto available in an image.
+Select the specific recipe(s) relevant to your needs.
+
+## Output
+
+The first code sample yields a data frame summarizing the image data.
+The others return lists or dicts, suitable for plugging into some subsequent workflow.
+
 ## Recipe: See which images are used
 
 In this example, we query Connect for all content items visible to the current user and count how many items use which images.
@@ -21,8 +37,8 @@ The result is a table, sorted by most commonly used images.
 import polars as pl
 from posit import connect
 
-con = connect.Client()
-df = pl.DataFrame(con.content.find(), infer_schema_length=None)
+client = connect.Client()
+df = pl.DataFrame(client.content.find(), infer_schema_length=None)
 df.group_by("image_name").count().sort("count", descending=True)
 ```
 
@@ -97,12 +113,12 @@ In this version, we provide an image name and return a list of GUIDs of the cont
 ```{python}
 from posit import connect
 
-con = connect.Client()
+client = connect.Client()
 
 # Change this to whatever image_name you want to find
 image = "ghcr.io/rstudio/content-pro:r4.1.3-py3.10.4-bionic"
 
-[c.guid for c in con.content.find() if c.image_name == image]
+[c.guid for c in client.content.find() if c.image_name == image]
 ```
 
 ### Example output
@@ -148,16 +164,16 @@ import pprint
 
 from posit import connect
 
-con = connect.Client()
+client = connect.Client()
 
 # Change this to whatever image_name you want to find
 image = "ghcr.io/rstudio/content-pro:r4.1.3-py3.10.4-bionic"
 
-all_images = con.get("/v1/environments").json()
+all_images = client.get("/v1/environments").json()
 for i in all_images:
-    if i['title'] == image:
-      pprint.pp({key: i[key] for key in ["python", "quarto", "r"]})
-      break
+    if i["title"] == image:
+        pprint.pp({key: i[key] for key in ["python", "quarto", "r"]})
+        break
 ```
 
 ### Example output
