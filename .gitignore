@@ -161,9 +161,7 @@ cython_debug/
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 #.idea/
 
-*.quarto/
-_site
-
-
-/.quarto/
+# Quarto
+.quarto/
 .Rproj.user
+_site
