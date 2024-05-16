@@ -94,7 +94,8 @@ top_n_content = (
 
 ```
 
-### Sample output:
+### Example output
+
 ```
 <!-- TODO: Add this. But from what demo environment? -->
 
@@ -160,7 +161,8 @@ top_n_content <- usage |>
 
 ```
 
-### Sample output:
+### Example output
+
 ```
 <!-- TODO: Add this. But from what demo environment? -->
 ```
@@ -223,7 +225,8 @@ top_n_users = (
 
 ```
 
-### Sample output:
+### Example output
+
 ```
 <!-- TODO: add sample, but from what demo environment? -->
 
@@ -265,7 +268,8 @@ top_n_users <- usage |>
 
 ```
 
-## Sample output:
+## Example output
+
 ```
 <!-- TODO: add sample, but from what demo environment? -->
 
@@ -329,7 +333,8 @@ top_n_publishers = (
 
 ```
 
-### Sample output:
+### Example output
+
 ```
 TODO: Add this. But from what demo environment?
 ```
@@ -358,7 +363,8 @@ top_n_publishers <- usage |>
     select(-content_guid, -name)
 ```
 
-### Sample output:
+### Example output
+
 ```
 TODO: Add this. But from what demo environment?
 ```

@@ -1,34 +1,41 @@
 ---
-title: Retrieve Content Usage Statistics 
+title: Retrieve Content Usage Statistics for a Content Item 
 execute: 
   eval: false
 ---
 
-This recipe yields summary usage statistics for a content item deployed on Connect.
+## Description
 
-
-## Method 
-
-Connect records content views (or hits) for all content types. These may be user views to the content or programmatic requests to content or APIs hosted on Connect. 
-
-Content usage data includes the `user_guid` (or `NA` for anonymous viewers), and access timestamp. Shiny for Python and Shiny for R content usage data also includes session duration.
-
-- For all content *except Shiny for Python and Shiny for R*, the content usage data is exposed at the [`/v1/instrumentation/content/visits` endpoint](https://docs.posit.co/connect/api/#get-/v1/instrumentation/content/visits)
-
-- Shiny for Python and Shiny for R usage data is exposed at the [`/v1/instrumentation/shiny/usage` endpoint](https://docs.posit.co/connect/api/#get-/v1/instrumentation/shiny/usage)
-
-Review the [Operational Metrics](https://docs.posit.co/connect/admin/operational-metrics/#content-visit-events) section of the Connect Administration Guide for details of how content visit events are logged. 
+This recipe yields summary usage statistics for a content item deployed on Connect. This is useful when seeking to understand overall usage trends for a content item, and understanding which users are most active in accessing the content.
 
 ::: {.callout-note}
+If your Connect version is prior to 2023.10, content usage for Plumber, Voila, Streamlit, Dash, and Bokeh were over-counted in instrumentation metrics. Metrics collected after upgrading to version 2023.10 or greater are accurate.
 Note that if your Connect version is prior to 2023.10, content usage for Plumber, Voila, Streamlit, Dash, and Bokeh were over-counted in instrumentation metrics. Metrics collected after upgrading to version 2023.10 or greater are accurate.
 ::: 
 
+## Output
+
+This recipe yields: 
+- A dataframe with historical content usage for an item, including by-user identification and session duration for Shiny for Python and Shiny for R content.
+- A summary table of content usage by user, including total usage and daily usage.
+- A Quarto dashboard with visualizations of the content usage data.
+
+## Workflow 
+
+This recipe requires the following inputs:
+1. The `content_guid` for the content item of interest.
+2. The desired timeframe for the report, defined by:
+  - the `as_of_date`.
+  - the number of `days_back` from the `as_of_date` to include in the report.
+3. The number of top users to include in the report, defined by `top_n`. If `top_n` is set to `np.nan` (Python), or , all users will be included in the report.
+
 This recipe provides methods for:
 
-1. Retrieving overall historical content usage
-2. Identifying usage by user
-3. Deploying a sample Quarto dashboard using these methods 
+1. Retrieving historical content usage.
+2. Identifying usage by user.
+3. Deploying a sample Quarto dashboard using these methods. 
 
+## Recipe 
 
 ### Retrieve historical content views data
 
@@ -39,7 +46,6 @@ The code samples below yields content usage data as a data frame.
 ## Python 
 
 ```{python}
-### Load required packages
 from posit import connect
 from datetime import date, timedelta
 import os
@@ -48,7 +54,7 @@ import polars as pl
 import numpy as np
 
 
-### User-defined inputs
+### User-defined inputs ###
 # 1. specify the guid for the content
 content_guid = "INSERT_CONTENT_GUID" 
 
@@ -58,15 +64,14 @@ days_back = 30
 
 # 3. Specify if the summary should show only the Top N users for the content (e.g., `top_n = 10`), or all users (as indicated by `np.nan`). Default is `np.nan` so that all users are shown. 
 top_n = np.nan
+############################
 
 report_from = as_of_date - timedelta(days=days_back)
 
-### Establish connection to Connect server
-# Note `connect.Client()` automatically detects the environment variables CONNECT_SERVER and CONNECT_API_KEY. They do not need to be specified as arguments to this function, however, if these environment variables are not set, the code will fail
 client = connect.Client() 
 
-### Get content usage data
-df = client.metrics.views.find(
+# Get content usage data
+df = client.metrics.usage.find(
     content_guid=content_guid,
     start=report_from.strftime("%Y-%m-%dT%H:%M:%SZ"),
     end=as_of_date.strftime("%Y-%m-%dT%H:%M:%SZ"))
@@ -80,7 +85,8 @@ usage
 
 ```
 
-Sample output:
+### Example output
+
 ```
 shape: (10, 10)
     content_guid	       user_guid	variant_key	rendering_id	bundle_id	            started	           ended	data_version	path	       day
@@ -103,12 +109,11 @@ The output above can be plotted for a historical perspective on content usage. A
 ## R
 
 ```{r}
-### Load required packages
 library(connectapi)
 library(dplyr)
 library(lubridate)
 
-### User-defined inputs
+### User-defined inputs ###
 # 1. specify the guid for the content
 content_guid <- "INSERT_CONTENT_GUID"
 
@@ -116,20 +121,23 @@ content_guid <- "INSERT_CONTENT_GUID"
 as_of_date <- today()
 days_back <- 30
 
+# 3. Specify if the summary should show only the Top N users for the content (e.g., `top_n = 10`). Default is `Inf` so that all users are shown.
+top_n <- Inf
+############################
+
 report_from <- as_of_date - ddays(days_back)
 
-### Establish connection to Connect server
-# Note `connectapi::connect` automatically detects the environment variables CONNECT_SERVER and CONNECT_API_KEY. They do not need to be specified as arguments to this function, however, if these environment variables are not set, the code will fail.
 client <- connect()
 
-### Determine if the desired content is Shiny or not. This will dictate which telemetry endpoint to use
+# Determine if the content type is Shiny or not. This dictates which telemetry endpoint to use
+
 # Retrive content details
 content_info <- get_content(client, guid = content_guid)
 
 # Determine type from the `app_mode`
 type <- content_info$app_mode
 
-### Query appropriate telemetry endpoint for usage data
+# Query appropriate telemetry endpoint for usage data
 if (type == "shiny" || type == "python-shiny") {
   usage <- get_usage_shiny(client,
     content_guid = content_guid,
@@ -148,12 +156,12 @@ if (type == "shiny" || type == "python-shiny") {
     mutate(day = floor_date(time, "day"))
 }
 
-### View usage data as a data frame
 usage
 
 ```
 
-Sample output for a Shiny app:
+### Example output for a Shiny app
+
 ```
 # A tibble: 14 × 6
    content_guid      user_guid         started             ended               data_version day                
@@ -180,7 +188,7 @@ The output above can be plotted for a historical perspective on content usage. A
 
 :::
 
-### Identifying usage by user
+### Identify usage by user
 
 The code samples below yield by-user content usage data as a data frame. 
 
@@ -189,10 +197,18 @@ The code samples below yield by-user content usage data as a data frame.
 ## Python
 
 ```{python}
-### Get user details to cross reference `user_guid` with usernames
+# Get user details to cross reference `user_guid` with usernames
 all_users = pl.DataFrame(client.users.find())
 
-### Make a table of a user's total usage
+# Determine number of rows to truncate to, based on `top_n`
+if np.isnan(top_n):
+  # have to define a very high number to feed into `head` below
+  truncation_rows = 99999
+else:
+  truncation_rows = top_n
+
+
+# Make a table of a user's total usage
 user_tot_usage = (
   usage.group_by("user_guid")
   .agg(pl.len().alias("tot_usage"))
@@ -200,23 +216,27 @@ user_tot_usage = (
   .with_columns(pl.coalesce(pl.col("user_guid"), pl.lit("anonymous")).alias("user_guid")) 
 )
 
-### Make a table of a user's daily usage and combine with total usage
-user_daily_usage = (
-...   usage.group_by(["user_guid","day"])
-...   .agg(pl.len()
-...   .alias("daily_usage"))
-...   .join(all_users, left_on="user_guid", right_on="guid", how="left")
-...   .with_columns(pl.coalesce(pl.col("username"), pl.lit("anonymous")).alias("username"))
-...   .with_columns(pl.coalesce(pl.col("user_guid"), pl.lit("anonymous")).alias("user_guid"))
-...   # join with total usage table
-...   .join(user_tot_usage, on="user_guid", how="left")
-...   .select(["username", "day","tot_usage", "daily_usage"])
-...   .sort("tot_usage",descending=True)
-... )
+# Make a table of a user's daily usage and combine with total usage
+by_user_usage = (
+    usage.group_by(["user_guid","day"])
+    .agg(pl.len()
+    .alias("daily_usage"))
+    .join(all_users, left_on="user_guid", right_on="guid", how="left")
+    .with_columns(pl.coalesce(pl.col("username"), pl.lit("anonymous")).alias("username"))
+    .with_columns(pl.coalesce(pl.col("user_guid"), pl.lit("anonymous")).alias("user_guid"))
+    # join with total usage table
+    .join(user_tot_usage, on="user_guid", how="left")
+    .select(["username", "day","tot_usage", "daily_usage"])
+    .sort("tot_usage",descending=True)
+    .head(truncation_rows)
+)
+
+by_user_usage
 
 ```
 
-Sample output:
+### Example output
+
 ```
 shape: (11, 4)
  username	       day	tot_usage	daily_usage
@@ -239,33 +259,34 @@ The output above can be plotted for a historical perspective on content views. A
 ## R
 
 ```{r}
-### Get user details to cross reference `user_guid` with usernames
+# Get user details to cross reference `user_guid` with usernames
 all_users <- get_users(client, limit = Inf)
 
-### Join user data with usage data
-by_user_usage <- usage |>
-                  select(user_guid, day) |> 
-                  group_by(user_guid) |> 
-                  # add a column for total usage/hits by that user
-                  mutate(total_usage = n()) |> 
-                  ungroup() |> 
-                  group_by(user_guid, day) |> 
-                  # add a column for usage/hits by that user on a particular day
-                  mutate(daily_usage = n()) |> 
-                  ungroup() |> 
-                  # cross reference with user data to bring in usernames
-                  left_join(all_users, by = c(user_guid = "guid")) |> 
-                  # if content was accessed anonymously, the user_guid will be NA. Replace these with "anonymous"
-                  mutate(username = coalesce(username, "anonymous")) |> 
-                  select(username, day, total_usage, daily_usage) |> 
-                  distinct() |> 
-                  arrange(desc(total_usage))
+# Join user data with usage data
+by_user_usage <- usage |> 
+  select(user_guid, day) |> 
+  group_by(user_guid) |> 
+  mutate(tot_usage = n()) |> 
+  mutate(first_visit = min(day)) |>
+  mutate(last_visit = max(day)) |>
+  ungroup() |> 
+  group_by(user_guid, day) |> 
+  mutate(daily_usage = n()) |> 
+  ungroup() |> 
+  left_join(all_users, by = c(user_guid = "guid")) |> 
+  mutate(username = coalesce(username, "anonymous")) |> 
+  select(username, day, tot_usage, first_visit, last_visit, daily_usage) |> 
+  distinct() |> 
+  arrange(desc(tot_usage)) |> 
+  pivot_wider(names_from = day, values_from = daily_usage) |> 
+  head(top_n)
 
-### View by-user usage data as a data frame
 by_user_usage
+
 ```
 
-Sample output:
+### Example output
+
 ```
 # A tibble: 11 × 4
    username  day                 total_usage daily_usage
@@ -285,12 +306,11 @@ Sample output:
 
 The output above can be plotted for a historical perspective on content views. An example is included in the Quarto dashboard code at the end of this recipe.
 
-:::
+## Extending the recipe
 
+### Deploy a sample Quarto dashboard with these metrics
 
-## Deploy a sample Quarto dashboard with these metrics
-
-The Quarto document below builds visualizations around the data frames retrieved above. This can be deployed in your own environment, or customized to your needs.
+The Quarto document below builds visualizations around the data frames retrieved above. This can be deployed in your own environment as is, or customized to your needs.
 
 <!-- TODO: Add github repo and manifest.json link -->
 

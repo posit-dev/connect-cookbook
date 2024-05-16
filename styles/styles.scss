@@ -205,3 +205,73 @@ ol.groovyAlpha li > p:before {
   line-height: 16px;
   vertical-align: middle;
 }
+
+
+/*-- ejs listings styles --*/
+
+
+
+@media (max-width: 575px) {
+
+  .link-cards .card {
+    margin-bottom: 20px;
+    margin-right: 35px;
+  }
+  
+  }
+  
+  @media (min-width: 576px) { 
+  .link-cards {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+  
+  .link-cards .card {
+    width: 400px;
+    margin: 0 5px 1px 0;
+  }
+  
+  }
+  
+  
+  .link-cards .card {
+    border: none;
+    padding: 0;
+  }
+  
+  .link-cards .card-title {
+    margin-top: 0;
+    font-size: larger;
+  }
+  
+
+  
+  .link-cards .card-subtitle {
+    margin-bottom: 0.7rem;
+  }
+  
+  .link-cards .card-body {
+    padding: 0.1rem;
+    /*padding: 0;*/
+  }
+
+  
+  .link-cards .card-body p {
+    margin-bottom: 0;
+    line-height: 100%;
+  }
+    
+
+  .card .source-code {
+    margin-top: 3px;
+  }
+  
+  .link-cards a {
+    text-decoration: none;
+  }
+  
+  .link-cards a:hover {
+  
+    text-decoration: underline;
+  }

@@ -21,9 +21,6 @@ library(plotly)
 
 # 1. specify the guid for the content
 content_guid <- "INSERT_CONTENT_GUID" 
-# content_guid = "0477855b-caeb-43e8-b3d9-28e0965e6230" #shiny
-content_guid = "8b765054-16a6-4c87-8c49-91b54b5e47bb" #quarto site
-# content_guid = "e33879ca-e251-49fa-b9bf-a56db9997048" #streamlit
 
 # 2. Specify timeframe for the report. Default is 30 days prior to today
 as_of_date <- lubridate::today()
@@ -47,7 +44,6 @@ report_from <- as_of_date - lubridate::ddays(days_back)
 ```{r}
 #| label: Establish connection to Connect server
 
-# Note `connectapi::connect` automatically detects the environment variables CONNECT_SERVER and CONNECT_API_KEY. They do not need to be specified as arguments to this function, however, if these environment variables are not set, the code will fail
 client <- connect()
 
 ```
@@ -55,7 +51,7 @@ client <- connect()
 ```{r}
 #| label: Get content info and usage
 
-### Determine if the desired content is Shiny or not. This will dictate which telemetry endpoint to use
+# Determine if the content type is Shiny or not. This will dictate which telemetry endpoint to use
 # Retrieve content details
 content_info <- connectapi::get_content(client, guid = content_guid)
 
@@ -80,10 +76,10 @@ if (type == "shiny" || type == "python-shiny"){
   
 }
 
-### Get all user details to cross reference user_guids with usernames
+# Get all user details to cross reference user_guids with usernames
 all_users <- connectapi::get_users(client, limit = Inf)
 
-### Count total usage and unique visitors
+# Count total usage and unique visitors
 total_hits_in_period <- nrow(usage)
 unique_visitors <- usage |> filter(!is.na(user_guid)) |>pull(user_guid) |> unique() |> length()
 
@@ -147,7 +143,7 @@ usage_plot_data <- usage |>
 #| label: Create table of content usage by user
 #| html-table-processing: none
 
-### Make a table of a user's daily usage
+# Make a table of a user's daily usage
 
 usage |> 
   select(user_guid, day) |> 
@@ -198,7 +194,7 @@ usage |>
 #| html-table-processing: none
 
 
-### Clean content info and present as a table
+# Clean content info and present as a table
 content_info |> 
   select(created_time, last_deployed_time, content_url, dashboard_url, owner_guid) |>
   # join with user info table to identify owner username
