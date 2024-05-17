@@ -6,13 +6,13 @@ execute:
 
 ## Description 
 
-This recipe shows how to manage user permissions for a content item. This includes granting and revoking user access as either viewers or collaborators.
+This recipe explains how to manage user permissions for a content item. This includes granting and revoking user access as either viewers or collaborators.
 
 This may be useful following the successful deployment of a content item where, by default, only the publisher has permission to view or change the content. It can also be helpful to revoke access if a user is no longer working on the project.
 
 ## Output
 
-There is no generated output from this recipe, however the permissions for the specified content item are updated on the Connect server.
+There is no generated output from this recipe, however, the permissions for the specified content item are updated on the Connect server.
 
 ## Workflow
 
@@ -20,11 +20,11 @@ Four independent code samples are provided below:
 
 1. How to [grant a user access](#recipe-grant-a-user-access-to-a-content-item) to a content item.
 
-2. How to [revoke a users access](#recipe-revoke-a-users-access-from-a-content-item) from a content item.
+2. How to [revoke a user's access](#recipe-revoke-a-users-access-from-a-content-item) from a content item.
 
 3. How to [grant a group access](#recipe-grant-a-group-access-to-a-content-item) to a content item.
 
-4. How to [revoke a groups access](#recipe-revoke-a-groups-access-from-a-content-item) from a content item.
+4. How to [revoke a group's access](#recipe-revoke-a-groups-access-from-a-content-item) from a content item.
 
 ## Recipe: Grant a user access to a content item
 
@@ -34,7 +34,7 @@ This receipe requires the following inputs:
 
 1. The `content_guid` for the content item from which you want to add permissions.
 2. The `user_guid` for the user being granted access.
-3. The `access_type` which determines the type of permissions the user will receive. Valid values are "viewer" and "owner" (collaborator).
+3. The `access_type` which determines the type of permissions the user receives. Valid values are "viewer" and "owner" (collaborator).
 
 :::{.panel-tabset group="language"}
 
@@ -93,7 +93,7 @@ get_content_permissions(content)
 
 ## Recipe: Revoke a users access from a content item
 
-In this example, we revoke a users access from a content item.
+In this example, we revoke a user's access from a content item.
 
 This receipe requires the following inputs:
 
@@ -156,8 +156,8 @@ In this example, we grant a group access to a content item.
 This receipe requires the following inputs:
 
 1. The `content_guid` for the content item from which you want to add permissions.
-2. Either the `group_guid` or `group_name` for the group being granted access. The `group_name` will be used if `group_guid` is blank.
-3. The `access_type` which determines the type of permissions the group will receive. Valid values are "viewer" and "owner" (collaborator).
+2. Either the `group_guid` or `group_name` for the group being granted access. The `group_name` is used if `group_guid` is blank.
+3. The `access_type` which determines the type of permissions the group receives. Valid values are "viewer" and "owner" (collaborator).
 
 :::{.panel-tabset group="language"}
 
@@ -245,12 +245,12 @@ get_content_permissions(content)
 
 ## Recipe: Revoke a groups access from a content item
 
-In this example, we revoke a groups access from a content item.
+In this example, we revoke a group's access from a content item.
 
 This receipe requires the following inputs:
 
 1. The `content_guid` for the content item from which you want to remove permissions.
-2. Either the `group_guid` or `group_name` for the group whose access is being revoked. The `group_name` will be used if `group_guid` is blank.
+2. Either the `group_guid` or `group_name` for the group whose access is being revoked. The `group_name` is used if `group_guid` is blank.
 
 :::{.panel-tabset group="language"}
 
