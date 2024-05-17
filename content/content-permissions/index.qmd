@@ -219,9 +219,7 @@ access_type = "viewer"
 client <- connect()
 
 if (group_guid == "" && group_name != "") {
-  # format group name so it fits in URL properly until https://github.com/rstudio/connectapi/issues/263 is addressed
-  group_name_url <- URLencode(group_name)
-  group_match <- get_groups(client, prefix = group_name_url)
+  group_match <- get_groups(client, prefix = group_name)
   if (nrow(group_match) == 0) {
     stop("Invalid group name")
   } else if (length(unique(group_match$name)) != 1) {
@@ -307,9 +305,7 @@ group_name = "GROUP_NAME_HERE"
 client <- connect()
 
 if (group_guid == "" && group_name != "") {
-  # format group name so it fits in URL properly until https://github.com/rstudio/connectapi/issues/263 is addressed
-  group_name_url <- URLencode(group_name)
-  group_match <- get_groups(client, prefix = group_name_url)
+  group_match <- get_groups(client, prefix = group_name)
   if (nrow(group_match) == 0) {
     stop("Invalid group name")
   } else if (length(unique(group_match$name)) != 1) {
