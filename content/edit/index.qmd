@@ -22,7 +22,7 @@ Select the specific recipe(s) relevant to your needs.
 
 ## Output
 
-TBD
+The edit and delete recipes print some output to show that they are working, but the primary purpose is to modify the state of the Connect server.
 
 ## Recipe: How to find a content item
 
@@ -57,6 +57,24 @@ else:
 library(connectapi)
 
 client <- connect()
+
+# Option 1. If you know the GUID of the content, you can look up by that
+content_guid <- "YOUR-GUID-HERE"
+
+# Option 2. You can pull all content and filter on any attributes in R
+content_title <- "Your title here"
+content_guid <- client |>
+  get_content() |>
+  filter(title == content_title) |>
+  pull(guid)
+
+if (length(content_guid) != 1) {
+  print("Did not find exactly one match")
+}
+
+# Now load that record
+item <- client |>
+  content_item(content_guid)
 ```
 
 :::
@@ -100,6 +118,18 @@ print(item.min_processes)
 library(connectapi)
 
 client <- connect()
+
+content_guid <- "YOUR-GUID-HERE"
+item <- client |>
+  content_item(content_guid)
+
+# Before:
+print(item$content[c("init_timeout", "min_processes")])
+
+item <- content_update(item, init_timeout = 300, min_processes = 2)
+
+# After:
+print(item$content[c("init_timeout", "min_processes")])
 ```
 
 :::
@@ -148,6 +178,18 @@ print(item.min_processes)
 library(connectapi)
 
 client <- connect()
+
+content_guid <- "YOUR-GUID-HERE"
+item <- client |>
+  content_item(content_guid)
+
+# Before:
+print(item$content[c("init_timeout", "min_processes")])
+
+item <- content_update(item, init_timeout = NULL, min_processes = NULL)
+
+# After:
+print(item$content[c("init_timeout", "min_processes")])
 ```
 
 :::
@@ -185,6 +227,16 @@ client.content.get(content_guid)
 library(connectapi)
 
 client <- connect()
+
+content_guid <- "YOUR-GUID-HERE"
+item <- client |>
+  content_item(content_guid)
+
+content_delete(item)
+
+# Confirm it was deleted: this will raise an error
+item <- client |>
+  content_item(content_guid)
 ```
 
 :::
