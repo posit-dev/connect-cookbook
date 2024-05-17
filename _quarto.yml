@@ -7,17 +7,31 @@ website:
     left:
       - href: index.qmd
         text: Home
+  page-navigation: true
 
   sidebar: 
     search: true
     collapse-level: 1
     contents: 
-      - section: Server Management
-        contents: server
-      - section: Content Management
-        contents: content
-      - section: User/Group Management
-        contents: user
+      - section: "Server Management"
+        href: server/index.qmd
+        contents:
+          - server/off-host-environments/index.qmd
+      - section: "Content Management"
+        href: content/index.qmd
+        contents:
+          - content/content-access-all/index.qmd
+          - content/content-by-user/index.qmd
+          - content/usage/index.qmd
+          - content/most-used/index.qmd
+          - content/remove-all-content-users/index.qmd
+      - text: "User Management"
+        href: user/index.qmd
+
+
+
+
+
 
 format:
   html:
