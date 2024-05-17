@@ -1,12 +1,12 @@
 ---
-title: Title
+title: List versions of Python, R, and Quarto on the server
 execute: 
   eval: false
 ---
 
 ## Description 
 
-Posit Connect allows you to install multiple versions of Python, R, or Quarto, and it is quite helpful to develop your content using a version of the software which is installed on the sever. 
+Posit Connect allows you to install multiple versions of Python, R, and Quarto, and it is quite helpful to develop your content using a version of the software which is installed on the sever. 
 This recipe lets you check the R, Python, and Quarto runtimes which are available on the Connect server.
 
 ## Output
@@ -16,7 +16,7 @@ This generates a data frame with the available R, Python, and Quarto versions.
 ## Workflow
 This recipe then does the following:
 
-1. Query connect to find the available runtimes
+1. Query Connect to find the available runtimes
 2. Format the json response into a dataframe
 
 ## Recipe
@@ -61,7 +61,6 @@ result = pd.concat([tidy_settings(rt) for rt in runtimes], ignore_index=True)
 ## R
 
 ```{r}
-# Note to recipe writer: Add comments. Include a renv.lock file in this repo.
 library(connectapi)
 library(purrr)
 client <- connect()
