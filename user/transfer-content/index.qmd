@@ -19,13 +19,11 @@ The purpose is to modify the state of the Connect server.
 This recipe requires the following inputs:
 
 1. GUID of the user you want to transfer from
-
 2. GUID of the user you want to transfer to
 
 This recipe then does the following:
 
 1. Finds all content owned by the first user
-
 2. Updates each content item to have the new owner
 
 ## Recipe
@@ -38,8 +36,6 @@ This recipe then does the following:
 from posit import connect
 
 client = connect.Client()
-
-# Note to recipe writer: if user input is required, use this format:
 
 ### User-defined inputs ###
 # 1. Specify the GUID of the user whose content we are reassigning
@@ -105,6 +101,4 @@ client |>
 
 :::
 
-## (Optional) Extending the recipe
 
-Here's a dashboard or something else that deploy or do.
