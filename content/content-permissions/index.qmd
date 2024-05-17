@@ -6,9 +6,9 @@ execute:
 
 ## Description 
 
-This recipe shows how to manage user permissions for a content item. This includes granting and revoking user access as either viewers or collabroators.
+This recipe shows how to manage user permissions for a content item. This includes granting and revoking user access as either viewers or collaborators.
 
-This may be useful following the successful deployment of a content item where by default only the publisher has permissions to view or change the content. Also this can be helpful to revoke access if a user is not longer working on the project.
+This may be useful following the successful deployment of a content item where, by default, only the publisher has permission to view or change the content. It can also be helpful to revoke access if a user is no longer working on the project.
 
 ## Output
 
