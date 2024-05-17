@@ -9,8 +9,8 @@ website:
         text: Home
 
   sidebar: 
-    style: "docked"
     search: true
+    collapse-level: 1
     contents: 
       - section: Server Management
         contents: server
