@@ -6,7 +6,14 @@ execute:
 
 ## Description 
 
-This recipe modifies the git repository settings git-backed content item. This is useful in situations where the git repository has migrated from one location or host to another, or if the branch of the repository has been renamed, deleted, or otherwise changed.
+This recipe modifies the git repository settings for a git-backed content item, allowing you to change: 
+
+- the respository URL.
+- the branch the content is deployed from.
+- the path within the repository where the content is located.
+- whether Connect should periodically check the repository for updates.
+
+ This is useful in situations where the git repository has migrated from one location or host to another, if the branch of the repository has been renamed, deleted, or otherwise changed.
 
 ## Output
 
@@ -16,7 +23,11 @@ There is no generated output from this recipe, however it will modify the conten
 This recipe requires the following inputs:
 
 1. The `content_guid` for the content item that you want to modify. 
-2. The new git repository URL and/or branch name.
+2. The git repository settings to overwrite the existing settings. Input the same value as the existing setting if is unchanged. You will specify:
+    - `repo_url`: The URL of the git repository. 
+    - `branch`: The branch of the git repository.
+    - `directory`: The directory path within the repository.
+    - `periodic_update`: A boolean indicating whether the repository should be periodically polled for updates.
 
 This recipe then does the following:
 
