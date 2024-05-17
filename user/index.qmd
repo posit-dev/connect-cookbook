@@ -1,4 +1,7 @@
 ---
-title: Recipes for management and visibility of users and groups
+title: Users and groups recipes
+listing: 
+    template: ../ejs/links.ejs
 ---
 
+The recipes in this section can help you to work with the users and groups on the Connect server.
