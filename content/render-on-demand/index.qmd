@@ -1,75 +1,216 @@
 ---
-title: Render static content on demand
+title: Render and email content on demand
 execute: 
   eval: false
 ---
 
-This recipe shows how to render static content programmatically, on demand. This can be helpful when you want to trigger a static report to re-render and the content scheduling options of Connect are not a good fit.
+## Description 
 
-## Method
+This recipe shows how to re-render content programmatically, on demand. Rendered content includes R Markdown, Jupyter Notebooks, and Quarto. This can be helpful when you want to trigger a report to re-render and the time-based content scheduling options of Connect are not a good fit. 
 
+## Output
 
-::: {.panel-tabset group="language"}
+This recipe will trigger a rendering of a content variant on the Connect server. Optionally, you can also have Connect send an email of the rendered content once it is complete.
+
+## Workflow
+This recipe requires the following inputs:
+
+1. The `content_guid` of the content item to be re-rendered. 
+2. The `variant_key` for the content item to be re-rendered. This is only relevant if the content item has multiple variants saved, such as variations of a parameterized report. Otherwise, `default` is the only variant and is appropriate for this recipe. See the box below for how to find the content variant key if your content has variants saved.
+3. Connect can send the rendering as email after the content renders. Specify who should receive this. Options are: 
+    - `none`: Do not send an email.
+    - `me`: Send an email to the user who triggered the rendering (as identified by the API key in use).
+    - `collaborators`: Send an email to the collaborators on the content item.
+    - `collaboratorss_viewers`: Send an email to the collaborators and viewers on the content item.
+
+::: {.callout-note title="How to determine the content variant key" collapse="true"}
+
+Often, content items will only have one variant, in which case, specifying "default" for this recipe is sufficient. If your content item has multiple variants saved, you can find the content variant key by running the following code and looking for the `key` value in the output:
+
+:::{.panel-tabset group="language"}
 
 ## Python
- 
- <!-- TODO: not implemented in posit-sdk yet. see https://github.com/posit-dev/posit-sdk-py/issues/189 -->
+
+```{python}
+from posit import connect
+
+client = connect.Client()
+
+content_guid = "SPECIFY CONTENT GUID"
+
+client.get(f"/applications/{content_guid}/variants").json()
+
+```
 
 
 ## R
 
 ```{r}
-### Load required packages
 library(connectapi)
 
-### User-defined inputs
-# 1. specify the content guid for the item to be redeployed
+client <- connect()
+
+content_guid <- "SPECIFY CONTENT GUID"
+
+get_variants(content_item(client, content_guid)) 
+
+```
+
+:::
+
+:::
+
+This recipe then does the following:
+
+1. Selects the target content item and variant to re-render.
+2. Triggers a rendering of the content variant.
+3. Optionally, sends the rendered content via email to the specified recipients.
+
+## Recipe
+
+:::{.panel-tabset group="language"}
+
+## Python
+
+```{.python}
+from posit import connect
+
+### User-defined inputs ###
+# 1. Specify the content guid for the item to be re-rendered
+# content_guid = "SPECIFY CONTENT GUID"
+
+# 2. Specify the variant key of the content to re-render. This is only relevant if the content item is parameterized and has multiple variants saved. Otherwise, "default" is the only variant.
+variant_key = "default"
+
+# 3. Send an email after the content renders? Options are: ( "none" | "me" | "collabs" | "collabs_viewers" )
+recipients =  "me"
+###########################
+
+# verify that `recipients` is a valid option and if not, set to "none"
+if recipients not in ["none", "me", "collabs", "collabs_viewers"]:
+    recipients = "none"
+    print(f"Invalid `recipients` option: {recipients}. Setting to 'none'.")
+
+# verify that variant key is either "default" or is a 8-character string. if not stop and print a warning.
+if variant_key != "default" and len(variant_key) != 8:
+    print(f"The specified variant key '{variant_key}' does not appear to be valid. Set to 'default' or enter a valid variant key.")
+    exit()
+
+client = connect.Client() 
+
+# Get content item from the server
+content = client.content.get(content_guid)
+
+# Select the variant to render
+content_variants = client.get(f"/applications/{content_guid}/variants").json()
+if variant_key == "default":
+    content_variant = next((variant["id"] for variant in content_variants if variant["is_default"]), None)
+    variant_key = next((variant["key"] for variant in content_variants if variant["is_default"]), None)
+else:
+    content_variant = next((variant["id"] for variant in content_variants if variant["key"] == variant_key), None)
+    variant_key = next((variant["key"] for variant in content_variants if variant["key"] == variant_key), None)
+    
+
+# trigger the variant to render and wait for it to complete
+response = client.post(f"/variants/{content_variant}/render?email=none&activate=true",
+data={"email":"none", "activate":"true"})
+
+result = response.json()
+task = client.tasks.get(result["id"])
+
+task.wait_for()
+
+# get new variant rendering id
+content_variants = client.get(f"/applications/{content_guid}/variants").json()
+if variant_key == "default":
+    content_variant = next((variant["id"] for variant in content_variants if variant["is_default"]), None)
+    rendering_id = next((variant["rendering_id"] for variant in content_variants if variant["is_default"]), None)
+else:
+    content_variant = next((variant["id"] for variant in content_variants if variant["key"] == variant_key), None)
+    rendering_id = next((variant["rendering_id"] for variant in content_variants if variant["key"] == variant_key), None)
+
+# send email of rendered content, if applicable
+if recipients != "none":
+    client.post(f"variants/{content_variant}/sender?email={recipients}&rendering_id={rendering_id}", 
+    data={"email": recipients,
+    "rendering_id": rendering_id})
+
+```
+
+## R
+
+```{.r}
+library(connectapi)
+
+### User-defined inputs ###
+# 1. Specify the content guid for the item to be re-rendered
 # content_guid <- "SPECIFY CONTENT GUID"
-# content_guid <- "24d2f5d9-a930-4345-8c30-17717b9d8d8d"
-content_guid <- "a804cb4f-7b93-4bd9-ad29-e1969df902c8"
 
+# 2. Specify the variant key of the content to re-render. This is only relevant if the content item is parameterized and has multiple variants saved. Otherwise, "default" is the only variant.
+variant_key <- "default"
 
-# 2. Send an email after the content renders? Options are: ( "none" | "me" | "collaborators" | "collaborators_viewers" )
-email_rendered_report <-  "me"
+# 3. Send an email after the content renders? Options are: ( "none" | "me" | "collaborators" | "collaborators_viewers" )
+recipients <-  "collaborators"
+###########################
 
-# verify thht email_rendered_report is a valid option and if not, set to "none"
-if(email_rendered_report %in% c("none", "to_me", "to_collabs", "to_collabs_viewers")){
-  email_rendered_report <- email_rendered_report
+# verify that `recipients` is a valid option and if not, set to "none"
+if(recipients %in% c("none", "me", "collaborators", "collaborators_viewers")){
+  recipients <- recipients
 } else {
-  email_rendered_report <- "none"
+  recipients <- "none"
+  print(glue::glue("Invalid `recipients` option: {recipients}. Defaulting to 'none'."))
 }
 
-### Establish connection to Connect server
-# Note `connectapi::connect` automatically detects the environment variables CONNECT_SERVER and CONNECT_API_KEY. They do not need to be specified as arguments to this function, however, if these environment variables are not set, the code will fail.
-con <- connect()
-
-### Get content item from server
-content <- content_item(con, content_guid)
-
-### select the default variant to re-render
-content_variant <- get_variant_default(content)
-
-### trigger the variant to render
-new_render <- variant_render(content_variant)
-
-info <- poll_task(variant_render(content_variant))
-
-### trigger email of rendered content, if applicable
-new_render$send_mail("me")
-
-if(email_rendered_report != "none"){
-  httr::POST(
-    url = paste0(con$server, "/__api__/variants/3/sender",
-    add_params(
-      email = email_rendered_report,
-      rendering_id = get_variants(content)$rendering_id
-    ),
-    add_headers(Authorization = paste("Key", con$api_key)
+# verify that variant key is either "default" or appears to be a valid entry.
+if(variant_key != "default" && nchar(variant_key) != 8){
+  stop(glue::glue("The specified variant key '{variant_key}' does not appear to be valid. Set to 'default' or enter a valid variant key."))
 }
 
-# TODO: this is broken. see https://github.com/rstudio/connectapi/issues/257
+client <- connect()
+
+# Get content item from server
+content <- content_item(client, content_guid)
+
+# select the variant to re-render. 
+if(variant_key == "default"){
+  content_variant <- get_variant_default(content)
+} else {
+  content_variant <- get_variant(content, variant_key)
+}
+
+# trigger the variant to render
+poll_task(variant_render(content_variant))
+
+# get new variant rendering id
+if(variant_key == "default"){
+  content_variant <- get_variant_default(content)
+} else {
+  content_variant <- get_variant(content, variant_key)
+}
+rendering_id <- content_variant$variant$rendering_id
+
+
+# send email of rendered content, if applicable
+if(recipients != "none"){
+  client$POST(
+    glue::glue("variants/{content_variant$variant$id}/sender?email={recipients}&rendering_id={rendering_id}"),
+    body = list(
+      email = recipients,
+      rendering_id = rendering_id
+    )
+  )
+}
 
 
 ```
 
 :::
+
+### Example output
+
+There is no output from this code block however, renderings will be visible in the Connect dashboard [Report History](https://docs.posit.co/connect/user/report-history/). If an email is sent, the recipient(s) will receive an email with the rendered content.
+
+
+## Extending the recipe
+
+This recipe can be incorporated into another script to create a workflow where a report rendering is dependent upon the timing or output of the previous report. This permits greater flexibility in scheduling and pipeline creation.
