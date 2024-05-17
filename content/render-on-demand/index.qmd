@@ -1,18 +1,19 @@
 ---
-title: Render and email content on demand
+title: Render and Email Content on Demand
 execute: 
   eval: false
 ---
 
 ## Description 
 
-This recipe shows how to re-render content programmatically, on demand. Rendered content includes R Markdown, Jupyter Notebooks, and Quarto. This can be helpful when you want to trigger a report to re-render and the time-based content scheduling options of Connect are not a good fit. 
+This recipe explains how to re-render content programmatically, on demand. Rendered content includes R Markdown, Jupyter notebooks, and Quarto. This can be helpful when you want to trigger a report to re-render and the time-based content scheduling options of Connect are not a good fit. 
 
 ## Output
 
-This recipe will trigger a rendering of a content variant on the Connect server. Optionally, you can also have Connect send an email of the rendered content once it is complete.
+This recipe triggers a rendering of a content variant on the Connect server. Optionally, you can also have Connect send an email of the rendered content once it is complete.
 
 ## Workflow
+
 This recipe requires the following inputs:
 
 1. The `content_guid` of the content item to be re-rendered. 
@@ -24,8 +25,7 @@ This recipe requires the following inputs:
     - `collaboratorss_viewers`: Send an email to the collaborators and viewers on the content item.
 
 ::: {.callout-note title="How to determine the content variant key" collapse="true"}
-
-Often, content items will only have one variant, in which case, specifying "default" for this recipe is sufficient. If your content item has multiple variants saved, you can find the content variant key by running the following code and looking for the `key` value in the output:
+Often, content items only have one variant, in which case, specifying "default" for this recipe is sufficient. If your content item has multiple variants saved, you can find the content variant key by running the following code and looking for the `key` value in the output:
 
 :::{.panel-tabset group="language"}
 
@@ -208,7 +208,7 @@ if(recipients != "none"){
 
 ### Example output
 
-There is no output from this code block however, renderings will be visible in the Connect dashboard [Report History](https://docs.posit.co/connect/user/report-history/). If an email is sent, the recipient(s) will receive an email with the rendered content.
+There is no output from this code block however, renderings are visible in the Connect dashboard [Report History](https://docs.posit.co/connect/user/report-history/). If an email is sent, the recipient(s) receive an email with the rendered content.
 
 
 ## Extending the recipe
