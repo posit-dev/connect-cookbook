@@ -18,7 +18,7 @@ Three independent code samples are provided below:
 
 3. How to delete content
 
-Select the specific recipe(s) relevant to your needs.
+Follow the recipe(s) relevant to your needs.
 
 ## Output
 
@@ -81,7 +81,7 @@ item <- client |>
 
 ## Recipe: editing content attributes
 
-We can edit one or more fields of the content item at a time.
+You can edit one or more fields of the content item at a time.
 For example, suppose that this application has a fairly expensive startup.
 You want to allow additional time for that initialization and leave an instance of that process running at all times.
 You can start by adjusting the `init_timeout` and `min_processes` settings:
