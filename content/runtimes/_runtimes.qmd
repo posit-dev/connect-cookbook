@@ -1,0 +1,94 @@
+---
+title: List versions of Python, R, and Quarto on the server
+execute: 
+  eval: false
+---
+
+## Description 
+
+Posit Connect allows you to install multiple versions of Python, R, and Quarto, and it is quite helpful to develop your content using a version of the software which is installed on the sever. 
+This recipe lets you check the R, Python, and Quarto runtimes which are available on the Connect server.
+
+## Output
+
+This generates a data frame with the available R, Python, and Quarto versions.
+
+## Workflow
+This recipe then does the following:
+
+1. Query Connect to find the available runtimes
+2. Format the json response into a dataframe
+
+## Recipe
+
+:::{.panel-tabset group="language"}
+
+## Python
+
+```{python}
+from posit.connect import Client
+import pandas as pd
+
+
+def tidy_settings(runtime_type):
+    with Client() as client:
+        settings = client.get(f"v1/server_settings/{runtime_type}").json()
+        df = pd.DataFrame(settings["installations"])
+        df["runtime"] = runtime_type
+        return df[["runtime", "version"]]
+
+
+runtimes = ["python", "r", "quarto"]
+result = pd.concat([tidy_settings(rt) for rt in runtimes], ignore_index=True)
+```
+
+
+### Example output
+
+|runtime |version |
+|:-------|:-------|
+|python  |3.8.17  |
+|python  |3.9.17  |
+|python  |3.10.13 |
+|python  |3.11.6  |
+|r       |4.1.3   |
+|r       |4.2.3   |
+|r       |4.3.2   |
+|quarto  |1.3.340 |
+|quarto  |1.3.450 |
+|quarto  |1.4.549 |
+
+## R
+
+```{r}
+library(connectapi)
+library(purrr)
+client <- connect()
+
+tidy_settings <- function(type = c("r", "python", "quarto")) {
+  type = match.arg(type)
+  settings = client$GET(paste0("v1/server_settings/", type))
+  out = map_dfr(settings$installations, ~as.data.frame(.))
+  out$runtime = type
+  return(out[, c("runtime", "version")])
+}
+
+map_dfr(c("python", "r", "quarto"), tidy_settings)
+
+```
+
+### Example output
+|runtime |version |
+|:-------|:-------|
+|python  |3.8.17  |
+|python  |3.9.17  |
+|python  |3.10.13 |
+|python  |3.11.6  |
+|r       |4.1.3   |
+|r       |4.2.3   |
+|r       |4.3.2   |
+|quarto  |1.3.340 |
+|quarto  |1.3.450 |
+|quarto  |1.4.549 |
+
+:::
