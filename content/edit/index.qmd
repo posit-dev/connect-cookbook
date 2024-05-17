@@ -1,0 +1,190 @@
+---
+title: Managing content
+execute:
+  eval: false
+---
+
+## Description
+
+This recipe shows how to obtain details about your existing content from the Connect Server APIs and perform updates to them.
+
+## Workflow
+
+Three independent code samples are provided below:
+
+1. How to find a content item
+
+2. How to update one or more attributes
+
+3. How to delete content
+
+Select the specific recipe(s) relevant to your needs.
+
+## Output
+
+TBD
+
+## Recipe: How to find a content item
+
+:::{.panel-tabset group="language"}
+
+## Python
+
+```{.python}
+from posit import connect
+
+client = connect.Client()
+
+# Option 1. If you know the GUID of the content, you can look up by that
+content_guid = "YOUR-GUID-HERE"
+item = client.content.get(content_guid)
+
+# Option 2. You can pull all content and filter on any attributes in Python
+content_title = "Your title here"
+all_content = client.content.find()
+
+filtered = [c for c in all_content if c.title == content_title]
+if len(filtered) == 1:
+    item = filtered[0]
+    print(item)
+else:
+    print("Did not find exactly one match")
+```
+
+## R
+
+```{.r}
+library(connectapi)
+
+client <- connect()
+```
+
+:::
+
+## Recipe: editing content attributes
+
+We can edit one or more fields of the content item at a time.
+For example, suppose that this application has a fairly expensive startup.
+You want to allow additional time for that initialization and leave an instance of that process running at all times.
+You can start by adjusting the `init_timeout` and `min_processes` settings:
+
+:::{.panel-tabset group="language"}
+
+## Python
+
+```{.python}
+from posit import connect
+
+client = connect.Client()
+
+# Let's go with option 1 from above,
+# but you can find your content however you want
+content_guid = "YOUR-GUID-HERE"
+item = client.content.get(content_guid)
+
+# Before:
+print(item.init_timeout)
+print(item.min_processes)
+
+item.update(init_timeout=300, min_processes=2)
+
+# After:
+print(item.init_timeout)
+print(item.min_processes)
+
+```
+
+## R
+
+```{.r}
+library(connectapi)
+
+client <- connect()
+```
+
+:::
+
+That application is now configured to keep two processes running on each
+server and allows up to five minutes for successful startup.
+
+You can undo the changes to `init_timeout` and `min_processes` after
+performance improvements to the application have been deployed.
+The `init_timeout` and `min_processes` had a `null` value before applying
+the first set of changes.
+For settings like these, a `null` value means to use whatever the system
+default is, and specifying a different value means to override the default.
+
+To reset these values:
+
+:::{.panel-tabset group="language"}
+
+## Python
+
+```{.python}
+from posit import connect
+
+client = connect.Client()
+
+# Let's go with option 1 from above,
+# but you can find your content however you want
+content_guid = "YOUR-GUID-HERE"
+item = client.content.get(content_guid)
+
+# Before:
+print(item.init_timeout)
+print(item.min_processes)
+
+item.update(init_timeout=None, min_processes=None)
+
+# After:
+print(item.init_timeout)
+print(item.min_processes)
+
+```
+
+## R
+
+```{.r}
+library(connectapi)
+
+client <- connect()
+```
+
+:::
+
+## Recipe: Deleting content
+
+::: {.callout-warning}
+Deleting content is a destructive operation and cannot be reversed, so use
+with caution.
+:::
+
+:::{.panel-tabset group="language"}
+
+## Python
+
+```{.python}
+from posit import connect
+
+client = connect.Client()
+
+# Let's go with option 1 from above,
+# but you can find your content however you want
+content_guid = "YOUR-GUID-HERE"
+item = client.content.get(content_guid)
+
+item.delete()
+
+# Confirm it was deleted: this will raise an Exception
+client.content.get(content_guid)
+```
+
+## R
+
+```{.r}
+library(connectapi)
+
+client <- connect()
+```
+
+:::
