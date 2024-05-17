@@ -22,5 +22,4 @@ website:
 format:
   html:
     theme: cosmo
-    css: styles/styles.scss
     toc: true

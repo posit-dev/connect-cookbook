@@ -1,5 +1,8 @@
 ---
 title: Content management recipes
+format:
+    html:
+        css: ../styles/styles.scss
 listing:
     - id: content
       template: ../ejs/links.ejs
