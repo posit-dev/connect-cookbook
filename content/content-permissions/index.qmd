@@ -1,0 +1,332 @@
+---
+title: "Manage User Permissions for Content"
+execute: 
+  eval: false
+---
+
+## Description 
+
+This recipe shows how to manage user permissions for a content item. This includes granting and revoking user access as either viewers or collabroators.
+
+This may be useful following the successful deployment of a content item where by default only the publisher has permissions to view or change the content. Also this can be helpful to revoke access if a user is not longer working on the project.
+
+## Output
+
+There is no generated output from this recipe, however the permissions for the specified content item are updated on the Connect server.
+
+## Workflow
+
+Four independent code samples are provided below:
+
+1. How to [grant a user access](#recipe-grant-a-user-access-to-a-content-item) to a content item.
+
+2. How to [revoke a users access](#recipe-revoke-a-users-access-from-a-content-item) from a content item.
+
+3. How to [grant a group access](#recipe-grant-a-group-access-to-a-content-item) to a content item.
+
+4. How to [revoke a groups access](#recipe-revoke-a-groups-access-from-a-content-item) from a content item.
+
+## Recipe: Grant a user access to a content item
+
+In this example, we grant a user access to a content item.
+
+This receipe requires the following inputs:
+
+1. The `content_guid` for the content item from which you want to add permissions.
+2. The `user_guid` for the user being granted access.
+3. The `access_type` which determines the type of permissions the user will receive. Valid values are "viewer" and "owner" (collaborator).
+
+:::{.panel-tabset group="language"}
+
+## Python
+
+```{.python}
+from posit import connect
+
+### User-defined inputs ###
+# 1. specify the guid for the content item
+content_guid = "CONTENT_GUID_HERE"
+# 2. specify the guid for the user to be added
+user_guid = "USER_GUID_HERE"
+# 3. specify if the user should be added as a "viewer" or "owner" (collaborator)
+access_type = "viewer"
+############################
+
+client = connect.Client() 
+
+# For the specified content item add the desired user
+client.content.get(content_guid).permissions.create(
+    principal_guid=user_guid,
+    principal_type="user",
+    role=access_type,
+    )
+
+# Confirm new permissions
+client.content.get(content_guid).permissions.find()
+```
+
+## R
+
+```{.r}
+library(connectapi)
+
+### User-defined inputs ###
+# 1. specify the guid for the content item
+content_guid = "CONTENT_GUID_HERE"
+# 2. specify the guid for the user to be added
+user_guid = "USER_GUID_HERE"
+# 3. specify if the user should be added as a "viewer" or "owner" (collaborator)
+access_type = "viewer"
+############################
+
+client <- connect()
+
+# For the specified content item add the desired user
+content <- content_item(client, content_guid)
+content_add_user(content, user_guid, role = access_type)
+
+# Confirm new permissions
+get_content_permissions(content)
+```
+
+:::
+
+## Recipe: Revoke a users access from a content item
+
+In this example, we revoke a users access from a content item.
+
+This receipe requires the following inputs:
+
+1. The `content_guid` for the content item from which you want to remove permissions.
+2. The `user_guid` for the user whose access is being revoked.
+
+:::{.panel-tabset group="language"}
+
+## Python
+
+```{.python}
+from posit import connect
+
+### User-defined inputs ###
+# 1. specify the guid for the content item
+content_guid = "CONTENT_GUID_HERE"
+# 2. specify the guid for the user to be removed
+user_guid = "USER_GUID_HERE"
+############################
+
+client = connect.Client() 
+
+# For the specified content item remove the desired user
+for perm in client.content.get(content_guid).permissions.find():
+    if perm.principal_guid == user_guid:
+        perm.delete()
+
+# Confirm new permissions
+client.content.get(content_guid).permissions.find()
+```
+
+## R
+
+```{.r}
+library(connectapi)
+
+### User-defined inputs ###
+# 1. specify the guid for the content item
+content_guid = "CONTENT_GUID_HERE"
+# 2. specify the guid for the user to be removed
+user_guid = "USER_GUID_HERE"
+############################
+
+client <- connect()
+
+# For the specified content item remove the desired user
+content <- content_item(client, content_guid)
+content_delete_user(content, user_guid)
+
+# Confirm new permissions
+get_content_permissions(content)
+```
+
+:::
+
+## Recipe: Grant a group access to a content item
+
+In this example, we grant a group access to a content item.
+
+This receipe requires the following inputs:
+
+1. The `content_guid` for the content item from which you want to add permissions.
+2. Either the `group_guid` or `group_name` for the group being granted access. The `group_name` will be used if `group_guid` is blank.
+3. The `access_type` which determines the type of permissions the group will receive. Valid values are "viewer" and "owner" (collaborator).
+
+:::{.panel-tabset group="language"}
+
+## Python
+
+```{.python}
+from posit import connect
+
+### User-defined inputs ###
+# 1. specify the guid for the content item
+content_guid = "CONTENT_GUID_HERE"
+# 2. specify either the guid or name for the group to be added (group_name will be used if group_guid is blank)
+group_guid = ""
+group_name = "GROUP_NAME_HERE"
+# 3. specify if the group should be added as a "viewer" or "owner" (collaborator)
+access_type = "viewer"
+############################
+
+client = connect.Client()
+
+# search by group_name to find the group_guid if blank
+if not group_guid and group_name:
+    group_match = client.get("/v1/groups", params={"prefix": group_name}).json()
+    if not group_match["results"]:
+        raise Exception("Invalid group name")
+    elif len(group_match["results"]) != 1:
+        raise Exception("More than one group name found, ensure you enter a unique name")
+    else:
+        group_guid = group_match["results"][0]["guid"]
+elif not group_name: 
+    raise Exception("Either group_guid or group_name must be specified")
+
+# For the specified content item add the desired group
+client.content.get(content_guid).permissions.create(
+    principal_guid=group_guid,
+    principal_type="group",
+    role=access_type,
+    )
+
+# Confirm new permissions
+client.content.get(content_guid).permissions.find()
+```
+
+## R
+
+```{.r}
+library(connectapi)
+
+### User-defined inputs ###
+# 1. specify the guid for the content item
+content_guid = "CONTENT_GUID_HERE"
+# 2. specify either the guid or name for the group to be added (group_name will be used if group_guid is blank)
+group_guid = ""
+group_name = "GROUP_NAME_HERE"
+# 3. specify if the group should be added as a "viewer" or "owner" (collaborator)
+access_type = "viewer"
+############################
+
+client <- connect()
+
+if (group_guid == "" && group_name != "") {
+  # format group name so it fits in URL properly until https://github.com/rstudio/connectapi/issues/263 is addressed
+  group_name_url <- URLencode(group_name)
+  group_match <- get_groups(client, prefix = group_name_url)
+  if (nrow(group_match) == 0) {
+    stop("Invalid group name")
+  } else if (length(unique(group_match$name)) != 1) {
+    stop("More than one group name found, ensure you enter a unique name")
+  } else {
+    group_guid <- unique(group_match$guid)
+  }
+} else if (group_name == "") {
+  stop("Either group_guid or group_name must be specified")
+}
+
+# For the specified content item add the desired group
+content <- content_item(client, content_guid)
+content_add_group(content, group_guid, role = access_type)
+
+# Confirm new permissions
+get_content_permissions(content)
+```
+
+:::
+
+## Recipe: Revoke a groups access from a content item
+
+In this example, we revoke a groups access from a content item.
+
+This receipe requires the following inputs:
+
+1. The `content_guid` for the content item from which you want to remove permissions.
+2. Either the `group_guid` or `group_name` for the group whose access is being revoked. The `group_name` will be used if `group_guid` is blank.
+
+:::{.panel-tabset group="language"}
+
+## Python
+
+```{.python}
+from posit import connect
+
+### User-defined inputs ###
+# 1. specify the guid for the content item
+content_guid = "CONTENT_GUID_HERE"
+# 2. specify either the guid or name for the group to be removed (group_name will be used if group_guid is blank)
+group_guid = ""
+group_name = "GROUP_NAME_HERE"
+############################
+
+client = connect.Client() 
+
+# search by group_name to find the group_guid if blank
+if not group_guid and group_name:
+    group_match = client.get("/v1/groups", params={"prefix": group_name}).json()
+    if not group_match["results"]:
+        raise Exception("Invalid group name")
+    elif len(group_match["results"]) != 1:
+        raise Exception("More than one group name found, ensure you enter a unique name")
+    else:
+        group_guid = group_match["results"][0]["guid"]
+elif not group_name: 
+    raise Exception("Either group_guid or group_name must be specified")
+
+# For the specified content item remove the desired user
+for perm in client.content.get(content_guid).permissions.find():
+    if perm.principal_guid == group_guid:
+        perm.delete()
+
+# Confirm new permissions
+client.content.get(content_guid).permissions.find()
+```
+
+## R
+
+
+```{.r}
+library(connectapi)
+
+### User-defined inputs ###
+# 1. specify the guid for the content item
+content_guid = "CONTENT_GUID_HERE"
+# 2. specify either the guid or name for the group to be removed (group_name will be used if group_guid is blank)
+group_guid = ""
+group_name = "GROUP_NAME_HERE"
+############################
+
+client <- connect()
+
+if (group_guid == "" && group_name != "") {
+  # format group name so it fits in URL properly until https://github.com/rstudio/connectapi/issues/263 is addressed
+  group_name_url <- URLencode(group_name)
+  group_match <- get_groups(client, prefix = group_name_url)
+  if (nrow(group_match) == 0) {
+    stop("Invalid group name")
+  } else if (length(unique(group_match$name)) != 1) {
+    stop("More than one group name found, ensure you enter a unique name")
+  } else {
+    group_guid <- unique(group_match$guid)
+  }
+} else if (group_name == "") {
+  stop("Either group_guid or group_name must be specified")
+}
+
+# For the specified content item remove the desired group
+content <- content_item(client, content_guid)
+content_delete_group(content, group_guid)
+
+# Confirm new permissions
+get_content_permissions(content)
+```
+
+:::
