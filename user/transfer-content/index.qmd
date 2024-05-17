@@ -6,7 +6,7 @@ execute:
 
 ## Description
 
-When a Connect user has been deactivated, you may want to assign all of the content they owned to a different user.
+When a Posit Connect user has been deactivated, you might want to assign all of the content they owned to a different user.
 This recipe identifies all content owned by one user and changes the owner to someone else.
 
 ## Output
