@@ -9,10 +9,10 @@ website:
         text: Home
   page-navigation: true
 
-  sidebar: 
+  sidebar:
     search: true
     collapse-level: 1
-    contents: 
+    contents:
       - section: "Server Management"
         href: server/index.qmd
         contents:
@@ -22,7 +22,7 @@ website:
         contents:
           - content/content-access-all/index.qmd
           - content/content-by-user/index.qmd
-          - content/usage/index.qmd
+          - content/content-usage/index.qmd
           - content/most-used/index.qmd
           - content/remove-all-content-users/index.qmd
       - text: "User Management"
