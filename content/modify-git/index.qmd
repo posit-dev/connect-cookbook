@@ -20,10 +20,11 @@ This recipe modifies the git repository settings for a git-backed content item, 
 There is no generated output from this recipe, however it will modify the content settings for the specified content, which will be reflected in the content Info pane in the Connect UI.
 
 ## Workflow
+
 This recipe requires the following inputs:
 
 1. The `content_guid` for the content item that you want to modify. 
-2. The git repository settings to overwrite the existing settings. Input the same value as the existing setting if is unchanged. You will specify:
+2. The git repository settings to modify from the existing settings. You may change any or all of the following:
     - `repo_url`: The URL of the git repository. 
     - `branch`: The branch of the git repository.
     - `directory`: The directory path within the repository.
@@ -32,7 +33,7 @@ This recipe requires the following inputs:
 This recipe then does the following:
 
 1. Retrieves the current git settings for the specified content item.
-2. Replaces the existing git settings with the new settings.
+2. Replaces the modified git settings with the new settings.
 
 ## Recipe
 
@@ -45,32 +46,30 @@ from posit import connect
 client = connect.Client() 
 
 ### User-defined inputs ###
-# 1. specify the guid for the content item you want to modify
+# 1. Specify the guid for the content item you want to modify
 content_guid = "INSERT_CONTENT_GUID" 
-# 2. Specify git repository URL 
-repo_url = "INSERT_REPO_URL"
-# 3. Specify branch name
-branch = "INSERT_BRANCH_NAME"
-# 4. Specify the directory path. Default is `.`
-directory = "."
-# 5. Periodically repository for updates? Default is `True`
-periodic_update = True
+# 2. Uncomment and specify any or all of the following inputs:
+# repo_url = "INSERT_REPO_URL"
+# branch = "INSERT_BRANCH_NAME"
+# directory = "."
+# periodic_update = True
 ###########################
 
-# check that periodic update is a boolean
-if not isinstance(periodic_update, bool):
-    raise ValueError("periodic_update must be a boolean True or False")
+# Retrieve current git settings for content
+data = client.get(f"/v1/content/{content_guid}/repository").json()
 
-# View current git settings for content
-client.get(f"/v1/content/{content_guid}/repository").json()
-
-# create the json payload to replace the git settings
-data = {
-    "repository": repo_url,
-    "branch": branch,
-    "directory": directory,
-    "polling": periodic_update
-}
+# update data to reflect new settings
+if "repo_url" in locals():
+    data["repository"] = repo_url
+if "branch" in locals():
+    data["branch"] = branch
+if "directory" in locals():
+    data["directory"] = directory
+if "periodic_update" in locals():
+    # check that periodic update is a boolean
+    if not isinstance(periodic_update, bool):
+        raise ValueError("periodic_update must be a boolean True or False")
+    data["polling"] = periodic_update
 
 # Update the git settings for the content. A 200 status code indicates success.
 client.put(f"/v1/content/{content_guid}/repository", json=data)
@@ -104,7 +103,7 @@ client.get(f"/v1/content/{content_guid}/repository").json()
 
 ## R
 
-```{.r}
+```{r}
 library(connectapi)
 library(glue)
 library(tibble)
@@ -114,14 +113,11 @@ client <- connect()
 ### User-defined inputs ###
 # 1. specify the guid for the content item you want to modify
 content_guid <- "INSERT_CONTENT_GUID" 
-# 2. Specify git repository URL 
-repo_url <- "INSERT_REPO_URL"
-# 3. Specify branch name
-branch <- "INSERT_BRANCH_NAME"
-# 4. Specify the directory path. Default is `.`
-directory = "."
-# 5. Periodically repository for updates? Default is `TRUE`
-periodic_update <- TRUE
+# 2. Uncomment and specify any or all of the following inputs:
+# repo_url <- "INSERT_REPO_URL"
+# branch <- "INSERT_BRANCH_NAME"
+# directory <- "."
+# periodic_update <- TRUE
 ###########################
 
 # check that periodic update is a boolean
@@ -129,16 +125,23 @@ if (!is.logical(periodic_update)) {
   stop("periodic_update must be a boolean TRUE or FALSE")
 }
 
-# View current git settings for content
-client$GET(glue::glue("/v1/content/{content_guid}/repository")) |> as_tibble()
+# Retrieve current git settings for content
+data <- client$GET(glue::glue("/v1/content/{content_guid}/repository")) 
 
-# create the json payload to replace the git settings
-data <- list(
-  repository = repo_url,
-  branch = branch,
-  directory = directory,
-  polling = periodic_update
-)
+# update data to reflect new settings
+if (exists("repo_url")) {
+  data$repository <- repo_url
+}
+if (exists("branch")) {
+  data$branch <- branch
+}
+if (exists("directory")) {
+  data$directory <- directory
+}
+if (exists("periodic_update")) {
+  if (!is.logical(periodic_update)) {stop("periodic_update must be a boolean TRUE or FALSE")}
+  data$polling <- periodic_update
+}
 
 # Update and view the git settings for the content.
 client$PUT(glue::glue("/v1/content/{content_guid}/repository"), body=data) |> as_tibble()
