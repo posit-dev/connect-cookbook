@@ -52,7 +52,6 @@ content = (pl.DataFrame(df_content, infer_schema_length=None)
 shape: (3, 2)
             run_as	count
                str	  u32
-         "default"	  121
   "sa-engineering"	    8
       "sa-finance"	    3
 "RunAsCurrentUser"	    1
@@ -85,7 +84,6 @@ content |>
 ```
   run_as            count
   <chr>             <int>
-1 default             121
 2 sa-engineering        8
 3 sa-finance            3
 4 RunAsCurrentUser      1
