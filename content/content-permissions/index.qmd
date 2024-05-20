@@ -33,7 +33,7 @@ In this example, we grant a user access to a content item.
 This receipe requires the following inputs:
 
 1. The `content_guid` for the content item from which you want to add permissions.
-2. The `user_guid` for the user being granted access.
+2. Either the `user_guid` or `user_name` for the user being granted access. The `user_name` is used if `user_guid` is blank.
 3. The `access_type` which determines the type of permissions the user receives. Valid values are "viewer" and "owner" (collaborator).
 
 :::{.panel-tabset group="language"}
@@ -46,13 +46,26 @@ from posit import connect
 ### User-defined inputs ###
 # 1. specify the guid for the content item
 content_guid = "CONTENT_GUID_HERE"
-# 2. specify the guid for the user to be added
-user_guid = "USER_GUID_HERE"
+# 2. specify either the guid or name for the user being added (user_name will be used if user_guid is blank)
+user_guid = ""
+user_name = "USER_NAME_HERE"
 # 3. specify if the user should be added as a "viewer" or "owner" (collaborator)
 access_type = "viewer"
 ############################
 
-client = connect.Client() 
+client = connect.Client()
+
+# search by user_name to find the user_guid if blank
+if not user_guid and user_name:
+    user_match = client.users.find(prefix=user_name)
+    if not user_match:
+        raise Exception("Invalid user name")
+    elif len(user_match) != 1:
+        raise Exception("More than one user name found, ensure you enter a unique name")
+    else:
+        user_guid = user_match[0]["guid"]
+elif not user_name: 
+    raise Exception("Either user_guid or user_name must be specified")
 
 # For the specified content item add the desired user
 client.content.get(content_guid).permissions.create(
@@ -73,13 +86,28 @@ library(connectapi)
 ### User-defined inputs ###
 # 1. specify the guid for the content item
 content_guid = "CONTENT_GUID_HERE"
-# 2. specify the guid for the user to be added
-user_guid = "USER_GUID_HERE"
+# 2. specify either the guid or name for the user being added (user_name will be used if user_guid is blank)
+user_guid = ""
+user_name = "USER_NAME_HERE"
 # 3. specify if the user should be added as a "viewer" or "owner" (collaborator)
 access_type = "viewer"
 ############################
 
 client <- connect()
+
+# search by user_name to find the user_guid if blank
+if (user_guid == "" && user_name != "") {
+  user_match <- get_users(client, prefix = user_name)
+  if (nrow(user_match) == 0) {
+    stop("Invalid user name")
+  } else if (length(unique(user_match$username)) != 1) {
+    stop("More than one user name found, ensure you enter a unique name")
+  } else {
+    user_guid <- unique(user_match$guid)
+  }
+} else if (user_name == "") {
+  stop("Either user_guid or user_name must be specified")
+}
 
 # For the specified content item add the desired user
 content <- content_item(client, content_guid)
@@ -98,7 +126,7 @@ In this example, we revoke a user's access from a content item.
 This receipe requires the following inputs:
 
 1. The `content_guid` for the content item from which you want to remove permissions.
-2. The `user_guid` for the user whose access is being revoked.
+2. Either the `user_guid` or `user_name` for the user whose access is being revoked. The `user_name` is used if `user_guid` is blank.
 
 :::{.panel-tabset group="language"}
 
@@ -110,11 +138,24 @@ from posit import connect
 ### User-defined inputs ###
 # 1. specify the guid for the content item
 content_guid = "CONTENT_GUID_HERE"
-# 2. specify the guid for the user to be removed
-user_guid = "USER_GUID_HERE"
+# 2. specify either the guid or name for the user being removed (user_name will be used if user_guid is blank)
+user_guid = ""
+user_name = "USER_NAME_HERE"
 ############################
 
-client = connect.Client() 
+client = connect.Client()
+
+# search by user_name to find the user_guid if blank
+if not user_guid and user_name:
+    user_match = client.users.find(prefix=user_name)
+    if not user_match:
+        raise Exception("Invalid user name")
+    elif len(user_match) != 1:
+        raise Exception("More than one user name found, ensure you enter a unique name")
+    else:
+        user_guid = user_match[0]["guid"]
+elif not user_name: 
+    raise Exception("Either user_guid or user_name must be specified")
 
 # For the specified content item remove the desired user
 for perm in client.content.get(content_guid).permissions.find():
@@ -133,11 +174,26 @@ library(connectapi)
 ### User-defined inputs ###
 # 1. specify the guid for the content item
 content_guid = "CONTENT_GUID_HERE"
-# 2. specify the guid for the user to be removed
-user_guid = "USER_GUID_HERE"
+# 2. specify either the guid or name for the user being removed (user_name will be used if user_guid is blank)
+user_guid = ""
+user_name = "USER_NAME_HERE"
 ############################
 
 client <- connect()
+
+# search by user_name to find the user_guid if blank
+if (user_guid == "" && user_name != "") {
+  user_match <- get_users(client, prefix = user_name)
+  if (nrow(user_match) == 0) {
+    stop("Invalid user name")
+  } else if (length(unique(user_match$username)) != 1) {
+    stop("More than one user name found, ensure you enter a unique name")
+  } else {
+    user_guid <- unique(user_match$guid)
+  }
+} else if (user_name == "") {
+  stop("Either user_guid or user_name must be specified")
+}
 
 # For the specified content item remove the desired user
 content <- content_item(client, content_guid)
@@ -218,6 +274,7 @@ access_type = "viewer"
 
 client <- connect()
 
+# search by group_name to find the group_guid if blank
 if (group_guid == "" && group_name != "") {
   group_match <- get_groups(client, prefix = group_name)
   if (nrow(group_match) == 0) {
@@ -304,6 +361,7 @@ group_name = "GROUP_NAME_HERE"
 
 client <- connect()
 
+# search by group_name to find the group_guid if blank
 if (group_guid == "" && group_name != "") {
   group_match <- get_groups(client, prefix = group_name)
   if (nrow(group_match) == 0) {
