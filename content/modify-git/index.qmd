@@ -25,10 +25,10 @@ This recipe requires the following inputs:
 
 1. The `content_guid` for the content item that you want to modify. 
 2. The git repository settings to modify from the existing settings. You may change any or all of the following:
-    - `repo_url`: The URL of the git repository. 
+    - `repository`: The URL of the git repository. 
     - `branch`: The branch of the git repository.
     - `directory`: The directory path within the repository.
-    - `periodic_update`: A boolean indicating whether the repository should be periodically polled for updates.
+    - `polling`: A boolean TRUE/FALSE indicating whether the repository should be periodically polled for updates.
 
 This recipe then does the following:
 
@@ -48,28 +48,19 @@ client = connect.Client()
 ### User-defined inputs ###
 # 1. Specify the guid for the content item you want to modify
 content_guid = "INSERT_CONTENT_GUID" 
-# 2. Uncomment and specify any or all of the following inputs:
-# repo_url = "INSERT_REPO_URL"
-# branch = "INSERT_BRANCH_NAME"
-# directory = "."
-# periodic_update = True
+# 2. Below in the code, find the section titled "Update data to reflect new settings." 
+# Uncomment the line(s) that correspond to the settings you want to change and specify the value(s)
 ###########################
 
 # Retrieve current git settings for content
 data = client.get(f"/v1/content/{content_guid}/repository").json()
 
-# update data to reflect new settings
-if "repo_url" in locals():
-    data["repository"] = repo_url
-if "branch" in locals():
-    data["branch"] = branch
-if "directory" in locals():
-    data["directory"] = directory
-if "periodic_update" in locals():
-    # check that periodic update is a boolean
-    if not isinstance(periodic_update, bool):
-        raise ValueError("periodic_update must be a boolean True or False")
-    data["polling"] = periodic_update
+# Update data to reflect new settings. 
+# Uncomment the line(s) below for the settings you want to change and specify the value(s).
+# data["repository"] = "https://example.gitrepository.com/my-repo.git"
+# data["branch"] = "branch-name"
+# data["directory"] = "."
+# data["polling"] = "True|False"
 
 # Update the git settings for the content. A 200 status code indicates success.
 client.put(f"/v1/content/{content_guid}/repository", json=data)
@@ -103,7 +94,7 @@ client.get(f"/v1/content/{content_guid}/repository").json()
 
 ## R
 
-```{r}
+```{.r}
 library(connectapi)
 library(glue)
 library(tibble)
@@ -113,39 +104,22 @@ client <- connect()
 ### User-defined inputs ###
 # 1. specify the guid for the content item you want to modify
 content_guid <- "INSERT_CONTENT_GUID" 
-# 2. Uncomment and specify any or all of the following inputs:
-# repo_url <- "INSERT_REPO_URL"
-# branch <- "INSERT_BRANCH_NAME"
-# directory <- "."
-# periodic_update <- TRUE
+# 2. Below in the code, find the section titled "Update data to reflect new settings." 
+# Uncomment the line(s) that correspond to the settings you want to change and specify the value(s)
 ###########################
-
-# check that periodic update is a boolean
-if (!is.logical(periodic_update)) {
-  stop("periodic_update must be a boolean TRUE or FALSE")
-}
 
 # Retrieve current git settings for content
 data <- client$GET(glue::glue("/v1/content/{content_guid}/repository")) 
 
-# update data to reflect new settings
-if (exists("repo_url")) {
-  data$repository <- repo_url
-}
-if (exists("branch")) {
-  data$branch <- branch
-}
-if (exists("directory")) {
-  data$directory <- directory
-}
-if (exists("periodic_update")) {
-  if (!is.logical(periodic_update)) {stop("periodic_update must be a boolean TRUE or FALSE")}
-  data$polling <- periodic_update
-}
+# Update data to reflect new settings. 
+# Uncomment the line(s) below for the settings you want to change and specify the value(s).
+# data$repository <- "https://example.gitrepository.com/my-repo.git"
+# data$branch <- "branch-name"
+# data$directory <- "."
+# data$polling <- "TRUE|FALSE"
 
 # Update and view the git settings for the content.
 client$PUT(glue::glue("/v1/content/{content_guid}/repository"), body=data) |> as_tibble()
-
 
 ```
 
