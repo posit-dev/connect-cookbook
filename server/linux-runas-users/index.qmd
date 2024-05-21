@@ -1,0 +1,175 @@
+---
+title: Identify RunAsCurrentUser / RunAs Linux Accounts In Use
+execute: 
+  eval: false
+---
+
+## Description 
+
+This recipe details the number of content items deployed to a Posit Connect server that have been configured to use either [`RunAsCurrentUser`](https://docs.posit.co/connect/admin/process-management/#runas-current) or a custom [`RunAs`](https://docs.posit.co/connect/admin/process-management/#runas) Linux account. It also provides a means for listing all content run by a particular `RunAs` account or as the Current User.
+
+This may be useful when auditing the server in preparation for a migration, to understand which accounts need to be replicated in the new environment. It is also generally helpful to understand if content on the server has specific run-time requirements.
+
+## Output
+
+The first recipe generates a table listing how many content items on the server run as either `RunAsCurrentUser` or a custom  Linux `RunAs` user. The second recipe lists all content run by a specified `RunAs` account or set to `RunAsCurrentUser`.
+
+## Workflow
+
+Two independent, but related recipes are provided below: 
+
+1. List the number of content items configured to use `RunAsCurrentUser` or a custom `RunAs` account.
+2. List all content items using `RunAsCurrentUser` or a specific `RunAs` account.
+
+## Recipe: List the number of content items configured to use `RunAsCurrentUser` or a custom `RunAs` account
+
+:::{.panel-tabset group="language"}
+
+## Python
+
+```{.python}
+from posit import connect
+import polars as pl
+
+client = connect.Client() 
+
+df_content = client.content.find()
+content = (pl.DataFrame(df_content, infer_schema_length=None)  
+    # combine RunAsCurrentUser and RunAs into a single column
+           .with_columns(pl.when(pl.col("run_as_current_user") == "true")
+           .then(pl.lit("RunAsCurrentUser"))
+           .otherwise(pl.col("run_as")).alias("run_as"))
+    # Remove NULL (content items run as the default account appear as NULL)
+    .filter(pl.col("run_as").is_not_null())
+    .group_by("run_as").count()
+    .sort("count", descending=True)
+    )
+
+```
+### Example output
+
+```
+shape: (3, 2)
+            run_as	count
+               str	  u32
+  "sa-engineering"	    8
+      "sa-finance"	    3
+"RunAsCurrentUser"	    1
+
+```
+
+## R
+
+```{.r}
+library(connectapi)
+library(dplyr)
+
+client <- connect()
+
+content <- get_content(client)
+
+content |> 
+  # combine RunAsCurrentUser and RunAs into a single column
+  mutate(run_as = if_else(run_as_current_user, "RunAsCurrentUser", run_as)) |> 
+  # Remove NA (content items run as the default account appear as NA)
+  filter(!is.na(run_as)) |> 
+  group_by(run_as) |> 
+  summarise(count = n()) |> 
+  arrange(desc(count))
+
+```
+
+### Example output
+
+```
+  run_as            count
+  <chr>             <int>
+2 sa-engineering        8
+3 sa-finance            3
+4 RunAsCurrentUser      1
+```
+
+:::
+
+## Recipe: List all content items using `RunAsCurrentUser` or a specific `RunAs` account
+
+:::{.panel-tabset group="language"}
+
+## Python
+
+```{.python}
+from posit import connect
+import polars as pl
+
+### User-defined inputs ###
+# 1. specify the Linux account or "RunAsCurrentUser"
+run_as = "INSERT_LINUX_ACCOUNT_NAME" 
+############################
+
+client = connect.Client() 
+
+df_content = client.content.find()
+(pl.DataFrame(df_content, infer_schema_length=None)  
+    # combine RunAsCurrentUser and RunAs into a single column
+           .with_columns(pl.when(pl.col("run_as_current_user") == "true")
+           .then(pl.lit("RunAsCurrentUser"))
+           .otherwise(pl.col("run_as")).alias("run_as"))
+    # `owner` is a dict of attributes, let's pull out the owner's username
+          .with_columns(pl.col("owner").map_elements(lambda x: x["username"], return_dtype=pl.String).alias("owner_username"))
+    # filter and select relevant columns
+          .filter(pl.col("run_as") == run_as)
+          .select(["guid", "run_as", "title", "owner_username", "dashboard_url"])
+)
+
+
+```
+
+### Example output
+
+```
+shape: (3, 5)
+
+            guid	      run_as	                          title	 owner_username	     dashboard_url
+             str	         str	                            str	            str	               str
+"95fcb004-4fc7-…	"sa-finance"	   "Loan Risk Prediction Model"	     "publisher1"	 "https://connect…
+"be1a08f1-b41a-…	"sa-finance"	"Evaluation Analysis Dashboard"	     "publisher3"	 "https://connect…
+"75a340d8-1454-…	"sa-finance"	                "Loan Risk API"	     "publisher3"	 "https://connect…
+
+```
+
+## R
+
+```{r}
+library(connectapi)
+library(dplyr)
+library(tidyr)
+
+### User-defined inputs ###
+# 1. specify the Linux account or "RunAsCurrentUser"
+run_as <- "INSERT_LINUX_ACCOUNT_NAME" 
+############################
+
+client <- connect()
+
+get_content(client) |> 
+  # combine RunAsCurrentUser and RunAs into a single column
+  mutate(run_as = case_when(run_as_current_user == TRUE ~ "RunAsCurrentUser", .default = run_as)) |> 
+  # `owner` is a list of attributes, let's pull out the owner's username
+  hoist(owner, owner_username = "username") |> 
+  filter(run_as == !!run_as) |>
+  select(guid, run_as, title, owner_username, dashboard_url)
+```
+
+### Example output
+
+```
+# A tibble: 3 × 5
+  guid             run_as      title                           owner_username dashboard_url                     
+  <chr>            <chr>       <chr>                           <chr>          <chr>                             
+1 95fcb004-4fc7-…  sa-finance  Loan Risk Prediction Model      publisher1     https://connect…
+2 be1a08f1-b41a-…  sa-finance  Evaluation Analysis Dashboard   publisher3     https://connect…
+3 75a340d8-1454-…  sa-finance  Loan Risk API                   publisher3     https://connect…
+```
+
+:::
+
