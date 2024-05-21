@@ -60,7 +60,7 @@ data = client.get(f"/v1/content/{content_guid}/repository").json()
 # data["repository"] = "https://example.gitrepository.com/my-repo.git"
 # data["branch"] = "branch-name"
 # data["directory"] = "."
-# data["polling"] = "True|False"
+# data["polling"] = True
 
 # Update the git settings for the content. A 200 status code indicates success.
 client.put(f"/v1/content/{content_guid}/repository", json=data)
