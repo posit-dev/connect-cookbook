@@ -70,7 +70,7 @@ content <- get_content(client)
 
 content |> 
   # combine RunAsCurrentUser and RunAs into a single column
-  mutate(run_as = case_when(run_as_current_user == TRUE ~ "RunAsCurrentUser", .default = run_as)) |> 
+  mutate(run_as = if_else(run_as_current_user, "RunAsCurrentUser", run_as)) |> 
   # Remove NA (content items run as the default account appear as NA)
   filter(!is.na(run_as)) |> 
   group_by(run_as) |> 
