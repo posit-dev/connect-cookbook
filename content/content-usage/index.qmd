@@ -76,7 +76,7 @@ df = client.metrics.usage.find(
     start=report_from.strftime("%Y-%m-%dT%H:%M:%SZ"),
     end=as_of_date.strftime("%Y-%m-%dT%H:%M:%SZ"))
     
-usage = (pl.DataFrame(df, infer_schema_length=len(df))
+usage = (pl.DataFrame(df, infer_schema_length=None)
         .with_columns(pl.col("started").str.to_datetime("%Y-%m-%dT%H:%M:%SZ"))
         .with_columns(pl.col("started").cast(pl.Date).alias("day")))
 

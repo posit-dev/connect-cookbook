@@ -46,7 +46,7 @@ client = connect.Client()
 
 ### Retrieve content details and select relevant columns
 df_content = client.content.find()
-content_info = (pl.DataFrame(df_content, infer_schema_length=len(df_content))
+content_info = (pl.DataFrame(df_content, infer_schema_length=None)
                 # unnest struct column "owner" to get owner username
                 .with_columns(pl.col("owner").map_elements(lambda x: x["username"], return_dtype=pl.String).alias("owner_username"))
                 # select relevant columns
@@ -58,7 +58,7 @@ df = client.metrics.usage.find(
     start=report_from.strftime("%Y-%m-%dT%H:%M:%SZ"),
     end=as_of_date.strftime("%Y-%m-%dT%H:%M:%SZ"))
     
-usage = (pl.DataFrame(df, infer_schema_length=len(df))
+usage = (pl.DataFrame(df, infer_schema_length=None)
         .with_columns(pl.col("started").str.to_datetime("%Y-%m-%dT%H:%M:%SZ"))
         .with_columns(pl.col("started").cast(pl.Date).alias("day"))
         .select(["content_guid", "user_guid", "day"])
