@@ -22,7 +22,7 @@ This recipe requires the following inputs:
     - `none`: Do not send an email.
     - `me`: Send an email to the user who triggered the rendering (as identified by the API key in use).
     - `collaborators`: Send an email to the collaborators on the content item.
-    - `collaboratorss_viewers`: Send an email to the collaborators and viewers on the content item.
+    - `collaborators_viewers`: Send an email to the collaborators and viewers on the content item.
 
 ::: {.callout-note title="How to determine the content variant key" collapse="true"}
 Often, content items only have one variant, in which case, specifying "default" for this recipe is sufficient. If your content item has multiple variants saved, you can find the content variant key by running the following code and looking for the `key` value in the output:
