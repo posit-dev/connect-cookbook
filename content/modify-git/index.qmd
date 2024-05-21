@@ -116,7 +116,7 @@ data <- client$GET(glue::glue("/v1/content/{content_guid}/repository"))
 # data$repository <- "https://example.gitrepository.com/my-repo.git"
 # data$branch <- "branch-name"
 # data$directory <- "."
-# data$polling <- "TRUE|FALSE"
+# data$polling <- TRUE
 
 # Update and view the git settings for the content.
 client$PUT(glue::glue("/v1/content/{content_guid}/repository"), body=data) |> as_tibble()
