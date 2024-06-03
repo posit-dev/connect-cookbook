@@ -8,6 +8,8 @@ execute:
 
 This recipe explains how to re-render content programmatically, on demand. Rendered content includes R Markdown, Jupyter notebooks, and Quarto. This can be helpful when you want to trigger a report to re-render and the time-based content scheduling options of Connect are not a good fit. 
 
+This recipe can be incorporated into another script to create a workflow where a report rendering is dependent upon the timing or output of the previous report. This permits greater flexibility in scheduling and pipeline creation.
+
 ## Output
 
 This recipe triggers a rendering of a content variant on the Connect server. Optionally, you can also have Connect send an email of the rendered content once it is complete.
@@ -77,12 +79,12 @@ from posit import connect
 
 ### User-defined inputs ###
 # 1. Specify the content guid for the item to be re-rendered
-# content_guid = "SPECIFY CONTENT GUID"
+content_guid = "SPECIFY CONTENT GUID"
 
 # 2. Specify the variant key of the content to re-render. This is only relevant if the content item is parameterized and has multiple variants saved. Otherwise, "default" is the only variant.
 variant_key = "default"
 
-# 3. Send an email after the content renders? Options are: ( "none" | "me" | "collabs" | "collabs_viewers" )
+# 3. Send an email after the content renders? Options are: ( "none" | "me" | "collaborators" | "collaborators_viewers" )
 recipients =  "me"
 ###########################
 
@@ -104,14 +106,16 @@ content = client.content.get(content_guid)
 # Select the variant to render
 content_variants = client.get(f"/applications/{content_guid}/variants").json()
 if variant_key == "default":
-    content_variant = next((variant["id"] for variant in content_variants if variant["is_default"]), None)
-    variant_key = next((variant["key"] for variant in content_variants if variant["is_default"]), None)
+    default_variant = next((variant for variant in content_variants if variant["is_default"]), None)
+    content_variant = default_variant["id"]
+    variant_key = default_variant["key"]
 else:
     content_variant = next((variant["id"] for variant in content_variants if variant["key"] == variant_key), None)    
 
 # trigger the variant to render and wait for it to complete
-response = client.post(f"/variants/{content_variant}/render?email=none&activate=true",
-data={"email":"none", "activate":"true"})
+post_body = {"email": "none", "activate": "true"}
+post_url = f"/variants/{content_variant}/render"
+response = client.post(post_url, params=post_body, data=post_body)
 
 result = response.json()
 task = client.tasks.get(result["id"])
@@ -123,16 +127,16 @@ if recipients != "none":
     # get new list of content variants and identify new variant rendering id
     content_variants = client.get(f"/applications/{content_guid}/variants").json()
     rendering_id = next((variant["rendering_id"] for variant in content_variants if variant["key"] == variant_key), None)
+    post_url = f"variants/{content_variant}/sender"
+    post_body = {"email": recipients, "rendering_id": rendering_id}
     # send email
-    client.post(f"variants/{content_variant}/sender?email={recipients}&rendering_id={rendering_id}", 
-    data={"email": recipients,
-    "rendering_id": rendering_id})
+    client.post(post_url, params=post_body, data=post_body)
 
 ```
 
 ## R
 
-```{r}
+```{.r}
 library(connectapi)
 
 ### User-defined inputs ###
@@ -173,7 +177,9 @@ if(variant_key == "default"){
 }
 
 # trigger the variant to render
-poll_task(variant_render(content_variant))
+content_variant |>
+  variant_render() |>
+  poll_task()
 
 
 # send email of rendered content, if applicable
@@ -181,18 +187,10 @@ if(recipients != "none"){
   # get updated list of content variants and identify new variant rendering id
   content_variant <- get_variant(content, variant_key)
   rendering_id <- content_variant$variant$rendering_id
+  post_url <- glue::glue("variants/{content_variant$variant$id}/sender")  
+  post_body <- list(email = recipients, rendering_id = rendering_id)  
   # send email
-  client$POST(
-    glue::glue("variants/{content_variant$variant$id}/sender"),
-    query = list(
-      email = recipients,
-      rendering_id = rendering_id
-    ),
-    body = list(
-      email = recipients,
-      rendering_id = rendering_id
-    )
-  )
+  client$POST(post_url, query = post_body, body = post_body)  
 }
 
 
@@ -203,8 +201,3 @@ if(recipients != "none"){
 ### Example output
 
 There is no output from this code block however, renderings are visible in the Connect dashboard [Report History](https://docs.posit.co/connect/user/report-history/). If an email is sent, the recipient(s) receive an email with the rendered content.
-
-
-## Extending the recipe
-
-This recipe can be incorporated into another script to create a workflow where a report rendering is dependent upon the timing or output of the previous report. This permits greater flexibility in scheduling and pipeline creation.
