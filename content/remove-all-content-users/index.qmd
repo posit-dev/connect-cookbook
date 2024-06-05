@@ -1,12 +1,12 @@
 ---
 title: Remove all viewers from a content item
-execute: 
+execute:
   eval: false
 ---
 
 ## Description
 
-This recipe removes all viewers, or optionally, all viewers and collaborators, from a piece of content. Additionally, if the access type is either "all" or "logged_in", this is changed to "acl" to ensure that only the owner, and optionally, collaborators, have access. 
+This recipe removes all viewers, or optionally, all viewers and collaborators, from a piece of content. Additionally, if the access type is either "all" or "logged_in", this is changed to "acl" to ensure that only the owner, and optionally, collaborators, have access.
 
 This recipe is useful when you want to take bulk action to restrict access to content.
 
@@ -16,14 +16,14 @@ There is no generated output from this recipe, however the permissions for the s
 
 ## Workflow
 
-This recipe requires the following inputs: 
+This recipe requires the following inputs:
 
 1. The `content_guid` for the content item from which you want to alter permissions.
 2. Optionally, a boolean value for `also_remove_collabs`. If set to `True`, all collaborators will also be removed from the content item, leaving only the publisher. If set to `False`, only viewers will be removed.
 
 This recipe then does the following:
 1. Removes all viewers (or optionally all viewers and collaborators) from a piece of content.
-2. Modifies the access settings to ensure only the owner, and optionally, collaborators, have access. 
+2. Modifies the access settings to ensure only the owner, and optionally, collaborators, have access.
 
 ## Recipe
 
@@ -33,7 +33,7 @@ This recipe then does the following:
 ```{python}
 from posit import connect
 
-### User-defined inputs ###
+#### User-defined inputs ####
 # 1. specify the guid for the content
 content_guid = "INSERT_CONTENT_GUID"
 
@@ -47,7 +47,7 @@ if type(also_remove_collabs) != bool:
     also_remove_collabs = False
 
 
-client = connect.Client() 
+client = connect.Client()
 
 # For the specified content item, iteratively adjust permissions.
 for perm in client.content.get(content_guid).permissions.find():
@@ -74,7 +74,7 @@ if access_type != "acl":
 library(connectapi)
 library(purrr)
 
-### User-defined inputs ###
+#### User-defined inputs ####
 # 1. specify the guid for the content
 content_guid <- "INSERT_CONTENT_GUID"
 
@@ -143,4 +143,4 @@ After removing permissions:
 
 :::
 
-:::: 
+::::

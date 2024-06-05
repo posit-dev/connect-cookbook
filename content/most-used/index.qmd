@@ -1,20 +1,20 @@
 ---
-title: Identify most used content on Connect 
-execute: 
+title: Identify most used content on Connect
+execute:
   eval: false
 ---
 
 ## Description
-This recipe identifies the most used content deployed on the Connect server, the users with the highest viewing history, and the publishers with the most content usage during the selected time period. 
+This recipe identifies the most used content deployed on the Connect server, the users with the highest viewing history, and the publishers with the most content usage during the selected time period.
 
 This recipe is useful for overall usage analysis, and can identify the content and users that would be most impacted by changes to the server or content.
 
 ::: {.callout-note}
 Note that if your Connect version is prior to 2023.10, content usage for Plumber, Voila, Streamlit, Dash, and Bokeh were over-counted in instrumentation metrics. Metrics collected after upgrading to version 2023.10 or greater are accurate.
-::: 
+:::
 
 ## Output
-This recipe yields: 
+This recipe yields:
 - A dataframe with historical content usage of all content on the server during a period
 - A dataframe with top N content usage during a period
 - A dataframe with top N content viewers during a period
@@ -26,9 +26,9 @@ This recipe requires the following inputs:
 1. The desired timeframe for the report, defined by:
   - the `as_of_date`
   - the number of `days_back` from the `as_of_date` to include in the report
-2. The number of top N items and users include in the report, defined by `top_n`. 
+2. The number of top N items and users include in the report, defined by `top_n`.
 
-## Recipe 
+## Recipe
 
 ### Identify top N most used content
 
@@ -36,7 +36,7 @@ The code sample below yields the top N content items, based on usage over a sele
 
 :::{.panel-tabset group="language"}
 
-## Python 
+## Python
 
 ```{python}
 from posit import connect
@@ -44,18 +44,18 @@ from datetime import date, timedelta
 import polars as pl
 import numpy as np
 
-### User-defined inputs ###
+#### User-defined inputs ####
 # 1. Specify timeframe for the report. Default is 90 days prior to today
 as_of_date = date.today()
 days_back = 90
 
-# 2. Specify the number of content items and users to report as the Top N pieces of content, users, and publishers. Default is to show the `top_n=20`.  
+# 2. Specify the number of content items and users to report as the Top N pieces of content, users, and publishers. Default is to show the `top_n=20`.
 top_n = 20
 ###########################
 
 report_from = as_of_date - timedelta(days=days_back)
 
-client = connect.Client() 
+client = connect.Client()
 
 # Retrieve content details and select relevant columns
 df_content = client.content.find()
@@ -70,7 +70,7 @@ content_info = (pl.DataFrame(df_content, infer_schema_length=None)
 df = client.metrics.usage.find(
     start=report_from.strftime("%Y-%m-%dT%H:%M:%SZ"),
     end=as_of_date.strftime("%Y-%m-%dT%H:%M:%SZ"))
-    
+
 usage = (pl.DataFrame(df, infer_schema_length=None)
         .with_columns(pl.col("started").str.to_datetime("%Y-%m-%dT%H:%M:%SZ"))
         .with_columns(pl.col("started").cast(pl.Date).alias("day"))
@@ -109,12 +109,12 @@ library(connectapi)
 library(dplyr)
 library(lubridate)
 
-### User-defined inputs ###
+#### User-defined inputs ####
 # 1. Specify timeframe for the report. Default is 90 days prior to today
 as_of_date <- today()
 days_back <- 90
 
-# 2. Specify the number of content items to report as the Top N pieces of content. Default is to show the `top_n <- 20` pieces of content. 
+# 2. Specify the number of content items to report as the Top N pieces of content. Default is to show the `top_n <- 20` pieces of content.
 top_n <- 20
 ############################
 
@@ -123,8 +123,8 @@ report_from <- as_of_date - ddays(days_back)
 client <- connect()
 
 # Retrieve content details and select relevant columns
-content_info <- connectapi::get_content(client) |> 
-  hoist(owner, owner_username = "username") |> 
+content_info <- connectapi::get_content(client) |>
+  hoist(owner, owner_username = "username") |>
   select(guid, name, title, owner_username, dashboard_url)
 
 
@@ -139,25 +139,25 @@ usage_non_shiny <- get_usage_static(client,
     from = report_from,
     to = as_of_date,
     limit = Inf
-  ) |> 
-    rename(started = time) |> 
-    mutate(ended = started) 
+  ) |>
+    rename(started = time) |>
+    mutate(ended = started)
 
 
-usage <- bind_rows(usage_shiny, usage_non_shiny) |> 
+usage <- bind_rows(usage_shiny, usage_non_shiny) |>
   mutate(day = as.Date(started)) |>
-  select(content_guid, user_guid, day) |> 
+  select(content_guid, user_guid, day) |>
   # filter out any content items that may have been deleted
   filter(content_guid %in% content_info$guid)
 
-top_n_content <- usage |> 
-  group_by(content_guid) |> 
-  summarise(tot_usage = n()) |> 
-  arrange(desc(tot_usage)) |> 
-  head(top_n) |> 
-  left_join(content_info, by = c(content_guid = "guid")) |> 
+top_n_content <- usage |>
+  group_by(content_guid) |>
+  summarise(tot_usage = n()) |>
+  arrange(desc(tot_usage)) |>
+  head(top_n) |>
+  left_join(content_info, by = c(content_guid = "guid")) |>
   # if title is NA then substitute with name
-  mutate(title = coalesce(title, name)) 
+  mutate(title = coalesce(title, name))
 
 ```
 
@@ -195,7 +195,7 @@ user_content_hits = (
   .group_by("user_guid")
   .head(1)
   # if user_guid is null then replace with "anonymous"
-  .with_columns(pl.coalesce(pl.col("user_guid"), pl.lit("anonymous")).alias("user_guid")) 
+  .with_columns(pl.coalesce(pl.col("user_guid"), pl.lit("anonymous")).alias("user_guid"))
 )
 
 # make a table of a user's total usage of all content
@@ -203,7 +203,7 @@ user_tot_usage = (
   usage.group_by("user_guid")
   .agg(pl.len().alias("users_tot_usage"))
   # if user_guid is null then replace with "anonymous"
-  .with_columns(pl.coalesce(pl.col("user_guid"), pl.lit("anonymous")).alias("user_guid")) 
+  .with_columns(pl.coalesce(pl.col("user_guid"), pl.lit("anonymous")).alias("user_guid"))
 )
 
 top_n_users = (
@@ -215,7 +215,7 @@ top_n_users = (
   .head(top_n)
   .join(all_users, left_on="user_guid", right_on="user_guid", how="left")
   # if username is null then replace with "anonymous"
-  .with_columns(pl.coalesce(pl.col("username"), pl.lit("anonymous")).alias("username")) 
+  .with_columns(pl.coalesce(pl.col("username"), pl.lit("anonymous")).alias("username"))
   .join(content_info, left_on="content_guid", right_on="guid", how="left")
   # if title is null then replace with name column
   .with_columns(pl.coalesce(pl.col("title"), pl.col("name")).alias("title"))

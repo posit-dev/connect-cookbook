@@ -1,10 +1,10 @@
 ---
 title: Title
-execute: 
+execute:
   eval: false
 ---
 
-## Description 
+## Description
 
 When would you use this recipe?
 
@@ -15,7 +15,7 @@ e.g. "This recipe generates a data frame of ..." or "There is no generated outpu
 ## Workflow
 This recipe requires the following inputs:
 
-1. 
+1.
 
 This recipe then does the following:
 
@@ -33,15 +33,15 @@ This recipe then does the following:
 # Note to recipe writer: use this for making the connection
 
 from posit import connect
-client = connect.Client() 
+client = connect.Client()
 
 # Note to recipe writer: if user input is required, use this format:
 
-### User-defined inputs ###
+#### User-defined inputs ####
 # 1. Specify xyz. Any clarifying text and what the default value is (if any).
-xyz = 
-# 2. Specify abc. Any clarifying text and what the default value is (if any).  
-abc = 
+xyz =
+# 2. Specify abc. Any clarifying text and what the default value is (if any).
+abc =
 ###########################
 
 ```
@@ -59,11 +59,11 @@ client <- connect()
 
 # Note to recipe writer: if user input is required, use this format:
 
-### User-defined inputs ###
+#### User-defined inputs ####
 # 1. Specify xyz. Any clarifying text and what the default value is (if any).
-xyz <- 
-# 2. Specify abc. Any clarifying text and what the default value is (if any).  
-abc <- 
+xyz <-
+# 2. Specify abc. Any clarifying text and what the default value is (if any).
+abc <-
 ###########################
 
 ```

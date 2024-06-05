@@ -1,10 +1,10 @@
 ---
 title: Identify RunAsCurrentUser / RunAs Linux Accounts In Use
-execute: 
+execute:
   eval: false
 ---
 
-## Description 
+## Description
 
 This recipe details the number of content items deployed to a Posit Connect server that have been configured to use either [`RunAsCurrentUser`](https://docs.posit.co/connect/admin/process-management/#runas-current) or a custom [`RunAs`](https://docs.posit.co/connect/admin/process-management/#runas) Linux account. It also provides a means for listing all content run by a particular `RunAs` account or as the Current User.
 
@@ -16,7 +16,7 @@ The first recipe generates a table listing how many content items on the server 
 
 ## Workflow
 
-Two independent, but related recipes are provided below: 
+Two independent, but related recipes are provided below:
 
 1. List the number of content items configured to use `RunAsCurrentUser` or a custom `RunAs` account.
 2. List all content items using `RunAsCurrentUser` or a specific `RunAs` account.
@@ -31,10 +31,10 @@ Two independent, but related recipes are provided below:
 from posit import connect
 import polars as pl
 
-client = connect.Client() 
+client = connect.Client()
 
 df_content = client.content.find()
-content = (pl.DataFrame(df_content, infer_schema_length=None)  
+content = (pl.DataFrame(df_content, infer_schema_length=None)
     # combine RunAsCurrentUser and RunAs into a single column
            .with_columns(pl.when(pl.col("run_as_current_user") == "true")
            .then(pl.lit("RunAsCurrentUser"))
@@ -68,13 +68,13 @@ client <- connect()
 
 content <- get_content(client)
 
-content |> 
+content |>
   # combine RunAsCurrentUser and RunAs into a single column
-  mutate(run_as = if_else(run_as_current_user, "RunAsCurrentUser", run_as)) |> 
+  mutate(run_as = if_else(run_as_current_user, "RunAsCurrentUser", run_as)) |>
   # Remove NA (content items run as the default account appear as NA)
-  filter(!is.na(run_as)) |> 
-  group_by(run_as) |> 
-  summarise(count = n()) |> 
+  filter(!is.na(run_as)) |>
+  group_by(run_as) |>
+  summarise(count = n()) |>
   arrange(desc(count))
 
 ```
@@ -101,15 +101,15 @@ content |>
 from posit import connect
 import polars as pl
 
-### User-defined inputs ###
+#### User-defined inputs ####
 # 1. specify the Linux account or "RunAsCurrentUser"
-run_as = "INSERT_LINUX_ACCOUNT_NAME" 
+run_as = "INSERT_LINUX_ACCOUNT_NAME"
 ############################
 
-client = connect.Client() 
+client = connect.Client()
 
 df_content = client.content.find()
-(pl.DataFrame(df_content, infer_schema_length=None)  
+(pl.DataFrame(df_content, infer_schema_length=None)
     # combine RunAsCurrentUser and RunAs into a single column
            .with_columns(pl.when(pl.col("run_as_current_user") == "true")
            .then(pl.lit("RunAsCurrentUser"))
@@ -144,18 +144,18 @@ library(connectapi)
 library(dplyr)
 library(tidyr)
 
-### User-defined inputs ###
+#### User-defined inputs ####
 # 1. specify the Linux account or "RunAsCurrentUser"
-run_as <- "INSERT_LINUX_ACCOUNT_NAME" 
+run_as <- "INSERT_LINUX_ACCOUNT_NAME"
 ############################
 
 client <- connect()
 
-get_content(client) |> 
+get_content(client) |>
   # combine RunAsCurrentUser and RunAs into a single column
-  mutate(run_as = case_when(run_as_current_user == TRUE ~ "RunAsCurrentUser", .default = run_as)) |> 
+  mutate(run_as = case_when(run_as_current_user == TRUE ~ "RunAsCurrentUser", .default = run_as)) |>
   # `owner` is a list of attributes, let's pull out the owner's username
-  hoist(owner, owner_username = "username") |> 
+  hoist(owner, owner_username = "username") |>
   filter(run_as == !!run_as) |>
   select(guid, run_as, title, owner_username, dashboard_url)
 ```
@@ -164,8 +164,8 @@ get_content(client) |>
 
 ```
 # A tibble: 3 × 5
-  guid             run_as      title                           owner_username dashboard_url                     
-  <chr>            <chr>       <chr>                           <chr>          <chr>                             
+  guid             run_as      title                           owner_username dashboard_url
+  <chr>            <chr>       <chr>                           <chr>          <chr>
 1 95fcb004-4fc7-…  sa-finance  Loan Risk Prediction Model      publisher1     https://connect…
 2 be1a08f1-b41a-…  sa-finance  Evaluation Analysis Dashboard   publisher3     https://connect…
 3 75a340d8-1454-…  sa-finance  Loan Risk API                   publisher3     https://connect…

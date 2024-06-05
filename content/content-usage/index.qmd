@@ -1,6 +1,6 @@
 ---
-title: Retrieve Content Usage Statistics for a Content Item 
-execute: 
+title: Retrieve Content Usage Statistics for a Content Item
+execute:
   eval: false
 ---
 
@@ -11,16 +11,16 @@ This recipe yields summary usage statistics for a content item deployed on Conne
 ::: {.callout-note}
 If your Connect version is prior to 2023.10, content usage for Plumber, Voila, Streamlit, Dash, and Bokeh were over-counted in instrumentation metrics. Metrics collected after upgrading to version 2023.10 or greater are accurate.
 Note that if your Connect version is prior to 2023.10, content usage for Plumber, Voila, Streamlit, Dash, and Bokeh were over-counted in instrumentation metrics. Metrics collected after upgrading to version 2023.10 or greater are accurate.
-::: 
+:::
 
 ## Output
 
-This recipe yields: 
+This recipe yields:
 - A dataframe with historical content usage for an item, including by-user identification and session duration for Shiny for Python and Shiny for R content.
 - A summary table of content usage by user, including total usage and daily usage.
 - A Quarto dashboard with visualizations of the content usage data.
 
-## Workflow 
+## Workflow
 
 This recipe requires the following inputs:
 1. The `content_guid` for the content item of interest.
@@ -33,9 +33,9 @@ This recipe provides methods for:
 
 1. Retrieving historical content usage.
 2. Identifying usage by user.
-3. Deploying a sample Quarto dashboard using these methods. 
+3. Deploying a sample Quarto dashboard using these methods.
 
-## Recipe 
+## Recipe
 
 ### Retrieve historical content views data
 
@@ -43,7 +43,7 @@ The code samples below yields content usage data as a data frame.
 
 :::{.panel-tabset group="language"}
 
-## Python 
+## Python
 
 ```{python}
 from posit import connect
@@ -54,28 +54,28 @@ import polars as pl
 import numpy as np
 
 
-### User-defined inputs ###
+#### User-defined inputs ####
 # 1. specify the guid for the content
-content_guid = "INSERT_CONTENT_GUID" 
+content_guid = "INSERT_CONTENT_GUID"
 
 # 2. Specify timeframe for the report. Default is 30 days prior to today
 as_of_date = date.today()
 days_back = 30
 
-# 3. Specify if the summary should show only the Top N users for the content (e.g., `top_n = 10`), or all users (as indicated by `np.nan`). Default is `np.nan` so that all users are shown. 
+# 3. Specify if the summary should show only the Top N users for the content (e.g., `top_n = 10`), or all users (as indicated by `np.nan`). Default is `np.nan` so that all users are shown.
 top_n = np.nan
 ############################
 
 report_from = as_of_date - timedelta(days=days_back)
 
-client = connect.Client() 
+client = connect.Client()
 
 # Get content usage data
 df = client.metrics.usage.find(
     content_guid=content_guid,
     start=report_from.strftime("%Y-%m-%dT%H:%M:%SZ"),
     end=as_of_date.strftime("%Y-%m-%dT%H:%M:%SZ"))
-    
+
 usage = (pl.DataFrame(df, infer_schema_length=None)
         .with_columns(pl.col("started").str.to_datetime("%Y-%m-%dT%H:%M:%SZ"))
         .with_columns(pl.col("started").cast(pl.Date).alias("day")))
@@ -91,16 +91,16 @@ usage
 shape: (10, 10)
     content_guid	       user_guid	variant_key	rendering_id	bundle_id	            started	           ended	data_version	path	       day
              str	             str	       null	        null	     null	       datetime[μs]	             str	         i64	null	      date
-"0477855b-caeb-…	"3dc75833-f6c2-…	       null	        null	     null	2024-04-11 00:36:00	"2024-04-11T00:…	           1	null	2024-04-11                               
-"0477855b-caeb-…	"26a7e881-a6c6-…	       null	        null	     null	2024-04-22 14:19:17	"2024-04-22T14:…	           1	null	2024-04-22                                 
-"0477855b-caeb-…	"26a7e881-a6c6-…	       null	        null	     null	2024-04-22 14:19:35	"2024-04-22T14:…	           1	null	2024-04-22                               
-"0477855b-caeb-…	"26a7e881-a6c6-…	       null	        null	     null	2024-04-22 14:20:33	"2024-04-22T15:…	           1	null	2024-04-22                               
-"0477855b-caeb-…	"d03a6b7a-c818-…	       null	        null	     null	2024-04-22 21:04:24	"2024-04-22T22:…	           1	null	2024-04-22                               
-"0477855b-caeb-…	"d03a6b7a-c818-…	       null	        null	     null	2024-04-23 17:33:48	"2024-04-23T18:…	           1	null	2024-04-23                               
-"0477855b-caeb-…	"1ec56831-7a34-…	       null	        null	     null	2024-04-23 19:29:28	"2024-04-23T19:…	           1	null	2024-04-23                               
-"0477855b-caeb-…	"fc80bd89-4488-…	       null	        null	     null	2024-04-24 20:19:10	"2024-04-24T20:…	           1	null	2024-04-24                               
-"0477855b-caeb-…	"1ec56831-7a34-…	       null	        null	     null	2024-04-26 15:10:18	"2024-04-26T15:…	           1	null	2024-04-26                               
-"0477855b-caeb-…	"1ec56831-7a34-…	       null	        null	     null	2024-04-26 15:18:59	"2024-04-26T15:…	           1	null	2024-04-26  
+"0477855b-caeb-…	"3dc75833-f6c2-…	       null	        null	     null	2024-04-11 00:36:00	"2024-04-11T00:…	           1	null	2024-04-11
+"0477855b-caeb-…	"26a7e881-a6c6-…	       null	        null	     null	2024-04-22 14:19:17	"2024-04-22T14:…	           1	null	2024-04-22
+"0477855b-caeb-…	"26a7e881-a6c6-…	       null	        null	     null	2024-04-22 14:19:35	"2024-04-22T14:…	           1	null	2024-04-22
+"0477855b-caeb-…	"26a7e881-a6c6-…	       null	        null	     null	2024-04-22 14:20:33	"2024-04-22T15:…	           1	null	2024-04-22
+"0477855b-caeb-…	"d03a6b7a-c818-…	       null	        null	     null	2024-04-22 21:04:24	"2024-04-22T22:…	           1	null	2024-04-22
+"0477855b-caeb-…	"d03a6b7a-c818-…	       null	        null	     null	2024-04-23 17:33:48	"2024-04-23T18:…	           1	null	2024-04-23
+"0477855b-caeb-…	"1ec56831-7a34-…	       null	        null	     null	2024-04-23 19:29:28	"2024-04-23T19:…	           1	null	2024-04-23
+"0477855b-caeb-…	"fc80bd89-4488-…	       null	        null	     null	2024-04-24 20:19:10	"2024-04-24T20:…	           1	null	2024-04-24
+"0477855b-caeb-…	"1ec56831-7a34-…	       null	        null	     null	2024-04-26 15:10:18	"2024-04-26T15:…	           1	null	2024-04-26
+"0477855b-caeb-…	"1ec56831-7a34-…	       null	        null	     null	2024-04-26 15:18:59	"2024-04-26T15:…	           1	null	2024-04-26
 
 
 ```
@@ -113,7 +113,7 @@ library(connectapi)
 library(dplyr)
 library(lubridate)
 
-### User-defined inputs ###
+#### User-defined inputs ####
 # 1. specify the guid for the content
 content_guid <- "INSERT_CONTENT_GUID"
 
@@ -164,8 +164,8 @@ usage
 
 ```
 # A tibble: 14 × 6
-   content_guid      user_guid         started             ended               data_version day                
-   <chr>             <chr>             <dttm>              <dttm>                     <int> <dttm>             
+   content_guid      user_guid         started             ended               data_version day
+   <chr>             <chr>             <dttm>              <dttm>                     <int> <dttm>
  1 0477855b-caeb-... 1ec56831-7a34-... 2024-03-19 21:09:03 2024-03-19 21:10:05            1 2024-03-19 00:00:00
  2 0477855b-caeb-... 1ec56831-7a34-... 2024-03-19 21:39:07 2024-03-19 22:39:48            1 2024-03-19 00:00:00
  3 0477855b-caeb-... d59e7a7b-9684-... 2024-03-20 00:36:29 2024-03-20 00:37:10            1 2024-03-20 00:00:00
@@ -190,7 +190,7 @@ The output above can be plotted for a historical perspective on content usage. A
 
 ### Identify usage by user
 
-The code samples below yield by-user content usage data as a data frame. 
+The code samples below yield by-user content usage data as a data frame.
 
 ::: {.panel-tabset group="language"}
 
@@ -213,7 +213,7 @@ user_tot_usage = (
   usage.group_by("user_guid")
   .agg(pl.len().alias("tot_usage"))
   # change any `nan` user_guid to "anonymous"
-  .with_columns(pl.coalesce(pl.col("user_guid"), pl.lit("anonymous")).alias("user_guid")) 
+  .with_columns(pl.coalesce(pl.col("user_guid"), pl.lit("anonymous")).alias("user_guid"))
 )
 
 # Make a table of a user's daily usage and combine with total usage
@@ -246,7 +246,7 @@ shape: (11, 4)
 "katie"	    2024-03-29	         4	           1
 "lisa"	    2024-03-19	         4	           2
 "katie"	    2024-03-25	         4	           1
-         …	         …	         …	           …         
+         …	         …	         …	           …
 "andrie"  	2024-03-21	         2	           1
 "ryan"	    2024-04-11	         1	           1
 "rika"	    2024-03-28	         1	           1
@@ -263,22 +263,22 @@ The output above can be plotted for a historical perspective on content views. A
 all_users <- get_users(client, limit = Inf)
 
 # Join user data with usage data
-by_user_usage <- usage |> 
-  select(user_guid, day) |> 
-  group_by(user_guid) |> 
-  mutate(tot_usage = n()) |> 
+by_user_usage <- usage |>
+  select(user_guid, day) |>
+  group_by(user_guid) |>
+  mutate(tot_usage = n()) |>
   mutate(first_visit = min(day)) |>
   mutate(last_visit = max(day)) |>
-  ungroup() |> 
-  group_by(user_guid, day) |> 
-  mutate(daily_usage = n()) |> 
-  ungroup() |> 
-  left_join(all_users, by = c(user_guid = "guid")) |> 
-  mutate(username = coalesce(username, "anonymous")) |> 
-  select(username, day, tot_usage, first_visit, last_visit, daily_usage) |> 
-  distinct() |> 
-  arrange(desc(tot_usage)) |> 
-  pivot_wider(names_from = day, values_from = daily_usage) |> 
+  ungroup() |>
+  group_by(user_guid, day) |>
+  mutate(daily_usage = n()) |>
+  ungroup() |>
+  left_join(all_users, by = c(user_guid = "guid")) |>
+  mutate(username = coalesce(username, "anonymous")) |>
+  select(username, day, tot_usage, first_visit, last_visit, daily_usage) |>
+  distinct() |>
+  arrange(desc(tot_usage)) |>
+  pivot_wider(names_from = day, values_from = daily_usage) |>
   head(top_n)
 
 by_user_usage

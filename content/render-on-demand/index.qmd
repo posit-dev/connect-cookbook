@@ -1,12 +1,12 @@
 ---
 title: Render and Email Content on Demand
-execute: 
+execute:
   eval: false
 ---
 
-## Description 
+## Description
 
-This recipe explains how to re-render content programmatically, on demand. Rendered content includes R Markdown, Jupyter notebooks, and Quarto. This can be helpful when you want to trigger a report to re-render and the time-based content scheduling options of Connect are not a good fit. 
+This recipe explains how to re-render content programmatically, on demand. Rendered content includes R Markdown, Jupyter notebooks, and Quarto. This can be helpful when you want to trigger a report to re-render and the time-based content scheduling options of Connect are not a good fit.
 
 This recipe can be incorporated into another script to create a workflow where a report rendering is dependent upon the timing or output of the previous report. This permits greater flexibility in scheduling and pipeline creation.
 
@@ -18,9 +18,9 @@ This recipe triggers a rendering of a content variant on the Connect server. Opt
 
 This recipe requires the following inputs:
 
-1. The `content_guid` of the content item to be re-rendered. 
+1. The `content_guid` of the content item to be re-rendered.
 2. The `variant_key` for the content item to be re-rendered. This is only relevant if the content item has multiple variants saved, such as variations of a parameterized report. Otherwise, `default` is the only variant and is appropriate for this recipe. See the box below for how to find the content variant key if your content has variants saved.
-3. Connect can send the rendering as email after the content renders. Specify who should receive this. Options are: 
+3. Connect can send the rendering as email after the content renders. Specify who should receive this. Options are:
     - `none`: Do not send an email.
     - `me`: Send an email to the user who triggered the rendering (as identified by the API key in use).
     - `collaborators`: Send an email to the collaborators on the content item.
@@ -54,7 +54,7 @@ client <- connect()
 
 content_guid <- "SPECIFY CONTENT GUID"
 
-get_variants(content_item(client, content_guid)) 
+get_variants(content_item(client, content_guid))
 
 ```
 
@@ -77,7 +77,7 @@ This recipe then does the following:
 ```{.python}
 from posit import connect
 
-### User-defined inputs ###
+#### User-defined inputs ####
 # 1. Specify the content guid for the item to be re-rendered
 content_guid = "SPECIFY CONTENT GUID"
 
@@ -98,7 +98,7 @@ if variant_key != "default" and len(variant_key) != 8:
     print(f"The specified variant key '{variant_key}' does not appear to be valid. Set to 'default' or enter a valid variant key.")
     exit()
 
-client = connect.Client() 
+client = connect.Client()
 
 # Get content item from the server
 content = client.content.get(content_guid)
@@ -110,7 +110,7 @@ if variant_key == "default":
     content_variant = default_variant["id"]
     variant_key = default_variant["key"]
 else:
-    content_variant = next((variant["id"] for variant in content_variants if variant["key"] == variant_key), None)    
+    content_variant = next((variant["id"] for variant in content_variants if variant["key"] == variant_key), None)
 
 # trigger the variant to render and wait for it to complete
 post_body = {"email": "none", "activate": "true"}
@@ -139,7 +139,7 @@ if recipients != "none":
 ```{.r}
 library(connectapi)
 
-### User-defined inputs ###
+#### User-defined inputs ####
 # 1. Specify the content guid for the item to be re-rendered
 content_guid <- "SPECIFY CONTENT GUID"
 
@@ -168,7 +168,7 @@ client <- connect()
 # Get content item from server
 content <- content_item(client, content_guid)
 
-# select the variant to re-render. 
+# select the variant to re-render.
 if(variant_key == "default"){
   content_variant <- get_variant_default(content)
   variant_key <- content_variant$key
@@ -187,10 +187,10 @@ if(recipients != "none"){
   # get updated list of content variants and identify new variant rendering id
   content_variant <- get_variant(content, variant_key)
   rendering_id <- content_variant$variant$rendering_id
-  post_url <- glue::glue("variants/{content_variant$variant$id}/sender")  
-  post_body <- list(email = recipients, rendering_id = rendering_id)  
+  post_url <- glue::glue("variants/{content_variant$variant$id}/sender")
+  post_body <- list(email = recipients, rendering_id = rendering_id)
   # send email
-  client$POST(post_url, query = post_body, body = post_body)  
+  client$POST(post_url, query = post_body, body = post_body)
 }
 
 
