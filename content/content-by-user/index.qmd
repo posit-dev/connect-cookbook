@@ -1,6 +1,6 @@
 ---
 title: Identify all content owned by a user
-execute: 
+execute:
   eval: false
 ---
 
@@ -12,9 +12,9 @@ This may be useful for auditing purposes, changing content ownership when an emp
 
 ## Output
 
-This recipe generates both a raw data frame identifying all content owned by a specified user, as well as a formatted table suitable for incorporating into a report or application. 
+This recipe generates both a raw data frame identifying all content owned by a specified user, as well as a formatted table suitable for incorporating into a report or application.
 
-## Workflow 
+## Workflow
 
 1. The username of the user whose content you want to identify.
 
@@ -35,12 +35,12 @@ from posit import connect
 import polars as pl
 
 
-### User-defined inputs ###
+#### User-defined inputs ####
 # 1. specify the username for the user of interest
 username = "SPECIFY USERNAME"
 ###########################
 
-client = connect.Client() 
+client = connect.Client()
 
 # Get user's `guid` from specified username
 user_guid = client.users.find_one(prefix = username).guid
@@ -67,7 +67,7 @@ shape: (3, 45)
 ```{r}
 library(connectapi)
 
-### User-defined inputs ###
+#### User-defined inputs ####
 # 1. specify the username for the user of interest
 username <- "SPECIFY USERNAME"
 ###########################
@@ -115,7 +115,7 @@ The output above can be presented in a formatted table for easier readability. I
 - `access_type`
 - `dashboard_url`
 
-You may modify this code to add or remove other fields to suit your requirements. 
+You may modify this code to add or remove other fields to suit your requirements.
 
 ::: {.panel-tabset group="language"}
 
@@ -201,7 +201,7 @@ content_info = (
  #wzunztfnpm .gt_super { font-size: 65%; }
  #wzunztfnpm .gt_footnote_marks { font-size: 75%; vertical-align: 0.4em; position: initial; }
  #wzunztfnpm .gt_asterisk { font-size: 100%; vertical-align: 0; }
- 
+
 </style>
 
 <table class="gt_table table table-sm table-striped small" data-quarto-postprocess="true" data-quarto-disable-processing="false" data-quarto-bootstrap="false">
@@ -258,7 +258,7 @@ content_info = (
 
 
 </div>
-        
+
 </div>
 
 ## R
@@ -268,12 +268,12 @@ library(dplyr)
 library(gt)
 
 # Select and format the columns of interest in a table
-content |> 
+content |>
   select("title", "description", "access_type", "created_time", "last_deployed_time", "bundle_id", "app_mode", "content_category", "r_version", "py_version", "quarto_version", "content_url", "dashboard_url") |>
-  gt() |> 
-  tab_header(title = paste("Content owned by",username)) |> 
-  fmt_url(columns = c(content_url, dashboard_url)) |> 
-  tab_spanner(label="Deployment Info", 
+  gt() |>
+  tab_header(title = paste("Content owned by",username)) |>
+  fmt_url(columns = c(content_url, dashboard_url)) |>
+  tab_spanner(label="Deployment Info",
               columns=c(created_time, last_deployed_time))
 ```
 

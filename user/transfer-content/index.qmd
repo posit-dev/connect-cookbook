@@ -37,7 +37,7 @@ from posit import connect
 
 client = connect.Client()
 
-### User-defined inputs ###
+#### User-defined inputs ####
 # 1. Specify the GUID of the user whose content we are reassigning
 old_owner_guid = "USER-GUID-HERE"
 # 2. Specify the GUID of the user who is going to be the new owner
@@ -66,7 +66,7 @@ library(connectapi)
 
 client <- connect()
 
-### User-defined inputs ###
+#### User-defined inputs ####
 # 1. Specify the GUID of the user whose content we are reassigning
 old_owner_guid <- "USER-GUID-HERE"
 # 2. Specify the GUID of the user who is going to be the new owner

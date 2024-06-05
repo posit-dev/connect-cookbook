@@ -1,10 +1,10 @@
 ---
 title: "Manage User Permissions for Content"
-execute: 
+execute:
   eval: false
 ---
 
-## Description 
+## Description
 
 This recipe explains how to manage user permissions for a content item. This includes granting and revoking user access as either viewers or collaborators.
 
@@ -43,7 +43,7 @@ This receipe requires the following inputs:
 ```{.python}
 from posit import connect
 
-### User-defined inputs ###
+#### User-defined inputs ####
 # 1. specify the guid for the content item
 content_guid = "CONTENT_GUID_HERE"
 # 2. specify either the guid or username for the user being added (username will be used if user_guid is blank)
@@ -64,7 +64,7 @@ if not user_guid and username:
         raise Exception("More than one username found, ensure you enter a unique name")
     else:
         user_guid = user_match[0]["guid"]
-elif not username: 
+elif not username:
     raise Exception("Either user_guid or username must be specified")
 
 # For the specified content item add the desired user
@@ -83,7 +83,7 @@ client.content.get(content_guid).permissions.find()
 ```{.r}
 library(connectapi)
 
-### User-defined inputs ###
+#### User-defined inputs ####
 # 1. specify the guid for the content item
 content_guid = "CONTENT_GUID_HERE"
 # 2. specify either the guid or name for the user being added (username will be used if user_guid is blank)
@@ -135,7 +135,7 @@ This receipe requires the following inputs:
 ```{.python}
 from posit import connect
 
-### User-defined inputs ###
+#### User-defined inputs ####
 # 1. specify the guid for the content item
 content_guid = "CONTENT_GUID_HERE"
 # 2. specify either the guid or name for the user being removed (username will be used if user_guid is blank)
@@ -154,7 +154,7 @@ if not user_guid and username:
         raise Exception("More than one username found, ensure you enter a unique name")
     else:
         user_guid = user_match[0]["guid"]
-elif not username: 
+elif not username:
     raise Exception("Either user_guid or username must be specified")
 
 # For the specified content item remove the desired user
@@ -171,7 +171,7 @@ client.content.get(content_guid).permissions.find()
 ```{.r}
 library(connectapi)
 
-### User-defined inputs ###
+#### User-defined inputs ####
 # 1. specify the guid for the content item
 content_guid = "CONTENT_GUID_HERE"
 # 2. specify either the guid or name for the user being removed (username will be used if user_guid is blank)
@@ -222,7 +222,7 @@ This receipe requires the following inputs:
 ```{.python}
 from posit import connect
 
-### User-defined inputs ###
+#### User-defined inputs ####
 # 1. specify the guid for the content item
 content_guid = "CONTENT_GUID_HERE"
 # 2. specify either the guid or name for the group to be added (group_name will be used if group_guid is blank)
@@ -243,7 +243,7 @@ if not group_guid and group_name:
         raise Exception("More than one group name found, ensure you enter a unique name")
     else:
         group_guid = group_match["results"][0]["guid"]
-elif not group_name: 
+elif not group_name:
     raise Exception("Either group_guid or group_name must be specified")
 
 # For the specified content item add the desired group
@@ -262,7 +262,7 @@ client.content.get(content_guid).permissions.find()
 ```{.r}
 library(connectapi)
 
-### User-defined inputs ###
+#### User-defined inputs ####
 # 1. specify the guid for the content item
 content_guid = "CONTENT_GUID_HERE"
 # 2. specify either the guid or name for the group to be added (group_name will be used if group_guid is blank)
@@ -314,7 +314,7 @@ This receipe requires the following inputs:
 ```{.python}
 from posit import connect
 
-### User-defined inputs ###
+#### User-defined inputs ####
 # 1. specify the guid for the content item
 content_guid = "CONTENT_GUID_HERE"
 # 2. specify either the guid or name for the group to be removed (group_name will be used if group_guid is blank)
@@ -322,7 +322,7 @@ group_guid = ""
 group_name = "GROUP_NAME_HERE"
 ############################
 
-client = connect.Client() 
+client = connect.Client()
 
 # search by group_name to find the group_guid if blank
 if not group_guid and group_name:
@@ -333,7 +333,7 @@ if not group_guid and group_name:
         raise Exception("More than one group name found, ensure you enter a unique name")
     else:
         group_guid = group_match["results"][0]["guid"]
-elif not group_name: 
+elif not group_name:
     raise Exception("Either group_guid or group_name must be specified")
 
 # For the specified content item remove the desired user
@@ -351,7 +351,7 @@ client.content.get(content_guid).permissions.find()
 ```{.r}
 library(connectapi)
 
-### User-defined inputs ###
+#### User-defined inputs ####
 # 1. specify the guid for the content item
 content_guid = "CONTENT_GUID_HERE"
 # 2. specify either the guid or name for the group to be removed (group_name will be used if group_guid is blank)
