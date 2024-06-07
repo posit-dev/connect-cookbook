@@ -55,7 +55,7 @@ client = connect.Client()
 group_GUID = "01c24f7d-700a-47d9-a695-2d25d3c14da5" 
 ###########################
 
-results = client.get(f"v1/experimental/groups/{group_GUID}/content", verify = False)
+results = client.get(f"v1/experimental/groups/{group_GUID}/content")
 results_df = pl.DataFrame(results.json())
 
 results_out = (
