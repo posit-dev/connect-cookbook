@@ -107,7 +107,7 @@ ClientError: A group using the same unique ID already exists
 ## R
 
 ### Find the group to add
-```{r}
+```{.r}
 library(connectapi)
 library(purrr)
 library(tibble)
@@ -145,7 +145,7 @@ We have two groups here (`Data Science` and `Data Science Apprentices`). The `Da
 
 The `connectapi` SDK has a function to create groups directly:
 
-```{r}
+```{.r}
 groups_create_remote(client, prefix = "Data Science Apprentices")
 ```
 

@@ -1,5 +1,5 @@
 ---
-title: Search for content based on group ownership
+title: Audit group access to content
 execute: 
   eval: false
 ---
@@ -24,7 +24,7 @@ You might have a GUID already, but you can also use the **[`GET /v1/groups/`](..
 ## Workflow
 This recipe requires the following inputs:
 
-1. The GUID of the group that you are interested in. 
+1. The GUID of the group that you are interested in. See the `User-defined inputs` comment section in the recipe for one way to get this GUID.
 
 This recipe then does the following:
 
@@ -44,28 +44,47 @@ client = connect.Client()
 
 ### User-defined inputs ###
 # 1. The GUID of the group you want to look up
-group_GUID = "e81c2c09-cd4c-468c-b6b8-891cd49363f0" 
+#    One way to get the GUID for the group you're 
+#    looking for is to use: 
+#    `pl.DataFrame(client.get("/v1/groups").json()['results'])`
+#    and then find the GUID for the name you're 
+#    looking for. You can also add:
+#    `params={"prefix": "Name"}`
+#    to the `client.get()` call to search for 
+#    all groups that start with "Name"
+group_GUID = "01c24f7d-700a-47d9-a695-2d25d3c14da5" 
 ###########################
 
-results = client.get(f"v1/experimental/groups/{group_GUID}/content")
+results = client.get(f"v1/experimental/groups/{group_GUID}/content", verify = False)
 results_df = pl.DataFrame(results.json())
 
-results_df[["content_guid", "content_title"]]
+results_out = (
+  # extract the access_type (viewer or publisher) from the 
+  # nested struct and rename that column to access_type
+  results_df
+  .explode('permissions')
+  .unnest('permissions')
+  .filter(pl.col('principal_guid') == group_GUID)
+  .select("content_guid", "content_title", "principal_role")
+  .rename({"principal_role": "access_type"})
+)
+
+results_out
 ```
 
 ### Example output
 
 ```
-shape: (3, 2)
-┌─────────────────────────────────┬──────────────────────────┐
-│ content_guid                    ┆ content_title            │
-│ ---                             ┆ ---                      │
-│ str                             ┆ str                      │
-╞═════════════════════════════════╪══════════════════════════╡
-│ 0bef0ba7-1470-458f-95b3-6e93c3… ┆ quarto-stock-report-r    │
-│ 2aa38512-46e4-4be7-9bb9-0b32a9… ┆ Stock Report             │
-│ f33285e4-6916-4241-b241-858f03… ┆ top-5-income-share-shiny │
-└─────────────────────────────────┴──────────────────────────┘
+shape: (3, 3)
+┌─────────────────────────────────┬──────────────────────────┬─────────────┐
+│ content_guid                    ┆ content_title            │ access_type │
+│ ---                             ┆ ---                      │ ---         │
+│ str                             ┆ str                      │ str         │
+╞═════════════════════════════════╪══════════════════════════╡═════════════╡
+│ 0bef0ba7-1470-458f-95b3-6e93c3… ┆ quarto-stock-report-r    │ viewer      │
+│ 2aa38512-46e4-4be7-9bb9-0b32a9… ┆ Stock Report             │ viewer      │
+│ f33285e4-6916-4241-b241-858f03… ┆ top-5-income-share-shiny │ viewer      │
+└─────────────────────────────────┴──────────────────────────┘─────────────┘
 ```
 
 ## R
@@ -77,24 +96,36 @@ client <- connect()
 
 ### User-defined inputs ###
 # 1. The GUID of the group you want to look up
-group_GUID <- "e81c2c09-cd4c-468c-b6b8-891cd49363f0" 
+#    One way to get the GUID for the group you're
+#    looking for is to use: `get_groups()` from
+#    the connectapi package. You can search for 
+#    group name prefixes with:
+#    `get_group(connect(), prefix = "Name")`
+group_GUID <- "01c24f7d-700a-47d9-a695-2d25d3c14da5" 
 ###########################
 
 results <- client$GET(glue::glue("v1/experimental/groups/{group_GUID}/content"))
 
 data.frame(
   content_guid = map_chr(results, ~.$content_guid),
-  content_title = map_chr(results, ~.$content_title)
+  content_title = map_chr(results, ~.$content_title),
+  # extract the access_type (viewer or publisher) from the 
+  # nested list and name that access_type
+  access_type = map_chr(results, ~pluck(
+    keep(.$permissions, ~.$principal_guid == group_GUID),
+    1,
+    "principal_role"
+  ))
 )
 ```
 
 ### Example output
 
 ```
-                          content_guid            content_title
-1 f33285e4-6916-4241-b241-858f0335ba38 top-5-income-share-shiny
-2 0bef0ba7-1470-458f-95b3-6e93c31c78b7    quarto-stock-report-r
-3 2aa38512-46e4-4be7-9bb9-0b32a9370fc7             Stock Report
+                          content_guid            content_title access_type
+1 f33285e4-6916-4241-b241-858f0335ba38 top-5-income-share-shiny      viewer
+2 0bef0ba7-1470-458f-95b3-6e93c31c78b7    quarto-stock-report-r      viewer
+3 2aa38512-46e4-4be7-9bb9-0b32a9370fc7             Stock Report      viewer
 ```
 
 :::
