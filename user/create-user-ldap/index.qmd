@@ -19,7 +19,7 @@ This recipe requires the following inputs:
 
 1. The username or the first part of the username of the user to add.
 
-There are three steps:
+There are two steps:
 
 1. Search for the user 
 2. Create the new user based on information we searched for
