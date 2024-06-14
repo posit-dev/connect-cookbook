@@ -96,7 +96,7 @@ which is a unique identifier for the group.
 └─────────────────────────────────┴──────────────────────────────┴────────────┘
 ```
 
-If the group already exists in Connect, the request will error:
+If the group already exists in Connect, the request errors:
 
 ```
 ClientError: A group using the same unique ID already exists
