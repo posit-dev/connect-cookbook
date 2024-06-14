@@ -98,7 +98,7 @@ shape: (1, 11)
 └────────────┴──────────┴────────────┴───────────┴───┴────────────┴───────────┴────────┴───────────┘
 ```
 
-If the user already exists in Connect, the request will error:
+If the user already exists in Connect, the request errors:
 
 ```
 ClientError: A user using the same Unique ID already exists
