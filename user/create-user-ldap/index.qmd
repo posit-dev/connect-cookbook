@@ -29,8 +29,11 @@ There are two steps:
 ## Python
 
 ```{.python}
-from posit import connect
 import polars as pl
+
+from posit import connect
+
+
 client = connect.Client()
 
 #### User-defined inputs ####
