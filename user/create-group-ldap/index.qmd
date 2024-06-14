@@ -6,7 +6,7 @@ execute:
 
 ## Description 
 
-This recipe searches for a group in an LDAP authentication provider, then creates a Posit Connect group for that LDAP group.
+This recipe searches for a group that is present in an LDAP authentication provider but not yet on Posit Connect and creates that group on Connect.
 
 ## Output
 
