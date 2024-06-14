@@ -160,7 +160,7 @@ Done creating remote users
 1 FrancisM@posit-9.c… francism Myra       Francis   viewer    2024-06-07 19:35:30 2024-06-07 19:35:30 NA          TRUE      FALSE  deb96ce5-e86…
 ```
 
-If the user already exists in Connect, the same call will return:
+If the user already exists in Connect, the same call returns:
 
 ```
 At least one user with username prefix 'francism' already exists
