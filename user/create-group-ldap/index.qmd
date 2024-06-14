@@ -162,7 +162,7 @@ Done creating remote groups
 1 b806d590-5d52-478e-a9d8-491228b090e7 Data Science Apprentices NA  
 ```
 
-If the group already exists in Connect, the same call will return:
+If the group already exists in Connect, the same call returns:
 
 ```
 At least one group with name prefix 'Data Science Apprentices' already exists
