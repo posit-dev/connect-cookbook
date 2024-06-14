@@ -29,7 +29,7 @@ This recipe requires the following inputs:
 This recipe then does the following:
 
 1. Queries the **[`GET /v1/experimental/groups/:guid/content`](../../api/#get-/v1/experimental/groups/-guid-/content)**
-endpoint which returns a list of content that group has access to.
+endpoint, which returns a list of content that group has access to.
 
 ## Recipe
 
