@@ -59,7 +59,7 @@ shape: (1, 12)
 └───────────────┴──────────┴────────────┴───────────┴───┴───────────┴────────┴──────┴──────────────┘
 ```
 
-We have one user here (`Myra Francis`, username: `francism`). `francism` does not have a GUID which means that they are not present as a user on Connect. 
+We have one user here, `Myra Francis`, username: `francism`. `francism` does not have a GUID, which means that they are not present as a user on Connect. 
 
 Included in the API response for each user is a `temp_ticket` value which can be used to create the user in Connect. In the example above, the user does not exist in Connect, so you need the `temp_ticket` for this user to create the user in Connect.
 
