@@ -17,7 +17,7 @@ Administrator credentials are needed in order to perform this action.
 
 ## Output
 
-This recipe generates a data frame of content GUIDs and titles that the group has access to.
+This recipe generates a data frame summarizing the content that the group has access to.
 
 You might have a GUID already, but you can also use the **[`GET /v1/groups/`](../../api/#get-/v1/groups)** endpoint to search for groups and their corresponding GUIDs.
 
