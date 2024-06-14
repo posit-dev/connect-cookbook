@@ -136,7 +136,7 @@ tibble(
 >
 ```
 
-We have one user here (`Myra Francis`, username: `francism`). `francism` does not have a GUID which means that they are not present as a user on Connect. 
+We have one user here, `Myra Francis`, username: `francism`. `francism` does not have a GUID, which means that they are not present as a user on Connect. 
 
 ### Creating the user
 
