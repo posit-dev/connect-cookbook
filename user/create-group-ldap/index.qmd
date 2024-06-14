@@ -16,7 +16,6 @@ This recipe searches for a group that is present in an LDAP authentication provi
 
 This recipe requires the name of the group you want to add.
 
-1. The name of the group you want to add
 
 This recipe then does the following:
 
