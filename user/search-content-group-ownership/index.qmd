@@ -22,6 +22,7 @@ This recipe generates a data frame summarizing the content that the group has ac
 You might have a GUID already, but you can also use the **[`GET /v1/groups/`](../../api/#get-/v1/groups)** endpoint to search for groups and their corresponding GUIDs.
 
 ## Workflow
+
 This recipe requires the following inputs:
 
 1. The GUID of the group that you are interested in. See the `User-defined inputs` comment section in the recipe for one way to get this GUID.
