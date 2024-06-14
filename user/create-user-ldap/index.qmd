@@ -15,7 +15,7 @@ The purpose is to modify the state of the Connect server.
 
 ## Workflow
 
-This recipe requires the following inputs:
+This recipe requires the username or the first part of the username of the user to be added.
 
 There are two steps:
 
