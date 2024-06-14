@@ -18,7 +18,7 @@ This recipe requires the name of the group you want to add.
 
 This recipe then does the following:
 
-1.  Search for the group via the  **[`GET /v1/groups/remote`](../../api/#get-/v1/groups/remote)** endpoint.
+1.  Search for the group via the **[`GET /v1/groups/remote`](../../api/#get-/v1/groups/remote)** endpoint.
 1.  Note the `temp_ticket` for the desired group.
 1.  Use the **[`PUT /v1/groups`](../../api/#put-/v1/groups)** endpoint with the `temp_ticket` to create a corresponding group on Connect.
 
