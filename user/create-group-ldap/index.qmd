@@ -61,7 +61,7 @@ shape: (2, 3)
 └──────────────────────────────┴─────────────────────────────────┴─────────────────────────────────┘
 ```
 
-We have two groups here (`Data Science` and `Data Science Apprentices`). The `Data Science` group has a GUID, which means that it already has a group on Connect, but the second `Data Science Apprentices` group does not have a GUID which means that it is not present as a group on Connect. 
+We have two groups here, `Data Science` and `Data Science Apprentices`. The `Data Science` group has a GUID, which means that it already has a group on Connect, but the second `Data Science Apprentices` group does not have a GUID which means that it is not present as a group on Connect. 
 
 Included in the API response for each group is a `temp_ticket` value which can be used to create the group in Connect. In the example above, the second group, `Data Science Apprentices`, does not exist in Connect, so you need the `temp_ticket` for this group to create the group in Connect.
 
