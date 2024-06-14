@@ -23,7 +23,7 @@ You might have a GUID already, but you can also use the **[`GET /v1/groups/`](..
 
 ## Workflow
 
-1. The GUID of the group that you are interested in. See the `User-defined inputs` comment section in the recipe for one way to get this GUID.
+This recipe requires the GUID of the group that you are interested in. See the `User-defined inputs` comment section in the recipe for one way to get this GUID.
 
 This recipe then does the following:
 
