@@ -12,7 +12,7 @@ or validating that the various groups you manage have access to all the content
 they should.
 
 ::: {.callout-note}
-Administrator credentials are needed in order to perform this action.
+Administrator permissions are needed in order to perform this action.
 ::: 
 
 ## Output
