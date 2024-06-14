@@ -138,7 +138,7 @@ A tibble: 2 × 3
 >
 ```
 
-We have two groups here (`Data Science` and `Data Science Apprentices`). The `Data Science` group has a GUID, which means that it already has a group on Connect, but the second `Data Science Apprentices` group does not have a GUID which means that it is not present as a group on Connect. 
+We have two groups here, `Data Science` and `Data Science Apprentices`. The `Data Science` group has a GUID, which means that it already has a group on Connect, but the second `Data Science Apprentices` group does not have a GUID which means that it is not present as a group on Connect. 
 
 ### Creating the group
 
