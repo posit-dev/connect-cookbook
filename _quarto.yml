@@ -36,6 +36,10 @@ website:
         href: user/index.qmd
         contents:
           - user/transfer-content/index.qmd
+      - text: "Job Management"
+        href: jobs/index.qmd
+        contents:
+          - jobs/kill/index.qmd
 
 format:
   html:
