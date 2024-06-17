@@ -46,6 +46,13 @@ website:
         contents:
           - jobs/find/index.qmd
           - jobs/kill/index.qmd
+      - text: "Tag Recipes"
+        href: tags/index.qmd
+        contents:
+          - tags/create/index.qmd
+          - tags/assign/index.qmd
+          - tags/find/index.qmd
+          - tags/delete/index.qmd
 
 format:
   html:

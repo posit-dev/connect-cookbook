@@ -1,0 +1,32 @@
+---
+title: "Deleting tags"
+execute:
+    eval: false
+---
+
+## Delete a tag
+
+A tag identifier is required to delete a tag.
+
+::: {.panel-tabset group="language"}
+
+### Python
+
+```{python}
+TAG_ID = "200"
+
+client.delete(f"/v1/tags/{TAG_ID}")
+```
+
+
+### R
+
+```{r}
+# TODO
+```
+
+:::
+
+#### See Also
+
+- [Tags](../index.qmd)
