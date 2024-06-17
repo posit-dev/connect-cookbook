@@ -1,0 +1,76 @@
+---
+title: "Register Job Kill Order"
+execute:
+  eval: false
+---
+
+## Description
+
+Register a kill order for a job.
+
+## Recipe
+
+::: {.panel-tabset group="language"}
+
+### Python
+
+```{python}
+import json
+
+from posit import connect
+
+CONTENT_GUID = '5b6f05d1-1fea-480b-b8fa-51aec687a0bd'
+JOB_KEY = 'p7zJxJkP7xocRSSO'
+
+client = connect.Client()
+
+client.delete(f"v1/content/{CONTENT_GUID}/jobs/{JOB_KEY}")
+```
+
+
+### R
+
+```{r}
+# TODO
+```
+
+:::
+
+
+### How to obtain a job key
+
+**1. Find a content item.**
+
+```py
+content_item = client.content.find_one()
+```
+
+**2. Fetch jobs for the content item.**
+
+```py
+jobs = client.get(f"v1/content/{content_item.guid}/jobs/").json()
+```
+
+**3. Get a job key.**
+
+```py
+print(jobs)
+```
+
+
+```json
+[
+  {
+    "key": "Iu5Wg4N3Y432P82l",
+    ...
+  },
+  {
+    "key": "nfIFOE12Ac2ZOsky",
+    ...
+  },
+  {
+    "key": "O2auCJQYOVG9tekh",
+    ...
+  }
+]
+```
