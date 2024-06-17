@@ -1,12 +1,12 @@
 ---
 title: List versions of Python, R, and Quarto on the server
-execute: 
+execute:
   eval: false
 ---
 
-## Description 
+## Description
 
-Posit Connect allows you to install multiple versions of Python, R, and Quarto, and it is quite helpful to develop your content using a version of the software which is installed on the sever. 
+Posit Connect allows you to install multiple versions of Python, R, and Quarto, and it is quite helpful to develop your content using a version of the software which is installed on the sever.
 This recipe lets you check the R, Python, and Quarto runtimes which are available on the Connect server.
 
 ## Output
