@@ -19,8 +19,9 @@ website:
       - section: "Server Management"
         href: server/index.qmd
         contents:
-          - server/linux-runas-users/index.qmd
-          - server/off-host-environments/index.qmd
+          - servers/linux-runas-users/index.qmd
+          - servers/off-host-environments/index.qmd
+          - servers/runtimes/index.qmd
       - section: "Content Management"
         href: content/index.qmd
         contents:

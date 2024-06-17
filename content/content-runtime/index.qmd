@@ -1,0 +1,33 @@
+---
+title: "Content Runtime"
+execute:
+  eval: false
+---
+
+## Description
+
+Get the language runtimes for a content item.
+
+::: {.panel-tabset group="language"}
+
+## Python
+
+```{python}
+from posit import connect
+
+client = connect.Client()
+
+item = client.content.find_one()
+
+print(item.py_version)
+print(item.quarto_version)
+print(item.r_version)
+```
+
+## R
+
+```{r}
+# TODO
+```
+
+:::
