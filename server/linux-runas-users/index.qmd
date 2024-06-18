@@ -1,7 +1,6 @@
 ---
 title: Identify RunAsCurrentUser / RunAs Linux Accounts In Use
-execute:
-  eval: false
+
 ---
 
 ## Description
@@ -172,4 +171,3 @@ get_content(client) |>
 ```
 
 :::
-

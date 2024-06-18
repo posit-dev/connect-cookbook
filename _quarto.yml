@@ -1,6 +1,9 @@
 project:
   type: website
 
+execute:
+  eval: false
+
 website:
   title: "Connect Cookbook"
   navbar:

@@ -1,7 +1,5 @@
 ---
 title: Connect Cookbook
-execute:
-  eval: false
 ---
 
 The Posit Connect Cookbook provides recipes in Python and R that enable you to get more out of your Connect instance through the Connect server API.

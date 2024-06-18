@@ -1,7 +1,6 @@
 ---
 title: Remove all viewers from a content item
-execute:
-  eval: false
+
 ---
 
 ## Description
