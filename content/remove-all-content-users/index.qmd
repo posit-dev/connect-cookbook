@@ -29,7 +29,7 @@ This recipe then does the following:
 ::: {.panel-tabset group="language"}
 ## Python
 
-```{python}
+```{.python}
 from posit import connect
 
 #### User-defined inputs ####
@@ -69,7 +69,7 @@ if access_type != "acl":
 
 ## R
 
-```{r}
+```{.r}
 library(connectapi)
 library(purrr)
 
