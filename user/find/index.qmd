@@ -1,0 +1,89 @@
+---
+title: "Finding users"
+execute:
+    eval: false
+---
+
+## Find users
+
+::: {.panel-tabset group="language"}
+
+### Python
+
+```{python}
+
+users = client.users.find()
+print(users)
+```
+
+```json
+[
+    {
+        "guid": "c6440668-15d0-4343-b3c8-18755c33df9b",
+        "username": "admin",
+        "email": "admin@posit.co",
+        "first_name": "John",
+        "last_name": "Doe",
+        "user_role": "administrator",
+        "created_time": "2018-01-02T14:47:19Z",
+        "updated_time": "2018-07-10T21:26:57Z",
+        "active_time": "2018-07-17T15:18:26Z",
+        "confirmed": true,
+        "locked": false,
+    },
+    {
+        ...
+    }
+]
+```
+
+
+### R
+
+```{r}
+# TODO
+```
+
+:::
+
+
+## Find users by role
+
+::: {.panel-tabset group="language"}
+
+### Python
+
+```{python}
+
+users = client.users.find(user_role="publisher")
+print(users)
+```
+
+```json
+[
+    {
+        "guid": "afeb15e7-274f-4981-a6d3-677cc39984d1",
+        "username": "hadley",
+        "email": "hadley@posit.co",
+        "first_name": "Hadley",
+        "last_name": "Wickham",
+        "user_role": "publisher",
+        "created_time": "2024-06-18T13:25:14Z",
+        "updated_time": "2024-06-18T13:25:27Z",
+        "active_time": "2024-06-18T13:25:27Z",
+        "confirmed": true,
+        "locked": false,
+    },
+    {
+        ...
+    }
+]
+```
+
+### R
+
+```{r}
+# TODO
+```
+
+:::
