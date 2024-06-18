@@ -34,6 +34,7 @@ jobs:
           packages: |
             any::knitr
             any::rmarkdown
+            any::reticulate
       - uses: quarto-dev/quarto-actions/setup@v2
       - uses: quarto-dev/quarto-actions/render@v2
       - uses: actions/configure-pages@v5
