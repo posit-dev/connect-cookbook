@@ -13,6 +13,7 @@ When would you use this recipe?
 e.g. "This recipe generates a data frame of ..." or "There is no generated output from this recipe, however it ..."
 
 ## Workflow
+
 This recipe requires the following inputs:
 
 1.
