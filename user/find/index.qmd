@@ -4,11 +4,15 @@ execute:
     eval: false
 ---
 
-## Find users
+## Description
+
+You want to find information on Connect users.
+
+## Recipe: Find users
 
 ::: {.panel-tabset group="language"}
 
-### Python
+## Python
 
 ```{python}
 
@@ -38,7 +42,7 @@ print(users)
 ```
 
 
-### R
+## R
 
 ```{r}
 # TODO
@@ -46,12 +50,134 @@ print(users)
 
 :::
 
-
-## Find users by role
+## Recipe: Find users by username
 
 ::: {.panel-tabset group="language"}
 
-### Python
+## Python
+
+```{python}
+
+users = client.users.find(prefix="hadley")
+print(users)
+```
+
+```json
+[
+    {
+        "guid": "afeb15e7-274f-4981-a6d3-677cc39984d1",
+        "username": "hadley",
+        "email": "hadley@posit.co",
+        "first_name": "Hadley",
+        "last_name": "Wickham",
+        "user_role": "publisher",
+        "created_time": "2024-06-18T13:25:14Z",
+        "updated_time": "2024-06-18T13:25:27Z",
+        "active_time": "2024-06-18T13:25:27Z",
+        "confirmed": true,
+        "locked": false,
+    },
+    {
+        ...
+    }
+]
+```
+
+## R
+
+```{r}
+# TODO
+```
+
+:::
+
+## Recipe: Find users by first name.
+
+::: {.panel-tabset group="language"}
+
+## Python
+
+```{python}
+
+users = client.users.find(prefix="hadley")
+print(users)
+```
+
+```json
+[
+    {
+        "guid": "afeb15e7-274f-4981-a6d3-677cc39984d1",
+        "username": "hadley",
+        "email": "hadley@posit.co",
+        "first_name": "Hadley",
+        "last_name": "Wickham",
+        "user_role": "publisher",
+        "created_time": "2024-06-18T13:25:14Z",
+        "updated_time": "2024-06-18T13:25:27Z",
+        "active_time": "2024-06-18T13:25:27Z",
+        "confirmed": true,
+        "locked": false,
+    },
+    {
+        ...
+    }
+]
+```
+
+## R
+
+```{r}
+# TODO
+```
+
+:::
+
+## Recipe: Find users by last name
+
+::: {.panel-tabset group="language"}
+
+## Python
+
+```{python}
+
+users = client.users.find(prefix="wickham")
+print(users)
+```
+
+```json
+[
+    {
+        "guid": "afeb15e7-274f-4981-a6d3-677cc39984d1",
+        "username": "hadley",
+        "email": "hadley@posit.co",
+        "first_name": "Hadley",
+        "last_name": "Wickham",
+        "user_role": "publisher",
+        "created_time": "2024-06-18T13:25:14Z",
+        "updated_time": "2024-06-18T13:25:27Z",
+        "active_time": "2024-06-18T13:25:27Z",
+        "confirmed": true,
+        "locked": false,
+    },
+    {
+        ...
+    }
+]
+```
+
+## R
+
+```{r}
+# TODO
+```
+
+:::
+
+## Recipe: Find users by role
+
+::: {.panel-tabset group="language"}
+
+## Python
 
 ```{python}
 
@@ -80,7 +206,7 @@ print(users)
 ]
 ```
 
-### R
+## R
 
 ```{r}
 # TODO
