@@ -6,7 +6,7 @@ format:
      orientation: rows
 ---
 
-```{r}
+```{.r}
 #| label: setup
 
 library(connectapi)
@@ -16,11 +16,11 @@ library(plotly)
 ```
 
 
-```{r}
-#| label: user-defined inputs 
+```{.r}
+#| label: user-defined inputs
 
 # 1. specify the guid for the content
-content_guid <- "INSERT_CONTENT_GUID" 
+content_guid <- "INSERT_CONTENT_GUID"
 
 # 2. Specify timeframe for the report. Default is 30 days prior to today
 as_of_date <- lubridate::today()
@@ -34,21 +34,21 @@ top_n <- Inf
 ```
 
 
-```{r}
+```{.r}
 #| label: report timeframe
 
 report_from <- as_of_date - lubridate::ddays(days_back)
 
 ```
 
-```{r}
+```{.r}
 #| label: Establish connection to Connect server
 
 client <- connect()
 
 ```
 
-```{r}
+```{.r}
 #| label: Get content info and usage
 
 # Determine if the content type is Shiny or not. This will dictate which telemetry endpoint to use
@@ -60,20 +60,20 @@ type <- content_info$app_mode
 
 ### Query appropriate telemetry endpoint for usage data
 if (type == "shiny" || type == "python-shiny"){
-  usage <- connectapi::get_usage_shiny(client, 
-                                       content_guid = content_guid, 
-                                       from = report_from, 
+  usage <- connectapi::get_usage_shiny(client,
+                                       content_guid = content_guid,
+                                       from = report_from,
                                        to = as_of_date,
                                        limit = Inf) |>
             dplyr::mutate(day = lubridate::floor_date(started, "day"))
 } else {
-  usage <- connectapi::get_usage_static(client, 
-                                        content_guid = content_guid, 
+  usage <- connectapi::get_usage_static(client,
+                                        content_guid = content_guid,
                                         from = report_from,
                                         to = as_of_date,
                                         limit = Inf) |>
             dplyr::mutate(day = lubridate::floor_date(time, "day"))
-  
+
 }
 
 # Get all user details to cross reference user_guids with usernames
@@ -90,9 +90,9 @@ unique_visitors <- usage |> filter(!is.na(user_guid)) |>pull(user_guid) |> uniqu
 Usage of **`r content_info$title`**, for the period of **`r report_from`** to **`r as_of_date`**
 
 
-## Row 
+## Row
 
-```{r}
+```{.r}
 #| content: valuebox
 #| title: "Total content hits in period"
 #| icon: binoculars
@@ -102,7 +102,7 @@ list (
 )
 ```
 
-```{r}
+```{.r}
 #| content: valuebox
 #| title: "Unique viewers in period"
 #| icon: people
@@ -113,18 +113,18 @@ list (
 ```
 
 
-## Row 
+## Row
 
-```{r}
+```{.r}
 #| label: plot content usage over time
 
 usage_plot_data <- usage |>
-    group_by(day) |> 
-    summarise(usage = n()) |> 
-    arrange(desc(usage)) 
-  
+    group_by(day) |>
+    summarise(usage = n()) |>
+    arrange(desc(usage))
+
  # generate plot
- {ggplot(usage_plot_data, aes(day, usage)) + 
+ {ggplot(usage_plot_data, aes(day, usage)) +
      geom_point(color = "#AE929F", size = 1) +
      geom_smooth(se = FALSE, color = "#546A7B") +
      theme_minimal() +
@@ -132,44 +132,44 @@ usage_plot_data <- usage |>
        y = NULL,
        x = NULL,
        title = glue::glue("Content usage for {content_info$title}"),
-     )} |> 
-      ggplotly(tooltip = c("y")) |> 
+     )} |>
+      ggplotly(tooltip = c("y")) |>
       config(displayModeBar = FALSE)
 
 ```
 
 
-```{r}
+```{.r}
 #| label: Create table of content usage by user
 #| html-table-processing: none
 
 # Make a table of a user's daily usage
 
-usage |> 
-  select(user_guid, day) |> 
-  group_by(user_guid) |> 
-  mutate(tot_usage = n()) |> 
+usage |>
+  select(user_guid, day) |>
+  group_by(user_guid) |>
+  mutate(tot_usage = n()) |>
   mutate(first_visit = min(day)) |>
   mutate(last_visit = max(day)) |>
-  ungroup() |> 
-  group_by(user_guid, day) |> 
-  mutate(daily_usage = n()) |> 
-  ungroup() |> 
-  left_join(all_users, by = c(user_guid = "guid")) |> 
-  mutate(username = coalesce(username, "anonymous")) |> 
-  select(username, day, tot_usage, first_visit, last_visit, daily_usage) |> 
-  distinct() |> 
-  arrange(desc(tot_usage)) |> 
-  pivot_wider(names_from = day, values_from = daily_usage) |> 
-  head(top_n) |> 
-  gt(rowname_col = "username") |> 
+  ungroup() |>
+  group_by(user_guid, day) |>
+  mutate(daily_usage = n()) |>
+  ungroup() |>
+  left_join(all_users, by = c(user_guid = "guid")) |>
+  mutate(username = coalesce(username, "anonymous")) |>
+  select(username, day, tot_usage, first_visit, last_visit, daily_usage) |>
+  distinct() |>
+  arrange(desc(tot_usage)) |>
+  pivot_wider(names_from = day, values_from = daily_usage) |>
+  head(top_n) |>
+  gt(rowname_col = "username") |>
     tab_header(
   title = if(top_n == Inf){
     paste("Content usage by user")
     }else{
-    paste("Top", top_n, "content users")})  |> 
+    paste("Top", top_n, "content users")})  |>
   tab_stubhead(label = "username") |>
-  cols_label(tot_usage = "total usage", first_visit ="first visit", last_visit="last visit") |> 
+  cols_label(tot_usage = "total usage", first_visit ="first visit", last_visit="last visit") |>
   tab_footnote(footnote=glue::glue("First and last usage in the period {report_from} to {as_of_date}"), locations=cells_column_labels(columns=c("first_visit", last_visit)) ) |>
   cols_nanoplot(
       columns = -c(tot_usage, first_visit, last_visit),
@@ -181,7 +181,7 @@ usage |>
         data_area_fill_color = "#CFD9C7",
         data_line_stroke_color = "#546A7B"
         )
-  ) 
+  )
 
 
 
@@ -189,39 +189,38 @@ usage |>
 
 ##
 
-```{r}
+```{.r}
 #| label: make a table of content details
 #| html-table-processing: none
 
 
 # Clean content info and present as a table
-content_info |> 
+content_info |>
   select(created_time, last_deployed_time, content_url, dashboard_url, owner_guid) |>
   # join with user info table to identify owner username
-  left_join(select(all_users,guid, username, email), by = c(owner_guid = "guid")) |> 
+  left_join(select(all_users,guid, username, email), by = c(owner_guid = "guid")) |>
   rename(
     content_owner = username,
-    owner_email = email) |> 
-  select(-owner_guid) |> 
-  relocate(content_owner, owner_email) |> 
+    owner_email = email) |>
+  select(-owner_guid) |>
+  relocate(content_owner, owner_email) |>
   mutate(across(everything(), as.character)) |>
-  # format owner email as a hyperlink 
+  # format owner email as a hyperlink
   # TODO: resolution of https://github.com/rstudio/gt/issues/1616 will make this unnecessary
-  mutate(owner_email, owner_email=glue::glue("[{owner_email}](mailto:{owner_email})")) |> 
+  mutate(owner_email, owner_email=glue::glue("[{owner_email}](mailto:{owner_email})")) |>
   # convert to long format for better formatting of summary table
   pivot_longer(everything(), names_to = "item", values_to = "value") |>
-  gt(rowname_col = "item") |> 
-    tab_options(column_labels.hidden = TRUE) |> 
+  gt(rowname_col = "item") |>
+    tab_options(column_labels.hidden = TRUE) |>
     tab_style(
       style = cell_text(font = system_fonts("monospace-code")),
       locations = cells_body(columns = value)
-      ) |> 
-    fmt_url(columns = value, rows = c("dashboard_url", "content_url","owner_email")) |> 
-    fmt_date(columns = value, rows = c("created_time", "last_deployed_time"), date_style = "iso") |> 
+      ) |>
+    fmt_url(columns = value, rows = c("dashboard_url", "content_url","owner_email")) |>
+    fmt_date(columns = value, rows = c("created_time", "last_deployed_time"), date_style = "iso") |>
   cols_align(
     align = "left",
     columns = value
   )
-  
-```
 
+```

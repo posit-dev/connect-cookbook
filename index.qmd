@@ -1,7 +1,5 @@
 ---
 title: Connect Cookbook
-execute:
-  eval: false
 ---
 
 The Posit Connect Cookbook provides recipes in Python and R that enable you to get more out of your Connect instance through the Connect server API.
@@ -37,7 +35,7 @@ pip install posit-sdk
 We strongly recommend the use of virtual environments to manage project-level dependencies.
 The code below uses `renv` for this purpose.
 
-```{r}
+```{.r}
 # install `renv` package
 install.packages(renv)
 
@@ -78,7 +76,7 @@ With these variables set, you don't have to pass any arguments to the library fu
 ::: {.panel-tabset group="language"}
 ## Python
 
-```{python}
+```{.python}
 # If you're using a .env file locally, do this:
 from dotenv import load_dotenv
 
@@ -92,7 +90,7 @@ client = connect.Client()
 
 ## R
 
-```{r}
+```{.r}
 library(connectapi)
 
 client <- connect()

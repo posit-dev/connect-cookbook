@@ -1,7 +1,6 @@
 ---
 title: Transfer ownership of all content
-execute:
-  eval: false
+
 ---
 
 ## Description
@@ -100,5 +99,3 @@ client |>
 ```
 
 :::
-
-
