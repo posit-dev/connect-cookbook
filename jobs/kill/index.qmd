@@ -13,7 +13,7 @@ You want to register a kill order for a job.
  Before executing, ensure you have the following information:
 
  - The unique identifier for the content item.
- - The unique key the job.
+ - The unique key the job. You can find this using the ["Find jobs" recipe](../find/index.qmd)
 
 ## Register a job kill order
 
