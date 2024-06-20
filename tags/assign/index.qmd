@@ -23,7 +23,7 @@ Before executing, ensure you have the following information:
 
 ## Assign a tag
 
-A content identifier and tag identifier is required to assign a tag.
+A content identifier and tag identifier are required to assign a tag.
 
 ::: {.callout-warning}
 
