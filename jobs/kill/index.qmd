@@ -6,7 +6,7 @@ execute:
 
 ## Description
 
-This recipe demonstrates how to register a kill order for a job.
+You want to register a kill order for a job.
 
 ## Recipe
 
