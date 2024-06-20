@@ -44,7 +44,7 @@ The code samples below yields content usage data as a data frame.
 
 ## Python
 
-```{python}
+```{.python}
 from posit import connect
 from datetime import date, timedelta
 import os
@@ -107,7 +107,7 @@ The output above can be plotted for a historical perspective on content usage. A
 
 ## R
 
-```{r}
+```{.r}
 library(connectapi)
 library(dplyr)
 library(lubridate)
@@ -195,7 +195,7 @@ The code samples below yield by-user content usage data as a data frame.
 
 ## Python
 
-```{python}
+```{.python}
 # Get user details to cross reference `user_guid` with usernames
 all_users = pl.DataFrame(client.users.find())
 
@@ -257,7 +257,7 @@ The output above can be plotted for a historical perspective on content views. A
 
 ## R
 
-```{r}
+```{.r}
 # Get user details to cross reference `user_guid` with usernames
 all_users <- get_users(client, limit = Inf)
 

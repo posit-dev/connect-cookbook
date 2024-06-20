@@ -37,7 +37,7 @@ The code sample below yields the top N content items, based on usage over a sele
 
 ## Python
 
-```{python}
+```{.python}
 from posit import connect
 from datetime import date, timedelta
 import polars as pl
@@ -103,7 +103,7 @@ An example bar graph visualizing this data is included in the Quarto dashboard c
 
 ## R
 
-```{r}
+```{.r}
 library(connectapi)
 library(dplyr)
 library(lubridate)
@@ -178,7 +178,7 @@ The code sample below yields the top N content users, based on usage over a sele
 
 ## Python
 
-```{python}
+```{.python}
 # Get user details to cross reference `user_guid` with usernames
 all_users = pl.DataFrame(client.users.find())
 
@@ -234,7 +234,7 @@ An example bar graph visualizing this data is included in the Quarto dashboard c
 
 ## R
 
-```{r}
+```{.r}
 # Get user details to cross reference `user_guid` with usernames
 all_users <- get_users(client, limit = Inf)
 
@@ -287,7 +287,7 @@ The code sample below yields the top N most publishers, based on usage over a se
 
 ## Python
 
-```{python}
+```{.python}
 # table of most frequent content_hits with content info
 content_hits = (
   usage.group_by("content_guid")
@@ -341,7 +341,7 @@ An example bar graph visualizing this data is included in the Quarto dashboard c
 
 ## R
 
-```{r}
+```{.r}
 top_n_publishers <- usage |>
     left_join(content_info, by = c(content_guid = "guid")) |>
     select(content_guid, name, title, owner_username) |>

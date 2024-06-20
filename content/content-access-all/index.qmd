@@ -1,18 +1,18 @@
 ---
 title: "Identify content set to \"No Login Required\""
-execute: 
+execute:
   eval: false
 ---
 
 ## Description
 
-This recipe provides details on how to identify any content published on Connect with permissions set to `no login required`. 
+This recipe provides details on how to identify any content published on Connect with permissions set to `no login required`.
 This recipe comes in handy while performing an audit of all content published on Posit Connect and there is a need to identify any content with open access. It also helps identify which URL is associated with such content and who the publisher is.
 This recipe would come in handy while performing an audit of all content published on Posit Connect and there is a need to identify any content with open access. It also helps identify which URL is associated with such content and who the publisher is.
 
-This recipe yields a table of all content that is set without restriction. The information includes a URL of the content on Connect and the username of the content owner. 
+This recipe yields a table of all content that is set without restriction. The information includes a URL of the content on Connect and the username of the content owner.
 
-This recipe yields a table of all content that is set without access restriction. The information includes URL of the content on Connect and the username of the content owner. 
+This recipe yields a table of all content that is set without access restriction. The information includes URL of the content on Connect and the username of the content owner.
 
 ## Workflow
 
@@ -28,11 +28,11 @@ This recipe does the following:
 
 ## Python
 
-```{python}
+```{.python}
 #| label: identify_content_python
 
-from posit.connect import Client  
-import pandas as pd  
+from posit.connect import Client
+import pandas as pd
 import itables
 
 def make_clickable(val):
@@ -51,7 +51,7 @@ content = content.rename(columns={"title": "App Name", "content_url": "URL"})
 content = content.style.format({'URL': make_clickable})
 
 # # Build a table
-itables.show(content) 
+itables.show(content)
 
 ```
 
@@ -61,7 +61,7 @@ itables.show(content)
 
 ## R
 
-```{r}
+```{.r}
 #| label: identify_content_r
 
 library(connectapi)
@@ -86,7 +86,7 @@ tbl <- content |>
 
 # Build a table
 gt(tbl) |>
-  fmt_url(columns = c("URL")) |> 
+  fmt_url(columns = c("URL")) |>
     opt_interactive(use_search = TRUE)
 
 ```
@@ -99,7 +99,7 @@ gt(tbl) |>
 
 ## Extending the recipe
 
-There are many ways to take further action based on the content list generated above. 
+There are many ways to take further action based on the content list generated above.
 
 If the objective is to generate a list of the content, the above code block provides that information.
 

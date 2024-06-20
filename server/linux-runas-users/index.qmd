@@ -138,7 +138,7 @@ shape: (3, 5)
 
 ## R
 
-```{r}
+```{.r}
 library(connectapi)
 library(dplyr)
 library(tidyr)
