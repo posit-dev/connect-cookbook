@@ -141,12 +141,6 @@ variant_key <- "default"
 recipients <-  "me"
 ###########################
 
-# verify that `recipients` is a valid option and if not, set to "none"
-if (!(recipients %in% c("none", "me", "collaborators", "collaborators_viewers"))) {
-  recipients <- "none"
-  print(glue::glue("Invalid `recipients` option: {recipients}. Defaulting to 'none'."))
-}
-
 # verify that variant key is either "default" or appears to be a valid entry.
 if (variant_key != "default" && nchar(variant_key) != 8) {
   stop(glue::glue("The specified variant key '{variant_key}' does not appear to be valid. Set to 'default' or enter a valid variant key."))
