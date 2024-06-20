@@ -44,6 +44,7 @@ website:
       - text: "Job Recipes"
         href: jobs/index.qmd
         contents:
+          - jobs/find/index.qmd
           - jobs/kill/index.qmd
 
 format:
