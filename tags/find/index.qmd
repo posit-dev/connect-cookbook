@@ -4,54 +4,45 @@ execute:
     eval: false
 ---
 
+## Description
+
+You want to find tag information.
+
 ## Find tags
 
 ::: {.panel-tabset group="language"}
 
-### Python
+## Python
 
-```{python}
-response = client.get("/v1/tags")
-tags = response.json()
+```{.python}
+res = client.get("/v1/tags")
 print(tags)
 ```
 
-```{json}
-[
-    {
-        "id": "100",
-        "name": "Departments",
-        "parent_id": null,
-        "created_time": "2024-06-17T18:33:37Z",
-        "updated_time": "2024-06-17T18:33:37Z"
-    },
-    {
-        {
-        "id": "200",
-        "name": "Administrative",
-        "parent_id": "100",
-        "created_time": "2024-06-17T19:51:48Z",
-        "updated_time": "2024-06-17T19:51:48Z"
-    },
-    {
-        "id": "300",
-        "name": "Human Resources",
-        "parent_id": "100",
-        ...
-    },
-    {
-        "id": "400",
-        "name": "Engineering",
-        "parent_id": "100",
-        ...
-    },
-]
+```{.python}
+>>> pl.DataFrame(res.json())
+shape: (309, 5)
+┌─────┬─────────────────────────────────┬───────────┬──────────────────────┬──────────────────────┐
+│ id  ┆ name                            ┆ parent_id ┆ created_time         ┆ updated_time         │
+│ --- ┆ ---                             ┆ ---       ┆ ---                  ┆ ---                  │
+│ str ┆ str                             ┆ str       ┆ str                  ┆ str                  │
+╞═════╪═════════════════════════════════╪═══════════╪══════════════════════╪══════════════════════╡
+│ 1   ┆ Technology                      ┆ null      ┆ 2017-04-18T19:53:45Z ┆ 2017-05-01T11:29:36Z │
+│ 2   ┆ Health                          ┆ null      ┆ 2017-04-18T19:54:05Z ┆ 2017-05-02T13:57:31Z │
+│ 4   ┆ Software                        ┆ 1         ┆ 2017-04-18T19:54:24Z ┆ 2017-05-19T18:15:39Z │
+│ 5   ┆ Mobile Apps                     ┆ 4         ┆ 2017-04-18T19:54:32Z ┆ 2017-05-03T20:15:27Z │
+│ 6   ┆ Version 1.6.0                   ┆ 207       ┆ 2017-05-18T04:53:31Z ┆ 2017-05-18T05:00:20Z │
+│ …   ┆ …                               ┆ …         ┆ …                    ┆ …                    │
+│ 751 ┆ Artificial Intelligence         ┆ 736       ┆ 2024-06-03T03:26:58Z ┆ 2024-06-03T04:03:24Z │
+│ 752 ┆ Machine Learning                ┆ 736       ┆ 2024-06-03T03:27:43Z ┆ 2024-06-03T04:04:04Z │
+│ 753 ┆ Deep Learning                   ┆ 736       ┆ 2024-06-03T03:28:12Z ┆ 2024-06-03T04:04:16Z │
+└─────┴─────────────────────────────────┴───────────┴──────────────────────┴──────────────────────┘
 ```
 
 
-### R
+## R
 
-```{r}
+```{.r}
 # TODO
 ```
 
@@ -64,29 +55,41 @@ A tag identifier is required to find content items.
 
 ::: {.panel-tabset group="language"}
 
-### Python
+## Python
 
-```{python}
-TAG_ID = "200"
+```{.python}
+TAG_ID = "your-tag-id"
 
-response = client.get(f"/v1/tags/{TAG_ID}/content")
-content_items = response.json()
-print(content_items)
+res = client.get(f"/v1/tags/{TAG_ID}/content")
 ```
 
-```{json}
-[
-    {
-        "guid": "95f0b367-0eb5-4a8f-a9a8-4a531f00f712",
-        ...
-    },
-]
+```{.python}
+>>> pl.DataFrame(res.json())
+shape: (24, 45)
+┌─────────────────────────────────┬──────────────────────────────┬──────────────────────────────┬──────────────────────────────────────────────────────────────────────────────┐
+│ guid                            ┆ name                         ┆ title                        ┆ description                                                                  │
+│ ---                             ┆ ---                          ┆ ---                          ┆ ---                                                                          │
+│ str                             ┆ str                          ┆ str                          ┆ str                                                                          │
+╞═════════════════════════════════╪══════════════════════════════╪══════════════════════════════╪══════════════════════════════════════════════════════════════════════════════╡
+│ 5b6f05d1-1fea-480b-b8fa-51aec6… ┆ AI-Overview                  ┆ Introduction to AI           ┆ An introductory overview of Artificial Intelligence and its core concepts.   │
+│ 7ec59570-b199-4f16-8fff-86e3c6… ┆ ML-Models                    ┆ Machine Learning Models      ┆ Detailed explanation of various machine learning models and their applicatio │
+│ 3f4140dd-5924-4b31-bb2e-2031b2… ┆ DeepLearning-Techniques      ┆ Advanced Deep Learning       ┆ Exploration of advanced techniques in deep learning, including neural network│
+│ 62ebbc03-818b-41f2-91fe-4718bb… ┆ Tech-Trends2024              ┆ Technology Trends in 2024    ┆ A look into the upcoming technology trends expected to dominate in 2024.     │
+│ 2bd2a699-b46e-4e6a-8eb6-caca49… ┆ Health-Innovations           ┆ Innovations in Healthcare    ┆ Innovations and breakthroughs in the healthcare industry for better outcomes.│
+│ …                               ┆ …                            ┆ …                            ┆ …                                                                            │
+│ d235306c-7155-4aa3-aac0-a6b587… ┆ Software-Development         ┆ Software Development Basics  ┆ Basics of software development, including best practices and methodologies.  │
+│ 3bed9e07-b793-43ea-839a-37e41b… ┆ Mobile-Apps-Trends           ┆ Trends in Mobile Apps        ┆ Current trends in mobile app development and popular frameworks.             │
+│ 1d79c2c7-c649-40be-a0b5-3be159… ┆ Stats-Overview               ┆ Overview of Statistics       ┆ Comprehensive overview of statistics and its importance in data analysis.    │
+│ 2c67c0c5-3d8b-44c7-a4b3-a80787… ┆ AI-Applications              ┆ Applications of AI           ┆ Various applications of artificial intelligence across different industries. │
+│ 2bee37f3-1f44-4ba5-bbdc-092dd0… ┆ Data-Visualization           ┆ Data Visualization Techniques┆ Techniques and tools for effective data visualization and presentation.      │
+└─────────────────────────────────┴──────────────────────────────┴──────────────────────────────┴──────────────────────────────────────────────────────────────────────────────┘
+
 ```
 
 
-### R
+## R
 
-```{r}
+```{.r}
 # TODO
 ```
 
@@ -98,32 +101,32 @@ A content item identifier is required to find tags.
 
 ::: {.panel-tabset group="language"}
 
-### Python
+## Python
 
-```{python}
-CONTENT_ITEM_GUID = "95f0b367-0eb5-4a8f-a9a8-4a531f00f712"
+```{.python}
+CONTENT_ITEM_GUID = "your-content-item-guid"
 
-response = client.get(f"/v1/content/{CONTENT_ITEM_GUID}/tags")
-tags = response.json()
-print(tags)
+res = client.get(f"/v1/content/{CONTENT_ITEM_GUID}/tags")
 ```
 
-```{json}
-[
-    {
-        "id": "200",
-        "name": "Administrative",
-        "parent_id": "100",
-        "created_time": "2024-06-17T19:51:48Z",
-        "updated_time": "2024-06-17T19:51:48Z"
-    }
-]
+### Example Output
+```{.python}
+>>> pl.DataFrame(res.json())
+shape: (2, 5)
+┌─────┬───────────────────────────┬───────────┬──────────────────────┬──────────────────────┐
+│ id  ┆ name                      ┆ parent_id ┆ created_time         ┆ updated_time         │
+│ --- ┆ ---                       ┆ ---       ┆ ---                  ┆ ---                  │
+│ str ┆ str                       ┆ str       ┆ str                  ┆ str                  │
+╞═════╪═══════════════════════════╪═══════════╪══════════════════════╪══════════════════════╡
+│ 4   ┆ Software                  ┆ 1         ┆ 2017-04-18T19:54:24Z ┆ 2017-05-19T18:15:39Z │
+│ 5   ┆ Artificial Intelligence   ┆ 1         ┆ 2017-04-18T19:54:32Z ┆ 2017-05-03T20:15:27Z │
+└─────┴───────────────────────────┴───────────┴──────────────────────┴──────────────────────┘
 ```
 
 
-### R
+## R
 
-```{r}
+```{.r}
 # TODO
 ```
 

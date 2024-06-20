@@ -1,27 +1,39 @@
 ---
 title: "Deleting tags"
-execute:
-    eval: false
 ---
+
+## Description
+
+You want to delete a tag.
+
+## Prerequisites
+
+Before executing, ensure you have the following information:
+
+- The unique identifier the tag you want to delete.
+
+::: {.callout-tip}
+
+To find the unique identifier for the tag see [*Finding tags*](../find/index.qmd).
+
+:::
 
 ## Delete a tag
 
-A tag identifier is required to delete a tag.
-
 ::: {.panel-tabset group="language"}
 
-### Python
+## Python
 
-```{python}
-TAG_ID = "200"
+```{.python}
+TAG_ID = "your-tag-id"
 
 client.delete(f"/v1/tags/{TAG_ID}")
 ```
 
 
-### R
+## R
 
-```{r}
+```{.r}
 # TODO
 ```
 

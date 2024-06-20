@@ -4,75 +4,92 @@ execute:
     eval: false
 ---
 
-Tags are used to categorize content.
+## Description
 
-### Create a tag group
+You want to organize content using tags.
 
-First, create a tag group.
+## Create a tag group
+
+Create a tag group.
 
 ::: {.panel-tabset group="language"}
 
-### Python
+## Python
 
-```{python}
-response = client.post("/v1/tags", json={
+```{.python}
+res = client.post("/v1/tags", json={
     'name': 'Departments',
 })
-
-departments = response.json()
-print(departments)
 ```
 
-```{json}
-{
-    "id": "100",
-    "name": "Departments",
-    "parent_id": null,
-    "created_time": "2024-06-17T18:33:37Z",
-    "updated_time": "2024-06-17T18:33:37Z"
-}
+### Example Output
+```{.python}
+>>> pl.DataFrame(response.json())
+shape: (1, 5)
+┌─────┬─────────────┬───────────┬──────────────────────┬──────────────────────┐
+│ id  ┆ name        ┆ parent_id ┆ created_time         ┆ updated_time         │
+│ --- ┆ ---         ┆ ---       ┆ ---                  ┆ ---                  │
+│ str ┆ str         ┆ null      ┆ str                  ┆ str                  │
+╞═════╪═════════════╪═══════════╪══════════════════════╪══════════════════════╡
+│ 100 ┆ Departments ┆ null      ┆ 2024-06-20T14:25:20Z ┆ 2024-06-20T14:25:20Z │
+└─────┴─────────────┴───────────┴──────────────────────┴──────────────────────┘
 ```
 
 
-### R
+## R
 
-```{r}
+```{.r}
 # TODO
 ```
 
 :::
 
-### Create a tag
+## Create a tag
 
-Next, create a tag within the group.
+Create a tag within a tag group.
+
+### Prerequisites
+
+Before executing, ensure you have the following information:
+
+- The unique identifier for the tag group you want to use.
 
 ::: {.panel-tabset group="language"}
 
-### Python
+## Python
 
-```{python}
-administrative = client.post("/v1/tags", json={
+```{.python}
+TAG_GROUP_ID = 'your-tag-group-id'
+
+res = client.post("/v1/tags", json={
     'name': 'Administrative',
-    'parent_id': departments['id']
+    'parent_id': TAG_GROUP_ID
 })
-
-administrative = response.json()
-print(administrative)
 ```
 
-```{json}
-{
-    "id": "200",
-    "name": "Administrative",
-    "parent_id": "100",
-    "created_time": "2024-06-17T19:51:48Z",
-    "updated_time": "2024-06-17T19:51:48Z"
-}
+### Example Output
+
+::: {.callout-tip}
+
+The `parent_id` shown below, `100`, is the identifier of the `Departments` tag shown in the prior example.
+
+:::
+
+```{.python}
+>>> pl.DataFrame(res.json())
+shape: (1, 5)
+┌─────┬────────────────┬───────────┬──────────────────────┬──────────────────────┐
+│ id  ┆ name           ┆ parent_id ┆ created_time         ┆ updated_time         │
+│ --- ┆ ---            ┆ ---       ┆ ---                  ┆ ---                  │
+│ str ┆ str            ┆ str       ┆ str                  ┆ str                  │
+╞═════╪════════════════╪═══════════╪══════════════════════╪══════════════════════╡
+│ 200 ┆ Administrative ┆ 100       ┆ 2024-06-20T14:27:22Z ┆ 2024-06-20T14:27:22Z │
+└─────┴────────────────┴───────────┴──────────────────────┴──────────────────────┘
 ```
 
-### R
+## R
 
-```{r}
+```{.r}
 # TODO
 ```
 
