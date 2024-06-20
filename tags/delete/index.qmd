@@ -18,6 +18,12 @@ To find the unique identifier for the tag see [*Finding tags*](../find/index.qmd
 
 :::
 
+::: {.callout-warning}
+
+You must have administrator privileges to delete a tag.
+
+:::
+
 ## Delete a tag
 
 ::: {.panel-tabset group="language"}

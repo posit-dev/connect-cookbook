@@ -25,6 +25,12 @@ Before executing, ensure you have the following information:
 
 A content identifier and tag identifier is required to assign a tag.
 
+::: {.callout-warning}
+
+You must have administrator privileges to assign a tag.
+
+:::
+
 ::: {.panel-tabset group="language"}
 
 ## Python

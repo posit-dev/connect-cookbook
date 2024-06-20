@@ -12,6 +12,12 @@ You want to organize content using tags.
 
 Create a tag group.
 
+::: {.callout-warning}
+
+You must have administrator privileges to create a tag group.
+
+:::
+
 ::: {.panel-tabset group="language"}
 
 ## Python
@@ -53,6 +59,12 @@ Create a tag within a tag group.
 Before executing, ensure you have the following information:
 
 - The unique identifier for the tag group you want to use.
+
+::: {.callout-warning}
+
+You must have administrator privileges to create a tag.
+
+:::
 
 ::: {.panel-tabset group="language"}
 
