@@ -31,7 +31,22 @@ client.delete(f"v1/content/{CONTENT_ITEM_GUID}/jobs/{JOB_KEY}")
 ## R
 
 ```{.r}
-# TODO
+library(connectapi)
+library(httr)
+client <- connect()
+
+#### User-defined inputs ####
+# 1. Content GUID, available in the Dashboard's Info tab.
+guid <- "154bd2af-e8fa-4aa4-aab8-dcef701f4af9"
+# 2. The job key, which you can find using the "Find jobs" recipe.
+key <- "wiSznovdN3IxIliY"
+###########################
+
+response <- client$DELETE(
+    paste0("v1/content/", guid, "/jobs/", key),
+)
+
+print(response)
 ```
 
 :::

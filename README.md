@@ -32,4 +32,3 @@ Some brainstorming for the CI setup:
     * Recipes should generally be robust to changes in global state they may face, since they could be run out of order or run multiple times
     * Should recipes have teardowns that restore state?
 * Should also be able to point scripts against another test server (e.g. when writing scripts for not-yet-released features, or for configurations not set up in the base image)
-
