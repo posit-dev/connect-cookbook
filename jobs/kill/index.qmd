@@ -6,7 +6,7 @@ execute:
 
 ## Description
 
-Register a kill order for a job.
+This recipe demonstrates how to register a kill order for a job.
 
 ## Recipe
 
@@ -39,19 +39,19 @@ client.delete(f"v1/content/{CONTENT_GUID}/jobs/{JOB_KEY}")
 
 ### How to obtain a job key
 
-**1. Find a content item.**
+1. Find a content item.
 
 ```py
 content_item = client.content.find_one()
 ```
 
-**2. Fetch jobs for the content item.**
+2. Fetch jobs for the content item.
 
 ```py
 jobs = client.get(f"v1/content/{content_item.guid}/jobs/").json()
 ```
 
-**3. Get a job key.**
+3. Get a job key.
 
 ```py
 print(jobs)
