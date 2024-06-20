@@ -37,7 +37,30 @@ print(item.r_version)
 ## R
 
 ```{r}
-# TODO
+library(connectapi)
+client <- connect()
+
+#### User-defined inputs ####
+# 1. Specify the GUID for the content item you wish to examine.
+guid <- "154bd2af-e8fa-4aa4-aab8-dcef701f4af9"
+###########################
+
+library(connectapi)
+client <- connect()
+item <- get_content(client, guid = guid)
+item$r_version
+item$quarto_version
+item$py_version
+```
+
+Your call to `get_content` can specify an item by its `guid`, or with its `name` and `owner_guid`. You can find the content GUID in the Info panel of the content sidebar in the Connect Dashboard.
+
+### Example output
+
+```console
+[1] "3.7.2"
+[1] "0.9.37"
+[1] "4.1.1"
 ```
 
 :::
