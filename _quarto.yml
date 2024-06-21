@@ -36,11 +36,8 @@ website:
         href: user/index.qmd
         contents:
           - user/transfer-content/index.qmd
-      - text: "Job Recipes"
-        href: jobs/index.qmd
-        contents:
-          - jobs/find/index.qmd
-          - jobs/kill/index.qmd
+=======
+    contents: /**/**/*.qmd
 
 format:
   html:

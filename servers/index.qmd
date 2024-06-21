@@ -1,5 +1,5 @@
 ---
-title: Content Recipes
+title: Server Management Recipes
 listing:
     template: ../ejs/links.ejs
 ---
