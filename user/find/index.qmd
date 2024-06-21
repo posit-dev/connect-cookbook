@@ -51,7 +51,7 @@ shape: (1, 11)
 users = client.users.find(prefix="hadley")
 ```
 
-### Example Output
+### Example output
 
 ```{.python}
 >>> pl.DataFrame(users)
