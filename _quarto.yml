@@ -16,12 +16,6 @@ website:
     search: true
     collapse-level: 1
     contents:
-      - section: "Server Management"
-        href: servers/index.qmd
-        contents:
-          - servers/linux-runas-users/index.qmd
-          - servers/off-host-environments/index.qmd
-          - servers/runtimes/index.qmd
       - section: "Content Management"
         href: content/index.qmd
         contents:
@@ -46,6 +40,19 @@ website:
         contents:
           - jobs/find/index.qmd
           - jobs/kill/index.qmd
+      - section: "Server Management Recipes"
+        href: servers/index.qmd
+        contents:
+          - servers/linux-runas-users/index.qmd
+          - servers/off-host-environments/index.qmd
+          - servers/runtimes/index.qmd
+      - text: "Tag Recipes"
+        href: tags/index.qmd
+        contents:
+          - tags/create/index.qmd
+          - tags/assign/index.qmd
+          - tags/find/index.qmd
+          - tags/delete/index.qmd
 
 format:
   html:
