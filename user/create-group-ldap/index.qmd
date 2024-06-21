@@ -2,7 +2,7 @@
 title: Create a Posit Connect group from LDAP
 ---
 
-## Description 
+## Description
 
 This recipe searches for a group that is present in an LDAP authentication provider but not yet on Connect and creates that group on Connect.
 
@@ -15,11 +15,11 @@ To run this, the name of the group you want to add is required.
 
 This recipe then does the following:
 
-1. Queries the remote LDAP server for a group 
+1. Queries the remote LDAP server for a group
 2. Creates a new group in Connect with the supplied details from the LDAP server
 
 ::: {.callout-note}
-This recipe is very similar to the one to [create users from an LDAP authentication provider](user/create-user-ldap/). 
+This recipe is very similar to the one to [create users from an LDAP authentication provider](user/create-user-ldap/).
 If you also need to create users, combining these two or doing them in sequence might be helpful.
 :::
 
@@ -34,7 +34,7 @@ If you also need to create users, combining these two or doing them in sequence 
 ```{.python}
 from posit import connect
 import polars as pl
-client = connect.Client() 
+client = connect.Client()
 
 ### User-defined inputs ###
 # 1. The group you want to search for
@@ -61,7 +61,7 @@ shape: (2, 3)
 └──────────────────────────────┴─────────────────────────────────┴─────────────────────────────────┘
 ```
 
-We have two groups here, `Data Science` and `Data Science Apprentices`. The `Data Science` group has a GUID, which means that it already has a group on Connect, but the second `Data Science Apprentices` group does not have a GUID which means that it is not present as a group on Connect. 
+We have two groups here, `Data Science` and `Data Science Apprentices`. The `Data Science` group has a GUID, which means that it already has a group on Connect, but the second `Data Science Apprentices` group does not have a GUID which means that it is not present as a group on Connect.
 
 Included in the API response for each group is a `temp_ticket` value, which can be used to create the group in Connect. In the example above, the second group, `Data Science Apprentices`, does not exist in Connect, so you need the `temp_ticket` for this group to create the group in Connect.
 
@@ -131,14 +131,14 @@ tibble(
 
 ```
 A tibble: 2 × 3
-  name                         guid                                 temp_ticket                                
-  <chr>                        <chr>                                <chr>                                      
+  name                         guid                                 temp_ticket
+  <chr>                        <chr>                                <chr>
 1 Data Science                 51a3747a-88c9-4d6c-a791-17c194f0a663 isMU7qo46iGlOZosHGz8NbIG3ciOimKNCn90kln57D…
 2 Data Science Apprentices     NA                                   p5OYtB634uqqfCf72p/KmCtTT9pn7Bpj/6CrGP9ynX…
 >
 ```
 
-We have two groups here, `Data Science` and `Data Science Apprentices`. The `Data Science` group has a GUID, which means that it already has a group on Connect, but the second `Data Science Apprentices` group does not have a GUID which means that it is not present as a group on Connect. 
+We have two groups here, `Data Science` and `Data Science Apprentices`. The `Data Science` group has a GUID, which means that it already has a group on Connect, but the second `Data Science Apprentices` group does not have a GUID which means that it is not present as a group on Connect.
 
 ### Creating the group
 
@@ -158,8 +158,8 @@ Creating remote group: Data Science Apprentices
 Done creating remote groups
 # A tibble: 1 × 3
   guid                                 name                     owner_guid
-  <chr>                                <chr>                    <chr>     
-1 b806d590-5d52-478e-a9d8-491228b090e7 Data Science Apprentices NA  
+  <chr>                                <chr>                    <chr>
+1 b806d590-5d52-478e-a9d8-491228b090e7 Data Science Apprentices NA
 ```
 
 If the group already exists in Connect, the same call returns:
@@ -168,8 +168,8 @@ If the group already exists in Connect, the same call returns:
 At least one group with name prefix 'Data Science Apprentices' already exists
 # A tibble: 1 × 3
   guid                                 name                     owner_guid
-  <chr>                                <chr>                    <chr>     
-1 b806d590-5d52-478e-a9d8-491228b090e7 Data Science Apprentices NA        
+  <chr>                                <chr>                    <chr>
+1 b806d590-5d52-478e-a9d8-491228b090e7 Data Science Apprentices NA
 ```
 
 

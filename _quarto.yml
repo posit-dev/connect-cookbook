@@ -39,6 +39,8 @@ website:
           - user/find/index.qmd
           - user/transfer-content/index.qmd
           - user/create-user-ldap/index.qmd
+          - user/create-group-ldap/index.qmd
+          - user/search-content-group-ownership/index.qmd
 
 format:
   html:
