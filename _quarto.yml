@@ -32,9 +32,10 @@ website:
           - content/most-used/index.qmd
           - content/remove-all-content-users/index.qmd
           - content/render-on-demand/index.qmd
-      - text: "User Management"
+      - text: "User Recipes"
         href: user/index.qmd
         contents:
+          - user/find/index.qmd
           - user/transfer-content/index.qmd
 
 format:

@@ -1,7 +1,11 @@
 ---
-title: Users and groups recipes
-listing: 
-    template: ../ejs/links.ejs
+ title: "User Recipes"
+ format:
+     html:
+         css: ../styles/styles.scss
+ listing:
+     template: ../ejs/links.ejs
+     contents: "**/index.qmd"
 ---
 
 The recipes in this section can help you to work with the users and groups on the Connect server.
