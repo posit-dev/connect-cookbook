@@ -26,7 +26,7 @@ CONTENT_ITEM_GUID = 'your-content-item-guid'
 res = client.get(f"v1/content/{CONTENT_ITEM_GUID}/jobs/").json()
 ```
 
-### Example Output
+### Example output
 
 ```{.python}
 >>> pl.DataFrame(res.json())
