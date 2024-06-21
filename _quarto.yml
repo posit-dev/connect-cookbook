@@ -38,6 +38,7 @@ website:
         contents:
           - user/find/index.qmd
           - user/transfer-content/index.qmd
+          - user/create-user-ldap/index.qmd
 
 format:
   html:
