@@ -17,7 +17,7 @@ website:
     collapse-level: 1
     contents:
       - section: "Server Management"
-        href: server/index.qmd
+        href: servers/index.qmd
         contents:
           - servers/linux-runas-users/index.qmd
           - servers/off-host-environments/index.qmd

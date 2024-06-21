@@ -36,7 +36,7 @@ print(item.r_version)
 
 ## R
 
-```{r}
+```{.r}
 # TODO
 ```
 
