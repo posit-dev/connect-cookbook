@@ -43,7 +43,7 @@ key <- "CwCoI9tizMRRcvLw"
 ###########################
 
 response <- client$DELETE(
-    paste0("v1/content/", guid, "/jobs/", key),
+    glue::glue("v1/content/{guid}/jobs/{key}"),
 )
 
 print(response)
