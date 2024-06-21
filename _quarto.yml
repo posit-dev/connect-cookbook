@@ -15,44 +15,7 @@ website:
   sidebar:
     search: true
     collapse-level: 1
-    contents:
-      - section: "Content Management"
-        href: content/index.qmd
-        contents:
-          - content/content-access-all/index.qmd
-          - content/content-by-user/index.qmd
-          - content/content-permissions/index.qmd
-          - content/content-usage/index.qmd
-          - content/modify-git/index.qmd
-          - content/most-used/index.qmd
-          - content/remove-all-content-users/index.qmd
-          - content/render-on-demand/index.qmd
-      - text: "User Recipes"
-        href: user/index.qmd
-        contents:
-          - user/find/index.qmd
-          - user/transfer-content/index.qmd
-          - user/create-user-ldap/index.qmd
-          - user/create-group-ldap/index.qmd
-          - user/search-content-group-ownership/index.qmd
-      - text: "Job Recipes"
-        href: jobs/index.qmd
-        contents:
-          - jobs/find/index.qmd
-          - jobs/kill/index.qmd
-      - section: "Server Management Recipes"
-        href: servers/index.qmd
-        contents:
-          - servers/linux-runas-users/index.qmd
-          - servers/off-host-environments/index.qmd
-          - servers/runtimes/index.qmd
-      - text: "Tag Recipes"
-        href: tags/index.qmd
-        contents:
-          - tags/create/index.qmd
-          - tags/assign/index.qmd
-          - tags/find/index.qmd
-          - tags/delete/index.qmd
+    contents: /**/**/*.qmd
 
 format:
   html:

@@ -1,5 +1,5 @@
 ---
-title: Transfer ownership of all content
+title: Transfer content ownership
 
 ---
 

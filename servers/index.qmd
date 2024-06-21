@@ -1,6 +1,5 @@
 ---
-title: Overview of recipes
-listing: grid
+title: Server Management Recipes
+listing:
+    template: ../ejs/links.ejs
 ---
-
-## Recipes for management of the server, processes, and resources
