@@ -41,6 +41,11 @@ website:
           - user/create-user-ldap/index.qmd
           - user/create-group-ldap/index.qmd
           - user/search-content-group-ownership/index.qmd
+      - text: "Job Recipes"
+        href: jobs/index.qmd
+        contents:
+          - jobs/find/index.qmd
+          - jobs/kill/index.qmd
 
 format:
   html:

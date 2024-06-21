@@ -1,0 +1,37 @@
+---
+title: "Register job kill order"
+execute:
+  eval: false
+---
+
+## Description
+
+You want to register a kill order for a job.
+
+## Prerequisites
+
+ Before executing, ensure you have the following information:
+
+ - The globally unique identifier (guid) for the content item.
+ - The unique key the job.
+
+## Register a job kill order
+
+::: {.panel-tabset group="language"}
+
+## Python
+
+```{.python}
+CONTENT_ITEM_GUID = 'your-content-item-guid'
+JOB_KEY = 'your-job-key'
+
+client.delete(f"v1/content/{CONTENT_ITEM_GUID}/jobs/{JOB_KEY}")
+```
+
+## R
+
+```{.r}
+# TODO
+```
+
+:::
