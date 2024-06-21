@@ -1,7 +1,5 @@
 ---
 title: Create a Posit Connect group from LDAP
-execute: 
-  eval: false
 ---
 
 ## Description 
@@ -10,18 +8,20 @@ This recipe searches for a group that is present in an LDAP authentication provi
 
 ## Output
 
-This recipe creates a group on Connect that is present in an LDAP authentication provider, but is not yet on Connect.
+The output is the side effect of creating the new group on Connect that was present in an LDAP authentication provider but not Connect along with  information about the group added to Connect displayed on the console.
 
 ## Workflow
-This recipe requires the name of the group you want to add.
-
+To run this, the name of the group you want to add is required.
 
 This recipe then does the following:
 
-1.  Search for the group via the **[`GET /v1/groups/remote`](../../api/#get-/v1/groups/remote)** endpoint.
-1.  Note the `temp_ticket` for the desired group.
-1.  Use the **[`PUT /v1/groups`](../../api/#put-/v1/groups)** endpoint with the `temp_ticket` to create a corresponding group on Connect.
+1. Queries the remote LDAP server for a group 
+2. Creates a new group in Connect with the supplied details from the LDAP server
 
+::: {.callout-note}
+This recipe is very similar to the one to [create users from an LDAP authentication provider](user/create-user-ldap/). 
+If you also need to create users, combining these two or doing them in sequence might be helpful.
+:::
 
 ## Recipe
 
