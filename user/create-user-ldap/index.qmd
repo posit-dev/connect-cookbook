@@ -1,7 +1,5 @@
 ---
-title: Create a Posit Connect user from LDAP or OAuth2
-execute:
-  eval: false
+title: Create a Posit Connect account from LDAP or OAuth2
 ---
 
 ## Description
@@ -19,20 +17,19 @@ This recipe requires the username or the first part of the username of the user 
 
 There are two steps:
 
-1. Search for the user 
-2. Create the new user based on information we searched for
+1. Search for the user on the auth provider
+2. Create an account for the user on Connect with information returned by the search
 
 ## Recipe
 
 :::{.panel-tabset group="language"}
 
-## Python
+### Python
 
 ```{.python}
 import polars as pl
 
 from posit import connect
-
 
 client = connect.Client()
 
@@ -47,7 +44,7 @@ results_df = pl.DataFrame(response.json()['results'])
 results_df
 ```
 
-#### Example output
+##### Example output
 
 ```
 shape: (1, 12)
@@ -62,15 +59,15 @@ shape: (1, 12)
 └───────────────┴──────────┴────────────┴───────────┴───┴───────────┴────────┴──────┴──────────────┘
 ```
 
-We have one user here, `Myra Francis`, username: `francism`. `francism` does not have a GUID, which means that they are not present as a user on Connect. 
+We have one user here, `Myra Francis`, username: `francism`. `francism` does not have a GUID, which means that they do not have a user account on Connect. 
 
-Included in the API response for each user is a `temp_ticket` value, which can be used to create the user in Connect. In the example above, the user does not exist in Connect, so you need the `temp_ticket` for this user to create the user in Connect.
+Included in the API response for each user is a `temp_ticket` value, which can be used to create the user in Connect. 
 
 ```{.python}
 temp_ticket = results_df["temp_ticket"][0]
 ```
 
-### Creating the user
+#### Creating the user
 
 Using the `temp_ticket` value from the previous section, you can create
 a Connect user with a **[`PUT /v1/user`](../../api/#put-/v1/user)** endpoint:
@@ -81,10 +78,10 @@ response = client.put("v1/users", json={"temp_ticket": temp_ticket})
 pl.DataFrame(response.json())
 ```
 
-#### Example output
+###### Example output
 
-When the call succeeds, the response contains a non-NULL `guid` value,
-which is a unique identifier for the user.
+When the call succeeds, the response contains a non-`NULL` `guid` value,
+which is a unique identifier for the user's account on Connect.
 
 ```
 shape: (1, 11)
@@ -107,15 +104,15 @@ If the user already exists in Connect, the request errors:
 ClientError: A user using the same Unique ID already exists
 ```
 
-## R
+### R
 
-### Find the user to add
+#### Find the user to add
 ```{.r}
 library(connectapi)
 library(purrr)
 library(tibble)
 client <- connect()
-### User-defined inputs ###
+#### User-defined inputs ####
 # 1. The user you want to search for
 user_prefix <- "francis"
 ###########################
@@ -129,7 +126,7 @@ tibble(
 )
 ```
 
-#### Example output
+##### Example output
 
 ```
 # A tibble: 1 × 5
@@ -139,9 +136,9 @@ tibble(
 >
 ```
 
-We have one user here, `Myra Francis`, username: `francism`. `francism` does not have a GUID, which means that they are not present as a user on Connect. 
+We have one user here, `Myra Francis`, username: `francism`. `francism` does not have a GUID, which means that they do not have a user account on Connect. 
 
-### Creating the user
+#### Creating the user
 
 The `connectapi` SDK has a function to create users directly:
 
@@ -149,10 +146,10 @@ The `connectapi` SDK has a function to create users directly:
 users_create_remote(client, prefix = "francism")
 ```
 
-#### Example output
+##### Example output
 
-When the call succeeds, the response contains a non-NULL `guid` value,
-which is a unique identifier for the user.
+When the call succeeds, the response contains a non-`NULL` `guid` value,
+which is a unique identifier for the user's account on Connect.
 
 ```
 Creating remote user: francism
