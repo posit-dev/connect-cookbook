@@ -14,7 +14,7 @@ You want to find jobs for a content item.
 
  - The globally unique identifier (guid) for the content item.
 
-## Find jobs
+## Recipe: Find jobs
 
 ::: {.panel-tabset group="language"}
 

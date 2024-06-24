@@ -8,7 +8,7 @@ execute:
 
 You want to organize content using tags.
 
-## Create a tag group
+## Recipe: Create a tag group
 
 Create a tag group.
 
@@ -50,7 +50,7 @@ shape: (1, 5)
 
 :::
 
-## Create a tag
+## Recipe: Create a tag
 
 Create a tag within a tag group.
 

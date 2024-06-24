@@ -21,7 +21,7 @@ Before executing, ensure you have the following information:
 - The unique identifier the tag you want to use.
 - The unique identifier for the content item you want to tag.
 
-## Assign a tag
+## Recipe: Assign a tag
 
 A content identifier and tag identifier are required to assign a tag.
 

@@ -8,7 +8,7 @@ execute:
 
 You want to find tag information.
 
-## Find tags
+## Recipe: Find tags
 
 ::: {.panel-tabset group="language"}
 
@@ -49,7 +49,7 @@ shape: (309, 5)
 :::
 
 
-## Find content items by tag
+## Recipe: Find content items by tag
 
 A tag identifier is required to find content items.
 
@@ -95,7 +95,7 @@ shape: (24, 45)
 
 :::
 
-## Find tags by content item
+## Recipe: Find tags by content item
 
 A content item identifier is required to find tags.
 
