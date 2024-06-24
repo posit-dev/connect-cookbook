@@ -1,7 +1,6 @@
 ---
 title: Render and Email Content on Demand
-execute:
-  eval: false
+
 ---
 
 ## Description

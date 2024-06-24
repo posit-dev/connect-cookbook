@@ -1,7 +1,6 @@
 ---
 title: Modify git repository settings for git-backed content
-execute:
-  eval: false
+
 ---
 
 ## Description
@@ -146,4 +145,3 @@ client$PUT(glue::glue("/v1/content/{content_guid}/repository"), body=data) |> as
 ```
 
 :::
-

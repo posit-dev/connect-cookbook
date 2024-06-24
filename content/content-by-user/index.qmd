@@ -1,7 +1,5 @@
 ---
 title: Identify all content owned by a user
-execute:
-  eval: false
 ---
 
 ## Description
@@ -30,7 +28,7 @@ This recipe then does the following:
 ::: {.panel-tabset group="language"}
 ## Python
 
-```{python}
+```{.python}
 from posit import connect
 import polars as pl
 
@@ -64,7 +62,7 @@ shape: (3, 45)
 
 ## R
 
-```{r}
+```{.r}
 library(connectapi)
 
 #### User-defined inputs ####
@@ -121,7 +119,7 @@ You may modify this code to add or remove other fields to suit your requirements
 
 ## Python
 
-```{python}
+```{.python}
 from great_tables import GT, style, loc, system_fonts, md
 
 
@@ -263,7 +261,7 @@ content_info = (
 
 ## R
 
-```{r}
+```{.r}
 library(dplyr)
 library(gt)
 

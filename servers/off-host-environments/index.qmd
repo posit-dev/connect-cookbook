@@ -1,7 +1,5 @@
 ---
-title: Identify images used in off-host execution
-execute:
-  eval: false
+title: Find content images
 ---
 
 ## Description
@@ -32,9 +30,10 @@ In this example, we query Connect for all content items visible to the current u
 The result is a table, sorted by most commonly used images.
 
 ::: {.panel-tabset group="language"}
+
 ## Python
 
-```{python}
+```{.python}
 import polars as pl
 from posit import connect
 
@@ -68,7 +67,7 @@ shape: (24, 2)
 
 ## R
 
-```{r}
+```{.r}
 library(connectapi)
 library(dplyr)
 
@@ -111,7 +110,7 @@ In this version, we provide an image name and return a list of GUIDs of the cont
 ::: {.panel-tabset group="language"}
 ## Python
 
-```{python}
+```{.python}
 from posit import connect
 
 client = connect.Client()
@@ -130,7 +129,7 @@ image = "ghcr.io/rstudio/content-pro:r4.1.3-py3.10.4-bionic"
 
 ## R
 
-```{r}
+```{.r}
 library(connectapi)
 library(dplyr)
 
@@ -160,7 +159,7 @@ To see what versions of Python, R, and Quarto are included in an image, we can q
 ::: {.panel-tabset group="language"}
 ## Python
 
-```{python}
+```{.python}
 import pprint
 
 from posit import connect
@@ -189,7 +188,7 @@ for i in all_images:
 
 ## R
 
-```{r}
+```{.r}
 library(connectapi)
 library(purrr)
 

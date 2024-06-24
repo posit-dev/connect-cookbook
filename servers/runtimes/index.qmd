@@ -25,7 +25,7 @@ This recipe then does the following:
 
 ## Python
 
-```{python}
+```{.python}
 from posit.connect import Client
 import pandas as pd
 
@@ -60,7 +60,7 @@ result = pd.concat([tidy_settings(rt) for rt in runtimes], ignore_index=True)
 
 ## R
 
-```{r}
+```{.r}
 library(connectapi)
 library(purrr)
 client <- connect()

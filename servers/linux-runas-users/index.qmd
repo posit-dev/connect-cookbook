@@ -1,7 +1,5 @@
 ---
-title: Identify RunAsCurrentUser / RunAs Linux Accounts In Use
-execute:
-  eval: false
+title: Find server runtime users
 ---
 
 ## Description
@@ -139,7 +137,7 @@ shape: (3, 5)
 
 ## R
 
-```{r}
+```{.r}
 library(connectapi)
 library(dplyr)
 library(tidyr)
@@ -172,4 +170,3 @@ get_content(client) |>
 ```
 
 :::
-

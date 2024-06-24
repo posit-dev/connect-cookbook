@@ -1,6 +1,6 @@
 ---
-title: Users and groups recipes
-listing: 
+title: User Recipes
+listing:
     template: ../ejs/links.ejs
 ---
 

@@ -1,0 +1,66 @@
+---
+title: "Assigning tags"
+execute:
+    eval: false
+---
+
+## Description
+
+You want to assign a tag content item.
+
+::: {.callout-tip}
+
+A tag must be [created](../create/index.qmd) before it can be assigned to content.
+
+:::
+
+## Prerequisites
+
+Before executing, ensure you have the following information:
+
+- The unique identifier the tag you want to use.
+- The unique identifier for the content item you want to tag.
+
+## Recipe: Assign a tag
+
+A content identifier and tag identifier are required to assign a tag.
+
+::: {.callout-warning}
+
+You must have administrator privileges to assign a tag.
+
+:::
+
+::: {.panel-tabset group="language"}
+
+## Python
+
+```{.python}
+
+CONTENT_ITEM_GUID = 'your-content-item-guid'
+TAG_ID = "your-tag-id"
+
+client.post(f"/v1/content/{CONTENT_GUID}/tags", json={
+    'tag_id': TAG_ID,
+})
+```
+
+
+## R
+
+```{.r}
+# TODO
+```
+
+:::
+
+::: {.callout-tip}
+
+See [*Finding tags*](../find/index.qmd) to find tags by a content item.
+
+:::
+
+#### See Also
+
+- [Content](../../content/index.qmd)
+- [Tags](../index.qmd)

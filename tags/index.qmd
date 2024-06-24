@@ -1,0 +1,9 @@
+---
+ title: "Tag Recipes"
+ format:
+     html:
+         css: ../styles/styles.scss
+ listing:
+     template: ../ejs/links.ejs
+     contents: "**/index.qmd"
+---

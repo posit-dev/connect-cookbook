@@ -1,0 +1,50 @@
+---
+title: "Deleting tags"
+---
+
+## Description
+
+You want to delete a tag.
+
+## Prerequisites
+
+Before executing, ensure you have the following information:
+
+- The unique identifier the tag you want to delete.
+
+::: {.callout-tip}
+
+To find the unique identifier for the tag see [*Finding tags*](../find/index.qmd).
+
+:::
+
+::: {.callout-warning}
+
+You must have administrator privileges to delete a tag.
+
+:::
+
+## Recipe: Delete a tag
+
+::: {.panel-tabset group="language"}
+
+## Python
+
+```{.python}
+TAG_ID = "your-tag-id"
+
+client.delete(f"/v1/tags/{TAG_ID}")
+```
+
+
+## R
+
+```{.r}
+# TODO
+```
+
+:::
+
+#### See Also
+
+- [Tags](../index.qmd)

@@ -1,0 +1,108 @@
+---
+title: "Creating tags"
+execute:
+    eval: false
+---
+
+## Description
+
+You want to organize content using tags.
+
+## Recipe: Create a tag group
+
+Create a tag group.
+
+::: {.callout-warning}
+
+You must have administrator privileges to create a tag group.
+
+:::
+
+::: {.panel-tabset group="language"}
+
+## Python
+
+```{.python}
+res = client.post("/v1/tags", json={
+    'name': 'Departments',
+})
+```
+
+### Example Output
+```{.python}
+>>> pl.DataFrame(response.json())
+shape: (1, 5)
+┌─────┬─────────────┬───────────┬──────────────────────┬──────────────────────┐
+│ id  ┆ name        ┆ parent_id ┆ created_time         ┆ updated_time         │
+│ --- ┆ ---         ┆ ---       ┆ ---                  ┆ ---                  │
+│ str ┆ str         ┆ null      ┆ str                  ┆ str                  │
+╞═════╪═════════════╪═══════════╪══════════════════════╪══════════════════════╡
+│ 100 ┆ Departments ┆ null      ┆ 2024-06-20T14:25:20Z ┆ 2024-06-20T14:25:20Z │
+└─────┴─────────────┴───────────┴──────────────────────┴──────────────────────┘
+```
+
+
+## R
+
+```{.r}
+# TODO
+```
+
+:::
+
+## Recipe: Create a tag
+
+Create a tag within a tag group.
+
+### Prerequisites
+
+Before executing, ensure you have the following information:
+
+- The unique identifier for the tag group you want to use.
+
+::: {.callout-warning}
+
+You must have administrator privileges to create a tag.
+
+:::
+
+::: {.panel-tabset group="language"}
+
+## Python
+
+```{.python}
+TAG_GROUP_ID = 'your-tag-group-id'
+
+res = client.post("/v1/tags", json={
+    'name': 'Administrative',
+    'parent_id': TAG_GROUP_ID
+})
+```
+
+### Example Output
+
+::: {.callout-tip}
+
+The `parent_id` shown below, `100`, is the identifier of the `Departments` tag shown in the prior example.
+
+:::
+
+```{.python}
+>>> pl.DataFrame(res.json())
+shape: (1, 5)
+┌─────┬────────────────┬───────────┬──────────────────────┬──────────────────────┐
+│ id  ┆ name           ┆ parent_id ┆ created_time         ┆ updated_time         │
+│ --- ┆ ---            ┆ ---       ┆ ---                  ┆ ---                  │
+│ str ┆ str            ┆ str       ┆ str                  ┆ str                  │
+╞═════╪════════════════╪═══════════╪══════════════════════╪══════════════════════╡
+│ 200 ┆ Administrative ┆ 100       ┆ 2024-06-20T14:27:22Z ┆ 2024-06-20T14:27:22Z │
+└─────┴────────────────┴───────────┴──────────────────────┴──────────────────────┘
+```
+
+## R
+
+```{.r}
+# TODO
+```
+
+:::
