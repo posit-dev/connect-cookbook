@@ -59,9 +59,9 @@ shape: (1, 12)
 └───────────────┴──────────┴────────────┴───────────┴───┴───────────┴────────┴──────┴──────────────┘
 ```
 
-We have one user here, `Myra Francis`, username: `francism`. `francism` does not have a GUID, which means that they do not have a user account on Connect. 
+We have one user here, `Myra Francis`, username: `francism`. `francism` does not have a GUID, which means that they do not have a user account on Connect.
 
-Included in the API response for each user is a `temp_ticket` value, which can be used to create the user in Connect. 
+Included in the API response for each user is a `temp_ticket` value, which can be used to create the user in Connect.
 
 ```{.python}
 temp_ticket = results_df["temp_ticket"][0]
@@ -70,7 +70,7 @@ temp_ticket = results_df["temp_ticket"][0]
 #### Creating the user
 
 Using the `temp_ticket` value from the previous section, you can create
-a Connect user with a **[`PUT /v1/user`](../../api/#put-/v1/user)** endpoint:
+a Connect user with a **[`PUT /v1/user`](/api/#put-/v1/user)** endpoint:
 
 ```{.python}
 # The 'temp_ticket' value comes from an earlier /users/remote search.
@@ -136,7 +136,7 @@ tibble(
 >
 ```
 
-We have one user here, `Myra Francis`, username: `francism`. `francism` does not have a GUID, which means that they do not have a user account on Connect. 
+We have one user here, `Myra Francis`, username: `francism`. `francism` does not have a GUID, which means that they do not have a user account on Connect.
 
 #### Creating the user
 
@@ -155,8 +155,8 @@ which is a unique identifier for the user's account on Connect.
 Creating remote user: francism
 Done creating remote users
 # A tibble: 1 × 11
-  email                username first_name last_name user_role created_time        updated_time        active_time confirmed locked guid          
-  <chr>                <chr>    <chr>      <chr>     <chr>     <dttm>              <dttm>              <dttm>      <lgl>     <lgl>  <chr>         
+  email                username first_name last_name user_role created_time        updated_time        active_time confirmed locked guid
+  <chr>                <chr>    <chr>      <chr>     <chr>     <dttm>              <dttm>              <dttm>      <lgl>     <lgl>  <chr>
 1 FrancisM@posit-9.c… francism Myra       Francis   viewer    2024-06-07 19:35:30 2024-06-07 19:35:30 NA          TRUE      FALSE  deb96ce5-e86…
 ```
 
@@ -167,9 +167,7 @@ At least one user with username prefix 'francism' already exists
 # A tibble: 1 × 11
   email               username first_name last_name user_role created_time        updated_time        active_time confirmed locked guid
   <chr>               <chr>    <chr>      <chr>     <chr>     <dttm>              <dttm>              <dttm>      <lgl>     <lgl>  <chr>
-1 FrancisM@posit-9.c… francism Myra       Francis   viewer    2024-06-07 19:35:30 2024-06-07 19:35:30 NA          TRUE      FALSE  deb96ce5-e86…       
+1 FrancisM@posit-9.c… francism Myra       Francis   viewer    2024-06-07 19:35:30 2024-06-07 19:35:30 NA          TRUE      FALSE  deb96ce5-e86…
 ```
 
 :::
-
-
