@@ -43,6 +43,32 @@ shape: (1, 20)
 ## R
 
 ```{.r}
-# TODO
+library(connectapi)
+library(dplyr)
+client <- connect()
+
+#### User-defined inputs ####
+# 1. Content GUID, available in the Dashboard's Info tab.
+guid <- "154bd2af-e8fa-4aa4-aab8-dcef701f4af9"
+###########################
+
+item <- content_item(client, guid)
+
+# The `jobs` API call returns all jobs for a content item, including jobs that
+# have finished. We can filter only for currently-running jobs by filtering
+# for `finalized == FALSE`.
+jobs <- get_jobs(item)
+jobs |>
+  filter(finalized == FALSE)
+```
+
+### Example output
+
+```console
+# A tibble: 2 × 14
+        id     pid key              app_id app_guid                             variant_id bundle_id start_time          end_time tag     exit_code finalized hostname  variant_key
+     <int>   <int> <chr>             <int> <chr>                                     <int>     <int> <dttm>              <dttm>   <chr>       <int> <lgl>     <chr>     <chr>      
+1 32593289 1179184 wiSznovdN3IxIliY  21537 154bd2af-e8fa-4aa4-aab8-dcef701f4af9          0    102197 2024-06-20 21:51:33 NA       run_app        NA FALSE     connect01 NA         
+2 32586170  863024 DZnNuuVtA6apt2Ew  21537 154bd2af-e8fa-4aa4-aab8-dcef701f4af9          0    102197 2024-06-20 14:22:53 NA       run_app        NA FALSE     connect01 NA         
 ```
 :::
