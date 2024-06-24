@@ -19,7 +19,7 @@ This recipe then does the following:
 2. Creates a new group in Connect with the supplied details from the LDAP server
 
 ::: {.callout-note}
-This recipe is very similar to the one to [create users from an LDAP authentication provider](user/create-user-ldap/).
+This recipe is very similar to the one to [create users from an LDAP authentication provider](../create-user-ldap/).
 If you also need to create users, combining these two or doing them in sequence might be helpful.
 :::
 
@@ -72,7 +72,7 @@ temp_ticket = results_df["temp_ticket"][1]
 ### Creating the group
 
 Using the `temp_ticket` value from the previous section, you can create
-a Connect group with a **[`PUT /v1/groups`](../../api/#put-/v1/groups)** endpoint:
+a Connect group with a **[`PUT /v1/groups`](/api/#put-/v1/groups)** endpoint:
 
 ```{.python}
 # The 'temp_ticket' value comes from an earlier /groups/remote search.
