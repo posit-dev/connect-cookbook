@@ -1,5 +1,5 @@
 ---
-title: Identify most used content on Connect
+title: Most active content, users, and publishers
 
 ---
 
@@ -27,9 +27,7 @@ This recipe requires the following inputs:
   - the number of `days_back` from the `as_of_date` to include in the report
 2. The number of top N items and users include in the report, defined by `top_n`.
 
-## Recipe
-
-### Identify top N most used content
+## Recipe: Top content
 
 The code sample below yields the top N content items, based on usage over a selected time period.
 
@@ -170,7 +168,7 @@ An example bar graph visualizing this data is included in the Quarto dashboard c
 
 :::
 
-## Identify top N content users
+## Recipe: Top users
 
 The code sample below yields the top N content users, based on usage over a selected time period. It builds from the previous code block.
 
@@ -279,7 +277,7 @@ An example bar graph visualizing this data is included in the Quarto dashboard c
 :::
 
 
-### Identify the top N most publishers
+## Recipe: Top publishers
 
 The code sample below yields the top N most publishers, based on usage over a selected time period. This builds from the previous code blocks.
 

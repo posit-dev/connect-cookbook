@@ -24,7 +24,7 @@ You must have administrator privileges to delete a tag.
 
 :::
 
-## Delete a tag
+## Recipe: Delete a tag
 
 ::: {.panel-tabset group="language"}
 

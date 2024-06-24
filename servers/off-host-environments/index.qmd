@@ -1,6 +1,5 @@
 ---
 title: Find content images
-
 ---
 
 ## Description
@@ -31,6 +30,7 @@ In this example, we query Connect for all content items visible to the current u
 The result is a table, sorted by most commonly used images.
 
 ::: {.panel-tabset group="language"}
+
 ## Python
 
 ```{.python}

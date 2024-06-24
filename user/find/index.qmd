@@ -51,6 +51,8 @@ shape: (1, 11)
 users = client.users.find(prefix="hadley")
 ```
 
+### Example output
+
 ```{.python}
 >>> pl.DataFrame(users)
 shape: (1, 11)
@@ -71,7 +73,7 @@ shape: (1, 11)
 
 :::
 
-## Recipe: Find users by first name.
+## Recipe: Find users by first name
 
 ::: {.panel-tabset group="language"}
 

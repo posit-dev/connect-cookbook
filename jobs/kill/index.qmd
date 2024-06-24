@@ -15,7 +15,7 @@ You want to register a kill order for a job.
  - The globally unique identifier (guid) for the content item.
  - The unique key the job.
 
-## Register a job kill order
+## Recipe: Register a job kill order
 
 ::: {.panel-tabset group="language"}
 
