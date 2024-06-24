@@ -1,0 +1,80 @@
+---
+title: Set a content item's vanity URL
+---
+
+## Description
+
+Use this recipe to set the vanity URL for a content item.
+
+## Prerequisites
+
+You'll need the following:
+
+1. The unique identifier (GUID) of your content item. You can find this in the Info tab of the Dashboard.
+2. The new vanity URL you wish to use.
+
+## Recipe
+
+:::{.panel-tabset group="language"}
+
+## Python
+
+```{.python}
+from posit import connect
+import polars as pl
+client = connect.Client()
+
+#### User-defined inputs ####
+# 1. Specify the guid for the content item you want to modify
+content_guid = "154bd2af-e8fa-4aa4-aab8-dcef701f4af9"
+# 2. Specify the new vanity URL you wish to assign
+vanity_url = "/my-new-vanity-url/"
+###########################
+
+response = client.put(f"v1/content/{content_guid}/vanity", json={"path": vanity_url})
+results_df = pl.DataFrame(response.json())
+
+results_df
+```
+
+### Example output
+
+```
+>>> results_df
+shape: (1, 3)
+┌─────────────────────────────────┬─────────────────────┬──────────────────────┐
+│ content_guid                    ┆ path                ┆ created_time         │
+│ ---                             ┆ ---                 ┆ ---                  │
+│ str                             ┆ str                 ┆ str                  │
+╞═════════════════════════════════╪═════════════════════╪══════════════════════╡
+│ 154bd2af-e8fa-4aa4-aab8-dcef70… ┆ /my-new-vanity-url/ ┆ 2024-04-25T18:27:16Z │
+└─────────────────────────────────┴─────────────────────┴──────────────────────┘
+```
+
+## R
+
+```{.r}
+library(connectapi)
+client <- connect()
+
+#### User-defined inputs ####
+# 1. Specify the guid for the content item you want to modify
+content_guid <- "154bd2af-e8fa-4aa4-aab8-dcef701f4af9"
+# 2. Specify the new vanity URL you wish to assign
+vanity_url <- "/my-new-vanity-url/"
+###########################
+
+content <- content_item(client, content_guid)
+set_vanity_url(content, vanity_url)
+```
+
+### Example output
+
+```
+> set_vanity_url(content, vanity_url)
+Posit Connect Content Vanity URL: 
+  Content GUID: 154bd2af-e8fa-4aa4-aab8-dcef701f4af9
+  Vanity URL: /my-new-vanity-url/
+```
+
+:::

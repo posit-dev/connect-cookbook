@@ -1,0 +1,60 @@
+---
+title: List all vanity URLs
+---
+
+## Description
+
+Use this recipe to list all vanity URLs across all content on the Connect server.
+
+## Recipe
+
+:::{.panel-tabset group="language"}
+
+## Python
+
+```{.python}
+from posit import connect
+import polars as pl
+client = connect.Client()
+
+response = client.get(f"/v1/vanities")
+results_df = pl.DataFrame(response.json())
+results_df
+```
+
+### Example output
+
+```
+>>> results_df
+┌─────────────────────────────────┬──────────────────────────────┬──────────────────────┐
+│ content_guid                    ┆ path                         ┆ created_time         │
+│ ---                             ┆ ---                          ┆ ---                  │
+│ str                             ┆ str                          ┆ str                  │
+╞═════════════════════════════════╪══════════════════════════════╪══════════════════════╡
+│ 2f022b6b-c6e7-4500-8574-d1fb4c… ┆ /my_great_vanity_url/        ┆ 2023-08-24T18:00:46Z │
+│ 578af693-e561-49e3-9943-d9350f… ┆ /vanity-2/                   ┆ 2023-06-29T21:27:32Z │
+└─────────────────────────────────┴──────────────────────────────┴──────────────────────┘
+```
+
+## R
+
+```{.r}
+library(connectapi)
+library(purrr)
+client <- connect()
+
+response <- client$GET("v1/vanities")
+results_df <- map_dfr(response, ~as.data.frame(.))
+results_df
+```
+
+### Example output
+
+```
+> results_df
+                          content_guid                  path         created_time
+1 2f022b6b-c6e7-4500-8574-d1fb4cc611db /my_great_vanity_url/ 2023-08-24T18:00:46Z
+2 578af693-e561-49e3-9943-d9350f2f7f93            /vanity-2/ 2023-06-29T21:27:32Z
+```
+
+:::
