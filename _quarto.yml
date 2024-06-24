@@ -15,28 +15,6 @@ website:
   sidebar:
     search: true
     collapse-level: 1
-    contents:
-      - section: "Server Management"
-        href: server/index.qmd
-        contents:
-          - server/linux-runas-users/index.qmd
-          - server/off-host-environments/index.qmd
-      - section: "Content Management"
-        href: content/index.qmd
-        contents:
-          - content/content-access-all/index.qmd
-          - content/content-by-user/index.qmd
-          - content/content-permissions/index.qmd
-          - content/content-usage/index.qmd
-          - content/modify-git/index.qmd
-          - content/most-used/index.qmd
-          - content/remove-all-content-users/index.qmd
-          - content/render-on-demand/index.qmd
-      - text: "User Management"
-        href: user/index.qmd
-        contents:
-          - user/transfer-content/index.qmd
-=======
     contents: /**/**/*.qmd
 
 format:
