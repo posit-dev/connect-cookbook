@@ -1,0 +1,73 @@
+---
+title: "Finding groups"
+---
+
+## Description
+
+You want to find information on Connect groups.
+
+## Recipe: Find groups
+
+::: {.panel-tabset group="language"}
+
+## Python
+
+```{.python}
+groups = client.groups.find()
+```
+
+### Example Output
+
+```{.python}
+>>> pl.DataFrame(groups)
+shape: (1, 11)
+┌─────────────────────────────────┬──────────┬────────────────┬────────────┬───┬──────────────────────┬──────────────────────┬───────────┬────────┐
+│ guid                            ┆ username ┆ email          ┆ first_name ┆ … ┆ updated_time         ┆ active_time          ┆ confirmed ┆ locked │
+│ ---                             ┆ ---      ┆ ---            ┆ ---        ┆   ┆ ---                  ┆ ---                  ┆ ---       ┆ ---    │
+│ str                             ┆ str      ┆ str            ┆ str        ┆   ┆ str                  ┆ str                  ┆ bool      ┆ bool   │
+╞═════════════════════════════════╪══════════╪════════════════╪════════════╪═══╪══════════════════════╪══════════════════════╪═══════════╪════════╡
+│ c6440668-15d0-4343-b3c8-18755c… ┆ admin    ┆ admin@posit.co ┆ John       ┆ … ┆ 2018-07-10T21:26:57Z ┆ 2018-07-17T15:18:26Z ┆ true      ┆ false  │
+└─────────────────────────────────┴──────────┴────────────────┴────────────┴───┴──────────────────────┴──────────────────────┴───────────┴────────┘
+```
+
+
+## R
+
+```{.r}
+# TODO
+```
+
+:::
+
+## Recipe: Find a group
+
+::: {.panel-tabset group="language"}
+
+## Python
+
+```{.python}
+group = client.groups.find_one(prefix='Friends')
+```
+
+### Example Output
+
+```{.python}
+>>> pl.DataFrame(group)
+shape: (1, 3)
+┌─────────────────────────────────┬───────────────┬─────────────────────────────────┐
+│ guid                            ┆ name          ┆ owner_guid                      │
+│ ---                             ┆ ---           ┆ ---                             │
+│ str                             ┆ str           ┆ str                             │
+╞═════════════════════════════════╪═══════════════╪═════════════════════════════════╡
+│ 54ed1e9d-4bee-4797-97a3-f22e99… ┆ Friends       ┆ 6ca57cef-186f-4897-9875-d692f9… │
+└─────────────────────────────────┴───────────────┴─────────────────────────────────┘
+```
+
+
+## R
+
+```{.r}
+# TODO
+```
+
+:::
