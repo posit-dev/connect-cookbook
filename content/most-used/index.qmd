@@ -384,14 +384,12 @@ The Quarto document below builds visualizations around the data frames retrieved
 ::: {.panel-tabset group="language"}
 ## Python
 
-<!-- TODO: Make this embed work -->
 <!-- TODO: Add a screenshot -->
-{{ < include _most-used-dashboard-py.qmd > }}
+{{< include _most-used-dashboard-py.qmd >}}
 
 ## R
 
-<!-- TODO: Make this embed work -->
 <!-- TODO: Add a screenshot -->
-{{ < include _most-used-dashboard-r.qmd > }}
+{{< include _most-used-dashboard-r.qmd >}}
 
 :::
