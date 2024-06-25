@@ -11,7 +11,7 @@ Use this recipe to set the vanity URL for a content item.
 You'll need the following:
 
 1. The unique identifier (GUID) of your content item. You can find this in the Info tab of the Dashboard.
-2. The new vanity URL you wish to use.
+2. The new vanity URL you wish to use. Vanity URLs on a Connect server must be unique.
 
 ## Recipe
 
@@ -51,6 +51,16 @@ shape: (1, 3)
 └─────────────────────────────────┴─────────────────────┴──────────────────────┘
 ```
 
+:::{.callout-note}
+
+If the vanity URL you wish to use is already in use, the Connect server will return a 409 Conflict HTTP status.
+
+```
+ClientError: Vanity path conflicts with one or more already in use. (Error Code: 51, HTTP Status: 409 Conflict)
+```
+
+:::
+
 ## R
 
 ```{.r}
@@ -64,9 +74,15 @@ content_guid <- "154bd2af-e8fa-4aa4-aab8-dcef701f4af9"
 vanity_url <- "/my-new-vanity-url/"
 ###########################
 
-content <- content_item(client, content_guid)
-set_vanity_url(content, vanity_url)
+# The vanity_is_available() function returns TRUE if vanity_url is available
+# on the server.
+if (vanity_is_available(client, vanity_url)) {
+  content <- content_item(client, content_guid)
+  set_vanity_url(content, vanity_url)
+}
 ```
+
+
 
 ### Example output
 
@@ -76,5 +92,16 @@ Posit Connect Content Vanity URL:
   Content GUID: 154bd2af-e8fa-4aa4-aab8-dcef701f4af9
   Vanity URL: /my-new-vanity-url/
 ```
+
+:::{.callout-note}
+
+If you call `set_vanity_url()` with an unavailabile vanity path, the Connect server will return a 409 Conflict HTTP status.
+
+```
+Error in `self$raise_error()`:
+! https://rsc.radixu.com/__api__/v1/content/154bd2af-e8fa-4aa4-aab8-dcef701f4af9/vanity request failed with Client error: (409) Conflict
+```
+
+:::
 
 :::
