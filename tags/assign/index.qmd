@@ -67,7 +67,7 @@ Before executing, ensure you have the following information:
 
 The `set_content_tags()` function in `connectapi` can take multiple tag objects, and returns an object representing the updated content item.
 
-```{r}
+```{.r}
 library(connectapi)
 client <- connect()
 
