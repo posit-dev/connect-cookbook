@@ -85,12 +85,12 @@ unique_visitors <- usage |> filter(!is.na(user_guid)) |>pull(user_guid) |> uniqu
 
 ```
 
-## Row
+###  Row
 
 Usage of **`r content_info$title`**, for the period of **`r report_from`** to **`r as_of_date`**
 
 
-## Row
+###  Row
 
 ```{.r}
 #| content: valuebox
@@ -113,7 +113,7 @@ list (
 ```
 
 
-## Row
+###  Row
 
 ```{.r}
 #| label: plot content usage over time
