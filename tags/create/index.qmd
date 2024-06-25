@@ -6,25 +6,30 @@ execute:
 
 ## Description
 
-You want to organize content using tags.
+Create tags, which can then be assigned to content items (see [*Assigning tags*](../assign/index.qmd)).
 
-## Recipe: Create a tag group
-
-Create a tag group.
+Tags can be nested arbitrarily deep.
 
 ::: {.callout-warning}
 
-You must have administrator privileges to create a tag group.
+You must have administrator privileges to create a tag.
 
 :::
+
+## Recipe: Create a tag at the top level of the hierarchy
+
+Create a tag without a parent tag. This tag will appear at the top level of the hierarchy.
 
 ::: {.panel-tabset group="language"}
 
 ## Python
 
 ```{.python}
-res = client.post("/v1/tags", json={
-    'name': 'Departments',
+from posit import connect
+client = connect.Client()
+
+response = client.post("/v1/tags", json={
+    "name": "Departments",
 })
 ```
 
@@ -45,20 +50,28 @@ shape: (1, 5)
 ## R
 
 ```{.r}
-# TODO
+library(connectapi)
+client <- connect()
+
+create_tag(client, "Departments")
+
+tags <- get_tags(client)
+depts_tag <- tags$Departments
+```
+
+### Expected output
+
+```{.r}
+> depts_tag
+Posit Connect Tag Tree (filtered)
+└── Departments
 ```
 
 :::
 
-## Recipe: Create a tag
+## Recipe: Create a nested tag
 
-Create a tag within a tag group.
-
-### Prerequisites
-
-Before executing, ensure you have the following information:
-
-- The unique identifier for the tag group you want to use.
+You can create a hierarchy of tags by nesting a tag underneath another tag. To do this, specify the identifier of the parent tag.
 
 ::: {.callout-warning}
 
@@ -70,12 +83,24 @@ You must have administrator privileges to create a tag.
 
 ## Python
 
+### Prerequisites
+
+Before executing, ensure you have the following information:
+
+- The identifier for the parent tag.
+
+### Code
+
 ```{.python}
-TAG_GROUP_ID = 'your-tag-group-id'
+from posit import connect
+client = connect.Client()
+
+# The ID of the "Departments" tag we created above.
+parent_tag_id = "100"
 
 res = client.post("/v1/tags", json={
-    'name': 'Administrative',
-    'parent_id': TAG_GROUP_ID
+    "name": "Administrative",
+    "parent_id": parent_tag_id
 })
 ```
 
@@ -101,8 +126,35 @@ shape: (1, 5)
 
 ## R
 
+### Prerequisites
+
+1. A `Tag` object representing the parent tag
+
+### Code
+
 ```{.r}
-# TODO
+library(connectapi)
+client <- connect()
+
+tags <- get_tags(client)
+depts_tag <- tags$Departments
+
+create_tag(client, "Administrative", depts_tag)
+tags <- get_tags(client)
+depts_tag <- tags$Departments
+admin_tag <- tags$Departments$Administrative
+```
+
+### Expected output
+
+```{.r}
+> depts_tag
+Posit Connect Tag Tree (filtered)
+Departments
+└── Administrative
+> admin_tag
+Posit Connect Tag Tree (filtered)
+└── Administrative
 ```
 
 :::

@@ -6,17 +6,6 @@ title: "Deleting tags"
 
 You want to delete a tag.
 
-## Prerequisites
-
-Before executing, ensure you have the following information:
-
-- The unique identifier the tag you want to delete.
-
-::: {.callout-tip}
-
-To find the unique identifier for the tag see [*Finding tags*](../find/index.qmd).
-
-:::
 
 ::: {.callout-warning}
 
@@ -30,18 +19,45 @@ You must have administrator privileges to delete a tag.
 
 ## Python
 
+### Prerequisites
+
+Before executing, ensure you have the following information:
+
+- The identifier the tag you want to delete.
+
+::: {.callout-tip}
+
+To find the unique identifier for the tag see [*Finding tags*](../find/index.qmd).
+
+:::
+
 ```{.python}
 TAG_ID = "your-tag-id"
 
 client.delete(f"/v1/tags/{TAG_ID}")
 ```
 
-
 ## R
 
+### Prerequisites
+
+1. A `Tag` object representing the tag you wish to delete
+
+### Code
+
 ```{.r}
-# TODO
+library(connectapi)
+client <- connect()
+
+tags <- get_tags(client)
+target_tag <- tags$Departments
+
+delete_tag(client, depts_tag)
 ```
+
+### Expected output
+
+The `delete_tag()` function returns a copy of the `client` object.
 
 :::
 

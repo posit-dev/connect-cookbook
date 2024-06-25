@@ -15,9 +15,14 @@ You want to find tag information.
 ## Python
 
 ```{.python}
+from posit import connect
+client = connect.Client()
+
 res = client.get("/v1/tags")
 print(tags)
 ```
+
+### Expected output
 
 ```{.python}
 >>> pl.DataFrame(res.json())
@@ -42,12 +47,38 @@ shape: (309, 5)
 
 ## R
 
-```{.r}
-# TODO
+Use the `get_tags()` function to get a tree of tags that you can browse using R's `$` operator. Alternately, use the `get_tag_data()` function to get a data frame of tag data.
+
+The tags you get from `get_tags()` can be used in other tag-related functions.
+
+```{r}
+library(connectapi)
+client <- connect()
+
+tag_tree <- get_tags(client)
+tag <- tag_tree$Departments$Administrative
+tag_data <- get_tag_data(client)
 ```
 
-:::
+### Expected output
 
+```{.r}
+> tag_tree
+Posit Connect Tag Tree (target_content)
+└── Departments
+   └── Administrative
+> tag
+Posit Connect Tag Tree (filtered)
+└── Administrative
+> tag_data
+# A tibble: 2 × 5
+  id    name           created_time         updated_time         parent_id
+  <chr> <chr>          <chr>                <chr>                <chr>    
+1 757   Departments    2024-06-20T14:25:20Z 2024-06-20T14:25:20Z NA       
+2 758   Administrative 2024-06-20T14:27:22Z 2024-06-20T14:27:22Z 757 
+``` 
+
+:::
 
 ## Recipe: Find content items by tag
 
@@ -58,6 +89,9 @@ A tag identifier is required to find content items.
 ## Python
 
 ```{.python}
+from posit import connect
+client = connect.Client()
+
 TAG_ID = "your-tag-id"
 
 res = client.get(f"/v1/tags/{TAG_ID}/content")
@@ -86,11 +120,36 @@ shape: (24, 45)
 
 ```
 
-
 ## R
 
+The `content_list_by_tag()` function returns a data frame of content for the provided tag.
+
+```{r}
+library(connectapi)
+client <- connect()
+
+tag_tree <- get_tags(client)
+target_tag <- tag_tree$Departments$Administrative
+
+tagged_content <- content_list_by_tag(client, target_tag)
+```
+
+### Expected output
+
 ```{.r}
-# TODO
+> tagged_content
+# A tibble: 1 × 46
+  guid       name  title description access_type locked locked_message connection_timeout
+  <chr>      <chr> <chr> <chr>       <chr>       <lgl>  <chr>                       <int>
+1 154bd2af-… cont… Cont… ""          logged_in   FALSE  ""                             NA
+# ℹ 38 more variables: read_timeout <int>, init_timeout <int>, idle_timeout <int>,
+#   max_processes <int>, min_processes <int>, max_conns_per_process <int>,
+#   load_factor <dbl>, memory_request <lgl>, memory_limit <lgl>, cpu_request <lgl>,
+#   cpu_limit <lgl>, amd_gpu_limit <lgl>, nvidia_gpu_limit <lgl>,
+#   service_account_name <lgl>, default_image_name <lgl>, created_time <dttm>,
+#   last_deployed_time <dttm>, bundle_id <chr>, app_mode <chr>, content_category <chr>,
+#   parameterized <lgl>, cluster_name <chr>, image_name <chr>, r_version <chr>, …
+
 ```
 
 :::
@@ -104,6 +163,9 @@ A content item identifier is required to find tags.
 ## Python
 
 ```{.python}
+from posit import connect
+client = connect.Client()
+
 CONTENT_ITEM_GUID = "your-content-item-guid"
 
 res = client.get(f"/v1/content/{CONTENT_ITEM_GUID}/tags")
@@ -126,8 +188,22 @@ shape: (2, 5)
 
 ## R
 
+The `get_content_tags()` function returns a tag tree object for the provided content item.
+
 ```{.r}
-# TODO
+content_guid <- "154bd2af-e8fa-4aa4-aab8-dcef701f4af9"
+target_content <- get_content(client, guid = content_guid)
+
+tags <- get_content_tags(target_content)
+```
+
+## Expected output
+
+```{.r}
+> tags
+Posit Connect Tag Tree (content)
+└── Departments
+   └── Administrative
 ```
 
 :::
