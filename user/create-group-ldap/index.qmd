@@ -42,7 +42,7 @@ group_prefix = "Data Science"
 ###########################
 
 response = client.get("v1/groups/remote", params={"prefix": group_prefix})
-results_df = pl.DataFrame(response.json()['results'])
+results_df = pl.DataFrame(response.json()["results"])
 
 results_df
 ```
