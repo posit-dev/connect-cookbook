@@ -4,7 +4,8 @@ title: "Usage"
 
 ## Description
 
-You want to analyze usage information.
+You want to see how people are interacting with your content.
+This can be useful to show who is viewing your content, how frequently they are viewing it, when they view it, and other information.
 
 ## Recipe: Find usage
 
