@@ -51,7 +51,7 @@ Use the `get_tags()` function to get a tree of tags that you can browse using R'
 
 The tags you get from `get_tags()` can be used in other tag-related functions.
 
-```{r}
+```{.r}
 library(connectapi)
 client <- connect()
 
@@ -124,7 +124,7 @@ shape: (24, 45)
 
 The `content_list_by_tag()` function returns a data frame of content for the provided tag.
 
-```{r}
+```{.r}
 library(connectapi)
 client <- connect()
 
