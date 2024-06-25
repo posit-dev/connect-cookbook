@@ -31,7 +31,32 @@ client.delete(f"v1/content/{CONTENT_ITEM_GUID}/jobs/{JOB_KEY}")
 ## R
 
 ```{.r}
-# TODO
+library(connectapi)
+library(httr)
+client <- connect()
+
+#### User-defined inputs ####
+# 1. Content GUID, available in the Dashboard's Info tab.
+guid <- "154bd2af-e8fa-4aa4-aab8-dcef701f4af9"
+# 2. The job key, which you can find using the "Find jobs" recipe.
+key <- "CwCoI9tizMRRcvLw"
+###########################
+
+response <- client$DELETE(
+    glue::glue("v1/content/{guid}/jobs/{key}"),
+)
+
+print(response)
+```
+
+### Example output
+
+```console
+Response [https://connect.company.co/__api__/v1/content/fdc3f938-3ace-4a22-8af2-1a8f17828b6a/jobs/CwCoI9tizMRRcvLw]
+  Date: 2024-06-21 17:48
+  Status: 200
+  Content-Type: application/json; charset=utf-8
+  Size: 199 B
 ```
 
 :::
