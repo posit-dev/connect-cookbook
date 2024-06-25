@@ -4,10 +4,10 @@ title: "Usage"
 
 ## Description
 
-You want to see how people are interacting with your content.
-This can be useful to show who is viewing your content, how frequently they are viewing it, when they view it, and other information.
+This recipe can help you see how people are interacting with your content, including 
+who is viewing your content, how frequently they are viewing it, when they view it, and other information.
 
-## Recipe: Find usage
+## Recipe: find usage
 
 ::: {.panel-tabset group="language"}
 
@@ -17,7 +17,7 @@ This can be useful to show who is viewing your content, how frequently they are 
 usage = client.metrics.usage.find()
 ```
 
-### Example Output
+### Example output
 
 ```{.python}
 >>> pl.DataFrame(usage, infer_schema_length=len(usage))
@@ -50,7 +50,8 @@ shape: (35_087, 9)
 :::
 
 
-#### See Also
+#### Additional resources
 
 - [Content Usage](../../content/content-usage/)
 - [Popular Content](../../content/most-used/)
+
