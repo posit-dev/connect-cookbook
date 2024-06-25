@@ -17,6 +17,9 @@ Get data on all registered users on the Connect server.
 ## Python
 
 ```{.python}
+from posit import connect
+client = connect.Client()
+
 users = client.users.find()
 ```
 
@@ -70,6 +73,9 @@ Use the `prefix` argument, available in both Python and R SDKs, to search for us
 ## Python
 
 ```{.python}
+from posit import connect
+client = connect.Client()
+
 users = client.users.find(prefix="hadley")
 ```
 
@@ -119,6 +125,9 @@ users <- get_users(client, prefix = "hadley")
 Use the `user_role` to search for users by role. Acceptable values are `"publisher"`, `"administrator"`, and `"viewer"`.
 
 ```{.python}
+from posit import connect
+client = connect.Client()
+
 users = client.users.find(user_role="publisher")
 ```
 
