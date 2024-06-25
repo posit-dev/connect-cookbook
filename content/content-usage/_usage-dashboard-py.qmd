@@ -83,12 +83,12 @@ unique_visitors = (
 )
 ```
 
-## Row
+### Row
 
 Usage of **`{.python} content_info.title`**, for the period of **`{.python} report_from.strftime("%Y-%m-%d")`** to **`{.python} as_of_date.strftime("%Y-%m-%d")`**
 
 
-## Row
+### Row
 
 ```{.python}
 #| content: valuebox
@@ -111,7 +111,7 @@ dict(
 ```
 
 
-## Row
+### Row
 
 ```{.python}
 # plot content usage over time
