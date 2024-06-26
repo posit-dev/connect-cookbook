@@ -305,6 +305,8 @@ by_user_usage
 
 The output above can be plotted for a historical perspective on content views. An example is included in the Quarto dashboard code at the end of this recipe.
 
+:::
+
 ## Extending the recipe
 
 ### Deploy a sample Quarto dashboard with these metrics
@@ -319,11 +321,11 @@ The Quarto document below builds visualizations around the data frames retrieved
 ## Python
 
 <!-- TODO: Add a screenshot -->
-{{< include _usage-dashboard-py.qmd >}}
+{{< include ./_usage-dashboard-py.qmd >}}
 
 ## R
 
 <!-- TODO: Add a screenshot -->
-{{< include _usage-dashboard-r.qmd >}}
+{{< include ./_usage-dashboard-r.qmd >}}
 
 :::

@@ -1,0 +1,5 @@
+---
+title: Metrics Recipes
+listing:
+    template: ../ejs/links.ejs
+---
