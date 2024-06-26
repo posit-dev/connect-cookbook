@@ -21,3 +21,4 @@ format:
   html:
     theme: cosmo
     toc: true
+    toc-expand: 3
