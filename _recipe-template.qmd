@@ -92,11 +92,9 @@ output_df <- function(ABC, new_var)
 
 :::
 
-### [Optional] Extending the recipe
+### [Optional additional subheadings, e.g. Deploy a dashboard to monitor usage]
 
 [Some recipes may have additional sections. These might have more language blocks. They might describe other related workflows, or provide supplemental material like tashboards to deploy.]
-
-[Don't use the heading "Extending the recipe"; use a descriptive heading that tells the reader what to expect when they see the heading in the sidebar, e.g. "Deploy a dashboard to monitor usage"]
 
 E.g. Here's a dashboard or something else that deploy or do.
 
