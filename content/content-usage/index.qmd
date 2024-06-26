@@ -320,13 +320,11 @@ The Quarto document below builds visualizations around the data frames retrieved
 ::: {.panel-tabset group="language"}
 ## Python
 
-<!-- TODO: Make this embed work -->
 <!-- TODO: Add a screenshot -->
 {{< include ./_usage-dashboard-py.qmd >}}
 
 ## R
 
-<!-- TODO: Make this embed work -->
 <!-- TODO: Add a screenshot -->
 {{< include ./_usage-dashboard-r.qmd >}}
 
