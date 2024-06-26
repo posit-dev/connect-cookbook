@@ -85,7 +85,7 @@ target_tag <- tags$category$my_tag
 target_content <- set_content_tags(content = target_content, tag = target_tag)
 ```
 
-### Expected Output
+### Example output
 
 ```{.r}
 > target_content <- set_content_tags(target_content, target_tag)
@@ -97,7 +97,7 @@ Posit Connect Tag Tree (target_content)
 Posit Connect Content: 
   Content GUID: 154bd2af-e8fa-4aa4-aab8-dcef701f4af9
   Content URL: https://connect.example.org/connect/#/apps/154bd2af-e8fa-4aa4-aab8-dcef701f4af9/
-  Content Title: Public Content States
+  Content Title: Example Content
 
 content_item(client, guid = "154bd2af-e8fa-4aa4-aab8-dcef701f4af9")
 ```

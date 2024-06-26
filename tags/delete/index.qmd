@@ -55,7 +55,7 @@ target_tag <- tags$Departments
 delete_tag(client, depts_tag)
 ```
 
-### Expected output
+### Example output
 
 The `delete_tag()` function returns a copy of the `client` object.
 

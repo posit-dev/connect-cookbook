@@ -22,7 +22,7 @@ res = client.get("/v1/tags")
 print(tags)
 ```
 
-### Expected output
+### Example output
 
 ```{.python}
 >>> pl.DataFrame(res.json())
@@ -60,7 +60,7 @@ tag <- tag_tree$Departments$Administrative
 tag_data <- get_tag_data(client)
 ```
 
-### Expected output
+### Example output
 
 ```{.r}
 > tag_tree
@@ -134,7 +134,7 @@ target_tag <- tag_tree$Departments$Administrative
 tagged_content <- content_list_by_tag(client, target_tag)
 ```
 
-### Expected output
+### Example output
 
 ```{.r}
 > tagged_content
@@ -197,7 +197,7 @@ target_content <- get_content(client, guid = content_guid)
 tags <- get_content_tags(target_content)
 ```
 
-## Expected output
+## Example output
 
 ```{.r}
 > tags

@@ -158,7 +158,7 @@ response <- client$GET("/v1/users", query = list(user_role = "publisher"))
 publishers_df <- map_dfr(response$results, ~.x)
 ```
 
-### Expected Output
+### Example output
 
 ```{.r}
 > publishers_df

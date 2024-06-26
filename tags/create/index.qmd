@@ -145,7 +145,7 @@ depts_tag <- tags$Departments
 admin_tag <- tags$Departments$Administrative
 ```
 
-### Expected output
+### Example output
 
 ```{.r}
 > depts_tag
