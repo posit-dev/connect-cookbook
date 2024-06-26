@@ -59,7 +59,7 @@ tags <- get_tags(client)
 depts_tag <- tags$Departments
 ```
 
-### Expected output
+### Example output
 
 ```{.r}
 > depts_tag
