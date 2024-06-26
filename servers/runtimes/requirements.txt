@@ -1,2 +1,0 @@
-posit-sdk-py 
-pandas

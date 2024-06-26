@@ -1,2 +1,0 @@
-polars
-posit-sdk-py
