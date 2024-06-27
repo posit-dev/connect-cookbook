@@ -1,4 +1,4 @@
 plotly==5.22.0
 polars==0.20.23
-posit-sdk==0.2.0
+posit-sdk==0.2.2
 pyarrow==16.0.0
