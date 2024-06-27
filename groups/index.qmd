@@ -1,5 +1,0 @@
----
-title: Group Recipes
-listing:
-    template: ../ejs/links.ejs
----

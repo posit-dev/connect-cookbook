@@ -1,0 +1,45 @@
+---
+title: 3.1 Viewing Group Information
+---
+
+## Problem
+
+You want to view group information.
+
+## Solution
+
+:::{.panel-tabset group="language"}
+
+## Python
+
+Use the `groups` attribute.
+
+```{.python}
+from posit import connect
+
+client = connect.Client()
+group = client.groups.find_one()
+```
+
+```{.python}
+>>> import json
+>>> print(json.dumps(group, indent=4))
+{
+    "guid": "54ed1e9d-4bee-4797-97a3-f22e990bccfe",
+    "owner_guid": "6ca57cef-186f-4897-9875-d692f97edd5a"
+    "name": "Data Scientists",
+}
+```
+
+## R
+
+
+```{.r}
+# TODO
+```
+
+:::
+
+## Discussion
+
+The `groups` object contains *guid*, *owner_guid*, and *name* field. The *guid* is a globally unique identifier for the group. The *owner_guid* is a reference to the user that created the group. The *name* field is a human readable description of the group.

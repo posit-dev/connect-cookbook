@@ -1,0 +1,63 @@
+---
+title: 3.2 Finding Groups
+---
+
+## Problem
+
+You want to find a subset of groups.
+
+## Solution
+
+:::{.panel-tabset group="language"}
+
+## Python
+
+Use the `groups` attribute and use the `prefix` parameter to filter groups by group name. The prefix is case insensitive (.e.g, 'PoSiT' is logically equivalent to 'pOsIt').
+
+```{.python}
+from posit import connect
+
+client = connect.Client()
+groups = client.groups.find(prefix='data')
+```
+
+The groups object is a list of groups with a name field that matches the prefix parameter. In this example, the prefix is *data*, which matches the groups name *Data Scientists* and *Data Engineers*.
+
+```{.python}
+>>> import polars as pl
+>>> pl.DataFrame(groups)
+shape: (2, 3)
+┌─────────────────────────────────┬─────────────────────────────────┬─────────────────┐
+│ guid                            ┆ owner_guid                      ┆ name            │
+│ ---                             ┆ ---                             ┆ ---             │
+│ object                          ┆ object                          ┆ str             │
+╞═════════════════════════════════╪═════════════════════════════════╪═════════════════╡
+│ 6d77fcab-92b0-48a2-94fd-f80c6b… ┆ 867f6d6f-53b4-4ee6-8f37-37ce5d… ┆ Data Scientists │
+│ 85d1ddff-bb05-4d3b-9f5b-37bb20… ┆ fd7b011b-7d07-4b92-8c7a-69279a… ┆ Data Engineers  │
+└─────────────────────────────────┴─────────────────────────────────┴─────────────────┘
+```
+
+## R
+
+```{.r}
+# TODO
+```
+
+:::
+
+## Discussion
+
+You can also use the prefix parameter to find a specific group by name if you do not know the group *guid*. Beware that multiple groups can exists with the same prefix. Please verify the group information is correct before performing additional actions.
+
+:::{.panel-tabset group="language"}
+
+## Python
+
+```python
+from posit import connect
+
+client = connect.Client()
+group = client.groups.find_one(prefix='Data Scientists')
+```
+
+:::
