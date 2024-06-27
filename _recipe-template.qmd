@@ -4,7 +4,7 @@ title: Recipe Title
 
 ## Problem
 
-[Describe what the recipe does, or set up the problem the user can solve with it, e.g. "You need to assign tags to content on your Connect server."]
+[Describe what the recipe does or set up the problem the user can solve with it, e.g., "You need to assign tags to content on your Connect server" or "You want to organize content on Connect."]
 
 ## Solution
 
