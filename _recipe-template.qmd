@@ -8,15 +8,11 @@ title: Recipe Title
 
 ## Solution
 
-[If the workflow is common between Python and R, describe it outside language tabs.]
+[Describe the solution in natural language. If the workflow is common between Python and R, describe it outside language tabs, but if they're significantly different, describe it in language-specific sections.
 
-This recipe requires the following inputs:
+The recipe should describe the inputs, workflow, and outputs, but doesn't need to follow a specific format for listing them out. Shorter recipes might just require a code block, and others might require more detail.]
 
-1. e.g. "The unique identifier (GUID) of the content you wish to modify." Link to other recipes if they generate the inputs, e.g. generating a tag.
-
-This recipe then does the following:
-
-1. e.g. "Modifies the tags for the provided content item.
+E.g. Assign a tag to your content. This requires obtaining the content item's unique identifier. See [Getting a content identifier](#some-other-section).
 
 :::{.panel-tabset group="language"}
 
@@ -29,20 +25,23 @@ This recipe then does the following:
 # - Include comments where appropriate. If comments are longer than a line
 #   or two, you can break up the code block.
 # - Include the imports and client creation at the top of the workflow.
+# - The recipe should ideally end with the creation of an object representing
+#   the output of the workflow, which is printed in a subsequent block.
+
 
 from posit import connect
 
-client = connect.Client()
+# Note to recipe writer: User-defined constants go in all-caps, immediately
+# after the import statements. Consider using comments to make it obvious
+# what the values are and how to get them even if the code has been copied
+# out of the recipe page.
 
-# Note to recipe writer: if user input is required, use this format,
-# and use all-caps variable names for input the user must provide.
-
-#### User-defined inputs ####
-# 1. Specify xyz. Any clarifying text and what the default value is (if any).
+# 1. Specify abc. Any clarifying text and what the default value is (if any).
 ABC = "154bd2af-e8fa-4aa4-aab8-dcef701f4af9"
-# 2. Specify abc. Any clarifying text and what the default value is (if any).
+# 2. Specify xyz. Any clarifying text and what the default value is (if any).
 XYZ = "23"
-#############################
+
+client = connect.Client()
 
 new_var = do_something(ABC, XYZ)
 output_df = function(ABC, new_var)
@@ -52,6 +51,8 @@ output_df = function(ABC, new_var)
 [Describe the output, e.g. "The recipe produces a data frame of outputs." When displaying outputs, display the output from an interactive session.]
 
 ```{.python}
+# Note to recipe writer: print the result of the recipe in a REPL/console
+# style code block.
 >>> output_df
 [output printout]
 ```
@@ -63,29 +64,32 @@ output_df = function(ABC, new_var)
 # - Include comments where appropriate. If comments are longer than a line
 #   or two, you can break up the code block.
 # - Include the imports and client creation at the top of the workflow.
+# - The recipe should ideally end with the creation of an object representing
+#   the output of the workflow, which is printed in a subsequent block.
 
 library(connectapi)
 
-client <- connect()
+# Note to recipe writer: User-defined constants go in all-caps, immediately
+# after the import statements. Consider using comments to make it obvious
+# what the values are and how to get them even if the code has been copied
+# out of the recipe page.
 
-# Note to recipe writer: if user input is required, use this format,
-# and use all-caps variable names for input the user must provide.
-
-#### User-defined inputs ####
-# 1. Specify xyz. Any clarifying text and what the default value is (if any).
+# 1. Specify abc. Any clarifying text and what the default value is (if any).
 ABC <- "154bd2af-e8fa-4aa4-aab8-dcef701f4af9"
-# 2. Specify abc. Any clarifying text and what the default value is (if any).
+# 2. Specify xyz. Any clarifying text and what the default value is (if any).
 XYZ <- "23"
-#############################
+
+client <- connect()
 
 new_var <- do_something(ABC, XYZ)
 output_df <- function(ABC, new_var)
-
 ```
 
 [Describe the output, e.g. "The recipe produces a data frame of outputs." When displaying outputs, display the output from an interactive session.]
 
 ```{.r}
+# Note to recipe writer: print the result of the recipe in a REPL/console
+# style code block.
 > output_df
 [1] "xyz"
 ```
