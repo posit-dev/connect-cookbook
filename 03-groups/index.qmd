@@ -4,7 +4,7 @@ title: Groups
 
 ## Introduction
 
-Groups are a way to organize users into collections for easier management and access control. Groups can be created by administrators or synced from external identity providers like LDAP or Active Directory.
+Groups are a way to organize users into collections for easier management and access control. Control of group membership depends on how Posit Connect is configured. In some instances, they can be created by administrators. In some cases, they can be synced from external identity providers like LDAP or Active Directory. [link to docs]
 
 3.1 [Viewing Group Information](./01-viewing-group-information/)
 
