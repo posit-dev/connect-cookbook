@@ -1,5 +1,5 @@
 ---
-title: 3.2 Finding Groups
+title: Finding Groups
 ---
 
 ## Problem
