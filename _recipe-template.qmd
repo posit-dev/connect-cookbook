@@ -44,8 +44,13 @@ XYZ = "23"
 client = connect.Client()
 
 new_var = do_something(ABC, XYZ)
-output_df = function(ABC, new_var)
+```
 
+[You may use multiple code blocks, separated by prose, if your example needs a lot of explanation.]
+
+```{.python}
+# Second code block
+output_df = function(ABC, new_var)
 ```
 
 [Describe the output, e.g. "The recipe produces a data frame of outputs." When displaying outputs, display the output from an interactive session.]
@@ -55,6 +60,21 @@ output_df = function(ABC, new_var)
 # style code block.
 >>> output_df
 [output printout]
+```
+
+### [Optional] Full example
+
+[If the recipe includes multiple code blocks, include a section with all the code in a single copyable block.]
+
+```{.python}
+# Define inputs
+ABC = "154bd2af-e8fa-4aa4-aab8-dcef701f4af9"
+XYZ = "23"
+
+client = connect.Client()
+
+new_var = do_something(ABC, XYZ)
+output_df = function(ABC, new_var)
 ```
 
 ## R
