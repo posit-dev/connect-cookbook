@@ -8,25 +8,20 @@ You need to identify all content on your Connect server with access permissions 
 
 ## Solution
 
-Find content where the *access type* is set to *all*.
-
-You can also extend the recipe to create an HTML table suitable for use in a Shiny app or other dashboard.
-
 ::: {.panel-tabset group="language"}
 
 ## Python
 
-Use the Posit SDK to get all content from the server, filter for the access type you want, then prepare the data. The `owner` column contains a JSON object with multiple fields; we are only interested in the `username`. We also need to process the datetime field.
-
+Use the Posit SDK to get all content from the server, keeping only content with the `all` access type. Next, prepare the data. The `owner` column contains a JSON object with multiple fields, and we are only interested in the `username`. We also need to convert the `last_deployed_time` field to the correct data type.
 
 ```{.python}
-from posit.connect import Client
+from posit import connect
 import pandas as pd
 
-connect = Client()
+client = connect.Client()
 
 # Get public access content
-content = pd.DataFrame(connect.content.find())
+content = pd.DataFrame(client.content.find())
 content = content[content['access_type']=='all']
 
 # Prepare the data
@@ -48,7 +43,7 @@ The recipe produces a `DataFrame` with the required data.
 
 ## R
 
-Use `connectapi` to get all content from the server, filter for the access type you want, then prepare the data. The `owner` column contains a JSON object with multiple fields; we are only interested in the `username`. We also need to process the datetime field.
+Use `connectapi` to get all content from the server, keeping only content with the `all` access type. Next, prepare the data. The `owner` column contains a JSON object with multiple fields, and we are only interested in the `username`. We also need to convert the `last_deployed_time` field to the correct data type.
 
 ```{.r}
 library(connectapi)
@@ -108,7 +103,7 @@ Use the `gt` package to create an HTML widget.
 ```{.r}
 library(gt)
 
-gt(tbl) |>
+gt(content) |>
   fmt_url(columns = c("URL")) |>
   opt_interactive(use_search = TRUE)
 ```
