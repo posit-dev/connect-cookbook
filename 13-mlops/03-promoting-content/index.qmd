@@ -4,7 +4,7 @@ title: Promoting Content
 
 ## Problem
 
-You want to promote content from one Posit Connect location to another. The location may be a different Posit Connect server or on the same server.
+You want to promote content from one Posit Connect location to another. The location may be a different Connect server or on the same server.
 
 ## Solution
 
@@ -41,7 +41,7 @@ source_bundle.download('bundle.tar.gz')
 target_bundle = target_content.bundles.create('bundle.tar.gz')
 ```
 
-Finally, deploy the bundle on the target server. This starts a new deployment task  on the target server to render the bundle.
+Finally, deploy the bundle on the target server. This starts a new deployment task on the target server to render the bundle.
 
 ```python
 deployment_task = target_bundle.deploy()
@@ -53,7 +53,7 @@ Optionally, wait for the deployment task to complete.
 deployment_task.wait_for()
 ```
 
-### Full Example
+### Full example
 
 ```python
 from posit import connect
