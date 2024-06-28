@@ -12,16 +12,16 @@ You want to find a subset of groups.
 
 ## Python
 
-Use the `groups` attribute and use the `prefix` parameter to filter groups by group name. The prefix is case insensitive (.e.g, 'PoSiT' is logically equivalent to 'pOsIt').
+Use the `groups` attribute and use the `prefix` parameter to filter groups by group name. The prefix is case insensitive (.e.g, "PoSiT" is logically equivalent to "pOsIt").
 
 ```{.python}
 from posit import connect
 
 client = connect.Client()
-groups = client.groups.find(prefix='data')
+groups = client.groups.find(prefix="data")
 ```
 
-The groups object is a list of groups with a name field that matches the prefix parameter. In this example, the prefix is *data*, which matches the groups name *Data Scientists* and *Data Engineers*.
+The `groups.find()` method returns a list of groups whose name matches the `prefix` parameter.
 
 ```{.python}
 >>> import polars as pl
@@ -47,7 +47,7 @@ shape: (2, 3)
 
 ## Discussion
 
-You can also use the prefix parameter to find a specific group by name if you do not know the group *guid*. Beware that multiple groups can exists with the same prefix. Please verify the group information is correct before performing additional actions.
+You can also use the prefix parameter to find a specific group by name if you do not know the group *guid*. Beware that multiple groups can exists with the same prefix. If this happens, the SDK will only return one group without warning that multiple possible matches exist. Therefore, verifying that group information is correct is important before performing additional actions.
 
 :::{.panel-tabset group="language"}
 
@@ -57,7 +57,7 @@ You can also use the prefix parameter to find a specific group by name if you do
 from posit import connect
 
 client = connect.Client()
-group = client.groups.find_one(prefix='Data Scientists')
+group = client.groups.find_one(prefix="Data Scientists")
 ```
 
 :::
