@@ -1,7 +1,5 @@
 ---
 title: "Finding Public Content"
-execute:
-  eval: false
 ---
 
 ## Problem
