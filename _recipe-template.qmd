@@ -67,6 +67,8 @@ output_df = function(ABC, new_var)
 [If the recipe includes multiple code blocks, include a section with all the code in a single copyable block.]
 
 ```{.python}
+from posit import connect
+
 # Define inputs
 ABC = "154bd2af-e8fa-4aa4-aab8-dcef701f4af9"
 XYZ = "23"
