@@ -8,7 +8,7 @@ You need to identify all content on your Connect server with access permissions 
 
 ## Solution
 
-Use the Python or R SDK packages to get data on all content from Connect. Then, filter the data for public access content: the `access_type` column can take on three values: `all`, `logged_in`, and `acl`, and we only want `all`.
+Find content where the *access type* is set to *all*.
 
 You can also extend the recipe to create an HTML table suitable for use in a Shiny app or other dashboard.
 
