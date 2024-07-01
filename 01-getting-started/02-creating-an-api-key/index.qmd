@@ -1,0 +1,15 @@
+---
+title: Creating an API Key
+---
+
+## Problem
+
+You need to obtain an API key to authenticate with your Connect server when using the Posit SDK.
+
+## Solution
+
+Follow the [API Keys User Guide](/user/api-keys/) to create an API key.
+
+## Discussion
+
+Your API key is a unique identifier associated with your user account, which Posit Connect uses to authenticate access. The API key is supplied at runtime via an environment variable or inline during client initialization when using the Posit SDK.
