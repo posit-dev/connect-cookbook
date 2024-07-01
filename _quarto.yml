@@ -17,13 +17,12 @@ website:
     collapse-level: 1
     file: index.qmd
     contents:
-      # - section: "Getting Started"
-      #   file: ./01-getting-started/index.qmd
-      #   contents:
-      #   - ./01-getting-started/01-installing-the-posit-sdk/index.qmd
-      #   - ./01-getting-started/02-creating-an-api-key/index.qmd
-      #   - ./01-getting-started/03-initializing-a-client/index.qmd
-      #   - ./01-getting-started/04-understanding-error-codes/index.qmd
+      - section: "Getting Started"
+        file: ./01-getting-started/index.qmd
+        contents:
+        - ./01-getting-started/01-installing-the-posit-sdk/index.qmd
+        - ./01-getting-started/02-creating-an-api-key/index.qmd
+        - ./01-getting-started/03-initializing-a-client/index.qmd
       # - section: "Users"
       #   file: ./02-users/index.qmd
       #   contents:

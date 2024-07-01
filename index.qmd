@@ -1,98 +1,13 @@
 ---
-title: Connect Cookbook
+title: Posit Connect Cookbook
 ---
 
-The Posit Connect Cookbook provides recipes in Python and R that enable you to get more out of your Connect instance through the Connect server API.
-The recipes fall into three general categories:
+The *Posit Connect Cookbook* contains recipes for Python and R using the *Posit SDK*, which you can utilize to accomplish everyday tasks on your Connect server. The recipes are lightweight and intend to be straightforward.
 
-1.  Server-level tasks: management of the server, processes, and resources
-2.  Content-level tasks: management of content and content settings
-3.  User- and group-level tasks: management and visibility of users and groups
+# [Getting Started](./01-getting-started/)
 
-## Getting started
+An overview of the Posit SDK and how to setup an authenticated client.
 
-### Install required packages
+# [Groups](./03-groups/)
 
-The recipes in this cookbook use packages that wrap API functionality and provide a natural interface for getting stuff done.
-In Python, the package is [`posit-sdk`](https://github.com/posit-dev/posit-sdk-py), and in R, [`connectapi`](https://pkgs.rstudio.com/connectapi/).
-
-::: {.panel-tabset group="language"}
-## Python
-
-We strongly recommend the use of virtual environments to manage project-level dependencies.
-The code below uses `venv` for this purpose.
-
-``` bash
-# In your project directory, create virtual environment and activate it
-python -m venv .venv && source .venv/bin/activate
-
-# install the `posit-sdk` package from PyPI
-pip install posit-sdk
-```
-
-## R
-
-We strongly recommend the use of virtual environments to manage project-level dependencies.
-The code below uses `renv` for this purpose.
-
-```{.r}
-# install `renv` package
-install.packages(renv)
-
-# In your project directory, initialize the project-level environment
-renv::init()
-
-# install required packages
-install.packages("connectapi")
-```
-:::
-
-Some recipes use additional packages for data tidying, manipulation, or presentation.
-These package requirements are identified in the recipe with either an `import` (Python) or `library()` (R) function call.
-You need to install them separately.
-
-### Set environment variables
-
-To use the Connect API, you need to provide your Connect server URL along with your API key.
-We recommend storing your server URL and API key as environment variables to keep the literal values out of your source code. This makes your secrets more secure, and your code easier to share or reuse in different environments.
-
-The `posit-sdk` and `connectapi` packages look for the following environment variables:
-
-* `CONNECT_SERVER`: Your Connect server URL is the same URL you use to access the Connect dashboard, minus the `connect` path.
-If you access the dashboard at `https://posit-connect.company.com/connect/`, the server URL is `https://posit-connect.company.com/`
-
-* `CONNECT_API_KEY`: The [API Keys](https://docs.posit.co/connect/user/api-keys/) section of the Posit Connect [User Guide](https://docs.posit.co/connect/user/) explains how to obtain a Connect API Key.
-
-Both of these environment variables are present on Connect when your content is rendered as well. By following this convention, you can work with the recipes locally and then publish content based on them to Connect and they will just work.
-
-For convenience when working locally, you can set them in a `.env` file and use the Python `dotenv` package to load them, or in R, a local `.Renviron` file is automatically picked up by R.
-Be sure to add those files to your `.gitignore` file if they're not already there so that you don't accidentally publish them.
-*Do not hard-code your API key into your code.* Treat it like your password.
-
-### Connect to Connect
-
-With these variables set, you don't have to pass any arguments to the library functions that establish a connection to the API, they just get picked up:
-
-::: {.panel-tabset group="language"}
-## Python
-
-```{.python}
-# If you're using a .env file locally, do this:
-from dotenv import load_dotenv
-
-load_dotenv()
-
-# Now load the posit-sdk
-from posit import connect
-
-client = connect.Client()
-```
-
-## R
-
-```{.r}
-library(connectapi)
-
-client <- connect()
-```
-:::
+Groups are utlized to to associate multiple users together and provide a simpler mechanism for managing content access controls.
