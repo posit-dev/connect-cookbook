@@ -1,0 +1,55 @@
+---
+title: Finding Content Owned by a User
+---
+
+## Problem
+
+You want to find content owned by a user.
+
+## Solution
+
+Find a user and then retrieve all content for that user.
+
+::: {.panel-tabset group="language"}
+
+## Python
+
+
+```{.python}
+from posit import connect
+
+USERNAME = "hadley"
+
+client = connect.Client()
+client.users.find_one(prefix=username).content.find()
+```
+
+## R
+
+```r
+library(connectapi)
+
+USERNAME = "hadley"
+
+client <- connect()
+user_guid <- user_guid_from_username(client, USERNAME)
+content <- get_content(client, owner_guid = user_guid)
+```
+
+```r
+content
+# A tibble: 3 × 45
+  guid               name  title description access_type connection_timeout read_timeout init_timeout idle_timeout
+  <chr>              <chr> <chr> <chr>       <chr>                    <int>        <int>        <int>        <int>
+1 f55cdaed-c13e-483… cgrn… Lite… An open-so… all                         NA           NA           NA           NA
+2 1c5278e5-a654-426… cjbx… Loan… An API ser… all                         NA           NA           NA           NA
+3 19afaa4e-e189-49f… ydcf… Inte… Easy web a… all                         NA           NA           NA           NA
+# ℹ 36 more variables: max_processes <int>, min_processes <int>, max_conns_per_process <int>, load_factor <dbl>,
+#   memory_request <lgl>, memory_limit <lgl>, cpu_request <lgl>, cpu_limit <lgl>, amd_gpu_limit <lgl>,
+#   nvidia_gpu_limit <lgl>, service_account_name <lgl>, default_image_name <lgl>, created_time <dttm>,
+#   last_deployed_time <dttm>, bundle_id <chr>, app_mode <chr>, content_category <chr>, parameterized <lgl>,
+#   cluster_name <chr>, image_name <chr>, r_version <chr>, py_version <chr>, quarto_version <chr>,
+#   r_environment_management <lgl>, default_r_environment_management <lgl>, py_environment_management <lgl>,
+#   default_py_environment_management <lgl>, run_as <chr>, run_as_current_user <lgl>, owner_guid <chr>, …
+```
+:::
