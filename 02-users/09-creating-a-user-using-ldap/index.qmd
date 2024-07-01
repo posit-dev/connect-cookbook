@@ -1,52 +1,36 @@
 ---
-title: Create a Posit Connect account from LDAP or OAuth2
+title: Creating a user using LDAP
 ---
 
-## Description
+## Problem
 
-The following recipe searches for a user in LDAP or OAuth2 and then creates a Posit Connect account for that user.
+You want to create a user and your Posit Connect server is configured with LDAP authentication.
 
-## Output
-
-There is no generated output from this recipe.
-The purpose is to modify the state of the Connect server.
-
-## Workflow
-
-This recipe requires the username or the first part of the username of the user to be added.
-
-There are two steps:
-
-1. Search for the user on the auth provider
-2. Create an account for the user on Connect with information returned by the search
-
-## Recipe
+## Solution
 
 :::{.panel-tabset group="language"}
 
-### Python
+## Python
+
+Obtain a *temporary ticket* using the *remote users* API and then create the user.
 
 ```{.python}
-import polars as pl
-
 from posit import connect
 
 client = connect.Client()
 
-#### User-defined inputs ####
-# 1. Specify the username or prefix of the username
-user_prefix = "francis"
-###########################
+USERNAME = "francism"
 
-response = client.get("v1/users/remote", params={"prefix": user_prefix})
-results_df = pl.DataFrame(response.json()['results'])
-
-results_df
+client = connect.Client()
+response = client.get("v1/users/remote", params={"prefix": USERNAME})
+results = response.json()['results']
 ```
 
-##### Example output
+The `results` object contains a single entry with the username *francism*. Notice that the `guid` field is empty, which means that the user has not been created on Connect.
 
-```
+```python
+>>> import polars as pl
+>>> pl.DataFrame(results)
 shape: (1, 12)
 ┌───────────────┬──────────┬────────────┬───────────┬───┬───────────┬────────┬──────┬──────────────┐
 │ email         ┆ username ┆ first_name ┆ last_name ┆ … ┆ confirmed ┆ locked ┆ guid ┆ temp_ticket  │
@@ -59,31 +43,16 @@ shape: (1, 12)
 └───────────────┴──────────┴────────────┴───────────┴───┴───────────┴────────┴──────┴──────────────┘
 ```
 
-We have one user here, `Myra Francis`, username: `francism`. `francism` does not have a GUID, which means that they do not have a user account on Connect.
+The field `temp_ticket` can be used in a subsequent request to create an account on Connect.
 
-Included in the API response for each user is a `temp_ticket` value, which can be used to create the user in Connect.
-
-```{.python}
-temp_ticket = results_df["temp_ticket"][0]
+```python
+ticket = results[0]['temp_ticket']
+response = client.put("v1/users", json={"temp_ticket": ticket})
+user = response.json()
 ```
 
-#### Creating the user
-
-Using the `temp_ticket` value from the previous section, you can create
-a Connect user with a **[`PUT /v1/user`](/api/#put-/v1/user)** endpoint:
-
-```{.python}
-# The 'temp_ticket' value comes from an earlier /users/remote search.
-response = client.put("v1/users", json={"temp_ticket": temp_ticket})
-pl.DataFrame(response.json())
-```
-
-###### Example output
-
-When the call succeeds, the response contains a non-`NULL` `guid` value,
-which is a unique identifier for the user's account on Connect.
-
-```
+```python
+>>> pl.DataFrame(user)
 shape: (1, 11)
 ┌────────────┬──────────┬────────────┬───────────┬───┬────────────┬───────────┬────────┬───────────┐
 │ email      ┆ username ┆ first_name ┆ last_name ┆ … ┆ active_tim ┆ confirmed ┆ locked ┆ guid      │
@@ -98,75 +67,40 @@ shape: (1, 11)
 └────────────┴──────────┴────────────┴───────────┴───┴────────────┴───────────┴────────┴───────────┘
 ```
 
-If the user already exists in Connect, the request errors:
+### Full example
 
+```python
+from posit import connect
+
+USERNAME = "francism"
+
+client = connect.Client()
+response = client.get("v1/users/remote", params={"prefix": USERNAME})
+ticket = response.json()['results'][0]['temp_ticket']
+response = client.put("v1/users", json={"temp_ticket": ticket})
+user = response.json()
 ```
-ClientError: A user using the same Unique ID already exists
-```
 
-### R
+## R
 
-#### Find the user to add
+Call the `users_create_remote` function to create a user.
+
 ```{.r}
 library(connectapi)
-library(purrr)
-library(tibble)
-client <- connect()
-#### User-defined inputs ####
-# 1. The user you want to search for
-user_prefix <- "francis"
-###########################
-remote_users <- client$users_remote(user_prefix)
-tibble(
-  username = map_chr(remote_users$results, ~.$username),
-  fist_name = map_chr(remote_users$results, ~.$first_name),
-  last_name = map_chr(remote_users$results, ~.$last_name),
-  guid = map_chr(remote_users$results,  ~ifelse(is.null(.$guid), NA, .$guid)),
-  temp_ticket = map_chr(remote_users$results, ~.$temp_ticket)
-)
+
+USERNAME = "francism"
+
+users = users_create_remote(client, prefix = USERNAME)
 ```
-
-##### Example output
-
-```
-# A tibble: 1 × 5
-  username fist_name last_name guid  temp_ticket
-  <chr>    <chr>     <chr>     <chr> <chr>
-1 francism Myra      Francis   NA    n7WrtxjvQwRqYmBHXZCIU8WFlkprDsgj8V21AjprLB/XRkYr/2+vxr1NE9N1pH+ftN2ArxiWZAkPa39UqkjhZohmDAeS+1PBOXT…
->
-```
-
-We have one user here, `Myra Francis`, username: `francism`. `francism` does not have a GUID, which means that they do not have a user account on Connect.
-
-#### Creating the user
-
-The `connectapi` SDK has a function to create users directly:
-
-```{.r}
-users_create_remote(client, prefix = "francism")
-```
-
-##### Example output
 
 When the call succeeds, the response contains a non-`NULL` `guid` value,
 which is a unique identifier for the user's account on Connect.
 
-```
-Creating remote user: francism
-Done creating remote users
+```r
+> users
 # A tibble: 1 × 11
   email                username first_name last_name user_role created_time        updated_time        active_time confirmed locked guid
   <chr>                <chr>    <chr>      <chr>     <chr>     <dttm>              <dttm>              <dttm>      <lgl>     <lgl>  <chr>
-1 FrancisM@posit-9.c… francism Myra       Francis   viewer    2024-06-07 19:35:30 2024-06-07 19:35:30 NA          TRUE      FALSE  deb96ce5-e86…
-```
-
-If the user already exists in Connect, the same call returns:
-
-```
-At least one user with username prefix 'francism' already exists
-# A tibble: 1 × 11
-  email               username first_name last_name user_role created_time        updated_time        active_time confirmed locked guid
-  <chr>               <chr>    <chr>      <chr>     <chr>     <dttm>              <dttm>              <dttm>      <lgl>     <lgl>  <chr>
 1 FrancisM@posit-9.c… francism Myra       Francis   viewer    2024-06-07 19:35:30 2024-06-07 19:35:30 NA          TRUE      FALSE  deb96ce5-e86…
 ```
 
