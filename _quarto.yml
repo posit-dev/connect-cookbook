@@ -57,7 +57,7 @@ website:
         # file: ./04-content/index.qmd
         contents:
       #   - ./04-content/01-viewing-content-information/index.qmd
-      #   - ./04-content/02-viewing-content-runtime-settings/index.qmd
+        - ./04-content/02-viewing-content-runtime-settings/index.qmd
       #   - ./04-content/03-viewing-content-git-repository-settings/index.qmd
       #   - ./04-content/04-viewing-content-vanity-urls/index.qmd
         # - ./04-content/05-finding-content/index.qmd
