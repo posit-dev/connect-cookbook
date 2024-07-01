@@ -12,13 +12,15 @@ You want to view information about a user.
 
 ## Python
 
-Use the `users` attribute find a user.
+The `users.find` and `users.find_one` methods return user objects. The `find_one` method returns the first user from Posit Connect that matches the provided arguments. Using the `prefix` argument limits results to users with a matching username, first name, or last name.
 
 ```{.python}
 from posit import connect
 
+PREFIX='hadley'
+
 client = connect.Client()
-user = client.user.find_one()
+user = client.user.find_one(prefix=PREFIX)
 ```
 
 ```{.python}
