@@ -1,0 +1,62 @@
+---
+title: Viewing User Information
+---
+
+## Problem
+
+You want to view information about a user.
+
+## Solution
+
+:::{.panel-tabset group="language"}
+
+## Python
+
+The `users.find` and `users.find_one` methods return user objects. The `find_one` method returns the first user from Posit Connect that matches the provided arguments. Using the `prefix` argument limits results to users with a matching username, first name, or last name.
+
+```{.python}
+from posit import connect
+
+PREFIX='hadley'
+
+client = connect.Client()
+user = client.user.find_one(prefix=PREFIX)
+```
+
+```{.python}
+>>> import json
+>>> print(json.dumps(user, indent=4))
+{
+    "email": "hadley@posit.co",
+    "username": "hadley",
+    "first_name": "Hadley",
+    "last_name": "Wickham",
+    "user_role": "publisher",
+    "created_time": "2017-03-08T04:52:04Z",
+    "updated_time": "2023-02-17 16:23:09",
+    "active_time": "2023-02-17 16:23:09",
+    "confirmed": true,
+    "locked": false,
+    "guid": "f155520a-ca2e-4084-b0a0-12120b7d1add"
+}
+```
+## R
+
+Use the `get_users` function to return a data frame of all users accounts on the Connect server, which you can filter to find the specific user whose information you need.
+
+```{.r}
+library(connectapi)
+client <- connect()
+
+users <- get_users(client)
+```
+The `users` variable is a dataframe of users.
+
+```{.r}
+> users[users$username == "hadley", ]
+# A tibble: 1 × 11
+  email           username first_name last_name user_role created_time        updated_time        active_time         confirmed locked guid
+  <chr>           <chr>    <chr>      <chr>     <chr>     <dttm>              <dttm>              <dttm>              <lgl>     <lgl>  <chr>
+1 hadley@posit.co hadley   Hadley     Wickham   publisher 2015-05-20 19:44:37 2023-02-17 16:23:09 2023-02-17 16:23:09 TRUE      FALSE  ef558598-1d87-40f5-9025-dda8dc62f92a
+```
+:::
