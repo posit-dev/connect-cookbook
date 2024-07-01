@@ -105,14 +105,14 @@ website:
       #   file: ./08-tasks/index.qmd
       #   contents:
       #   - ./08-tasks/01-viewing-task-information/index.qmd
-      # - section: "Jobs"
-      #   file: ./09-jobs/index.qmd
-      #   contents:
+      - section: "Jobs"
+        # file: ./09-jobs/index.qmd
+        contents:
       #   - ./09-jobs/01-viewing-job-information/index.qmd
       #   - ./09-jobs/02-viewing-jobs-by-content/index.qmd
       #   - ./09-jobs/03-viewing-job-logs/index.qmd
       #   - ./09-jobs/04-viewing-job-errors/index.qmd
-      #   - ./09-jobs/05-registering-a-job-kill-order/index.qmd
+        - ./09-jobs/05-registering-a-job-kill-order/index.qmd
       # - section: "Server Management"
       #   file: ./10-server-management/index.qmd
       #   contents:
