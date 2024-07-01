@@ -12,7 +12,7 @@ You want to find users.
 
 ## Python
 
-Use the `users.find` and `users.find_one` methods to find users using various criteria.
+Use the `users.find` and `users.find_one` methods to find users.
 
 ```{.python}
 from posit import connect
@@ -20,17 +20,6 @@ from posit import connect
 client = connect.Client()
 users = client.users.find()
 ```
-
-The `find_one` method returns the first user that matches the provided criteria.
-
-```{.python}
-from posit import connect
-
-client = connect.Client()
-user = client.users.find_one()
-```
-
-### Example Output
 
 ```{.python}
 >>> pl.DataFrame(users)
@@ -45,6 +34,26 @@ shape: (1, 11)
 └─────────────────────────────────┴──────────┴─────────────────┴────────────┴───┴──────────────────────┴──────────────────────┴───────────┴────────┘
 ```
 
+The `find_one` method returns the first user that matches the provided criteria.
+
+```{.python}
+from posit import connect
+
+client = connect.Client()
+user = client.users.find_one()
+```
+
+```{.python}
+>>> pl.DataFrame(user)
+shape: (1, 11)
+┌─────────────────────────────────┬──────────┬─────────────────┬────────────┬───┬──────────────────────┬──────────────────────┬───────────┬────────┐
+│ guid                            ┆ username ┆ email           ┆ first_name ┆ … ┆ updated_time         ┆ active_time          ┆ confirmed ┆ locked │
+│ ---                             ┆ ---      ┆ ---             ┆ ---        ┆   ┆ ---                  ┆ ---                  ┆ ---       ┆ ---    │
+│ str                             ┆ str      ┆ str             ┆ str        ┆   ┆ str                  ┆ str                  ┆ bool      ┆ bool   │
+╞═════════════════════════════════╪══════════╪═════════════════╪════════════╪═══╪══════════════════════╪══════════════════════╪═══════════╪════════╡
+│ c6440668-15d0-4343-b3c8-18755c… ┆ admin    ┆ admin@posit.co  ┆ John       ┆ … ┆ 2018-07-10T21:26:57Z ┆ 2018-07-17T15:18:26Z ┆ true      ┆ false  │
+└─────────────────────────────────┴──────────┴─────────────────┴────────────┴───┴──────────────────────┴──────────────────────┴───────────┴────────┘
+```
 
 ## R
 
