@@ -61,7 +61,7 @@ users[1,]
 
 These methods provide an effective way to search for users when you do not know the users unique identifier (guid).
 
-There are additional parameter that you can use to filter the resulting users set.
+There are additional parameters that you can use to filter the resulting users set.
 
 You can use the `prefix` parameter to find users by username, first name, or last name.
 
