@@ -42,7 +42,7 @@ user = client.users.get(GUID)
 ```
 ## R
 
-Use the `get_users` function to find a user
+Use the `get_users` function to return a data frame of all users accounts on the Connect server, which you can filter to find the specific user whose information you need.
 
 ```{.r}
 library(connectapi)
