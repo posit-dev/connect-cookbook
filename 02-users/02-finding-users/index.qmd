@@ -64,8 +64,6 @@ client <- connect()
 users <- get_users(client)
 ```
 
-### Example Output
-
 ```{.r}
 > users
 users[1,]
