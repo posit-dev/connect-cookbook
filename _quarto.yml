@@ -53,15 +53,15 @@ website:
         # - ./03-groups/11-create-group-members/index.qmd
         # - ./03-groups/12-deleting-group-members/index.qmd
         # - ./03-groups/13-analyzing-group-members/index.qmd
-      # - section: "Content"
-      #   file: ./04-content/index.qmd
-      #   contents:
+      - section: "Content"
+        # file: ./04-content/index.qmd
+        contents:
       #   - ./04-content/01-viewing-content-information/index.qmd
       #   - ./04-content/02-viewing-content-runtime-settings/index.qmd
       #   - ./04-content/03-viewing-content-git-repository-settings/index.qmd
       #   - ./04-content/04-viewing-content-vanity-urls/index.qmd
-      #   - ./04-content/05-finding-content/index.qmd
-      #   - ./04-content/06-finding-public-content/index.qmd
+        # - ./04-content/05-finding-content/index.qmd
+        - ./04-content/06-finding-public-content/index.qmd
       #   - ./04-content/07-finding-authorized-content/index.qmd
       #   - ./04-content/08-finding-content-owned-by-a-user/index.qmd
       #   - ./04-content/09-creating-content/index.qmd
