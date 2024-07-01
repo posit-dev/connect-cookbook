@@ -1,0 +1,75 @@
+---
+title: Initializing a Client
+---
+
+## Problem
+
+You want to get started using the Posit SDK by initializing a connection to your server.
+
+Credential information may be supplied inline or at runtime via the following environment variables.
+
+- **CONNECT_API_KEY** - Your unique Posit Connect API key.
+- **CONNECT_SERVER** - Your Posit Connect server URL.
+
+## Solution
+
+Create a Posit Connect client and provide credential information at runtime via environment variables.
+
+### Option 1 (Preferred)
+
+Import the `connect` module from `posit` and create a `Client`.
+
+:::{.panel-tabset group="language"}
+
+## Python
+
+```python
+from posit import connect
+
+client = connect.Client()
+```
+
+## R
+
+```r
+library(connectapi)
+
+client <- connect()
+```
+:::
+
+### Option 2
+
+Create a Posit Connect client and define credential information inline.
+
+::: {.callout-warning}
+Keep your credentials safe. Do NOT use inline credentials if you need to share your program with others. Instead, provide your credentials via environment variables or obtain them through a secrets manager.
+:::
+
+:::{.panel-tabset group="language"}
+
+## Python
+
+```python
+from posit import connect
+
+URL = "https://connect.example.com"
+API_KEY = "abcdefghijklmnopqrstuvwxyz123456"
+
+client = connect.Client(URL, API_KEY)
+```
+## R
+
+```r
+library(connectapi)
+
+URL = "https://connect.example.com"
+API_KEY = "abcdefghijklmnopqrstuvwxyz123456"
+
+client <- connect(server = URL, api_key = API_KEY)
+```
+:::
+
+## Discussion
+
+The Posit SDK client provide an idomatic interface to Posit Connect. The client object accepts credential information, which can be provided at runtime or defined inline. The preferred method for credential injection is at runtime through environment variables. This protects your information from accidentally being shared along with source code that uses the Posit SDK. Alternatively, you can

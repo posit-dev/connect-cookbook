@@ -1,0 +1,39 @@
+---
+title: Installing the Posit SDK
+---
+
+## Problem
+
+You want to start using the Posit SDK.
+
+## Solution
+
+Download and install the Posit SDK.
+
+:::{.panel-tabset group="language"}
+
+## Python
+
+The Posit SDK for Python is available on [PyPI](https://pypi.org/project/posit-sdk/) and is installed using [pip](https://pip.pypa.io/en/stable/installation/).
+
+:::{.callout-tip}
+We recommend using a virtual environment to isolate dependencies. There are several popular Python virtual environment managers. The standard tool for virtual environment is the builtin Python module [venv](https://docs.python.org/3/library/venv.html). Alternatively, other popular virtual environment managers include [Pipenv](https://pipenv.pypa.io/en/latest/), [Conda](https://docs.conda.io/en/latest/), and [Poetry](https://python-poetry.org).
+:::
+
+```sh
+pip install posit-sdk
+```
+
+## R
+
+The [`connectapi`](https://pkgs.rstudio.com/connectapi/) package is available on [CRAN](https://cran.r-project.org/package=connectapi) and [GitHub](https://github.com/rstudio/connectapi).
+
+:::{.callout-tip}
+We recommend using a virtual environment to isolate dependencies. There are several popular R virtual environment managers. We recommend using the [renv](https://rstudio.github.io/renv/) package.
+:::
+
+```{.r}
+install.packages("connectapi")
+```
+
+:::
