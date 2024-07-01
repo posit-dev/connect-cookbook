@@ -10,4 +10,4 @@ An overview of the Posit SDK and how to setup an authenticated client.
 
 # [Groups](./03-groups/)
 
-Groups are utlized to to associate multiple users together and provide a simpler mechanism for managing content access controls.
+Groups consist of multiple users, and provide a streamlined way to manage content access controls.
