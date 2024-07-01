@@ -1,8 +1,14 @@
-## Recipe: Grant a user access to a content item
+---
+title: Granting content access to a user
+---
 
-In this example, we grant a user access to a content item.
+## Problem
 
-This receipe requires the following inputs:
+You need to grant a user access to a content item.
+
+## Solution
+
+Use the Python or R SDKs to grant access. You need to specify the following information:
 
 1. The `content_guid` for the content item from which you want to add permissions.
 2. Either the `user_guid` or `username` for the user being granted access. The `username` is used if `user_guid` is blank.

@@ -1,8 +1,14 @@
-## Recipe: Revoke a users access from a content item
+---
+title: Revoking content access from a user
+---
 
-In this example, we revoke a user's access from a content item.
+## Problem
 
-This receipe requires the following inputs:
+You need to revoke a user's access to a content item.
+
+## Solution
+
+Use the Python or R SDKs to revoke access. You need to specify the following information:
 
 1. The `content_guid` for the content item from which you want to remove permissions.
 2. Either the `user_guid` or `username` for the user whose access is being revoked. The `username` is used if `user_guid` is blank.

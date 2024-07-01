@@ -1,8 +1,14 @@
-## Recipe: Grant a group access to a content item
+---
+title: Granting content access to a group
+---
 
-In this example, we grant a group access to a content item.
+## Problem
 
-This receipe requires the following inputs:
+You need to grant a group access to a content item.
+
+## Solution
+
+Use the Python or R SDKs to grant access. You need to specify the following information:
 
 1. The `content_guid` for the content item from which you want to add permissions.
 2. Either the `group_guid` or `group_name` for the group being granted access. The `group_name` is used if `group_guid` is blank.

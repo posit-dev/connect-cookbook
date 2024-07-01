@@ -1,8 +1,14 @@
-## Recipe: Revoke a groups access from a content item
+---
+title: Revoking content access from a group
+---
 
-In this example, we revoke a group's access from a content item.
+## Problem
 
-This receipe requires the following inputs:
+You need to revoke a group's access to a content item.
+
+## Solution
+
+Use the Python or R SDKs to revoke access. You need to specify the following information:
 
 1. The `content_guid` for the content item from which you want to remove permissions.
 2. Either the `group_guid` or `group_name` for the group whose access is being revoked. The `group_name` is used if `group_guid` is blank.
