@@ -1,0 +1,90 @@
+---
+title: Viewing Runtime Caches
+---
+
+## Problem
+
+You want to enumerate a list of content runtime caches created by Connect. For more information, see the [Runtime Caches](https://docs.posit.co/connect/admin/server-management/runtime-caches/index.html) section of the Admin Guide.
+
+## Solution
+
+:::{.panel-tabset group="language"}
+
+## Python
+
+Call Connect's API using the SDK. The API returns a JSON response that can be easily transformed into a DataFrame.
+
+```{.python}
+from posit import connect
+import polars as pl
+
+ABC = "154bd2af-e8fa-4aa4-aab8-dcef701f4af9"
+XYZ = "23"
+
+client = connect.Client()
+
+response = client.get("/v1/system/caches/runtime")
+caches_df = pl.DataFrame(response.json()["caches"])
+```
+
+The data includes information on the language and version of the cache. For Connect servers using [off-host execution](https://docs.posit.co/connect/admin/getting-started/off-host-install/), the `image_name` column includes the name of the execution image. The name `Local` indicates that the cache is for local execution mode.
+
+```{.python}
+>>> print(caches_df)
+shape: (23, 3)
+┌──────────┬─────────┬────────────┐
+│ language ┆ version ┆ image_name │
+│ ---      ┆ ---     ┆ ---        │
+│ str      ┆ str     ┆ str        │
+╞══════════╪═════════╪════════════╡
+│ R        ┆ 3.0.2   ┆ Local      │
+│ R        ┆ 3.1.0   ┆ Local      │
+│ R        ┆ 3.1.2   ┆ Local      │
+│ R        ┆ 3.1.3   ┆ Local      │
+│ R        ┆ 3.2.0   ┆ Local      │
+│ …        ┆ …       ┆ …          │
+│ Python   ┆ 3.10.10 ┆ Local      │
+│ Python   ┆ 3.11.3  ┆ Local      │
+│ Python   ┆ 3.7.6   ┆ Local      │
+│ Python   ┆ 3.8.1   ┆ Local      │
+│ Python   ┆ 3.9.7   ┆ Local      │
+└──────────┴─────────┴────────────┘
+```
+
+## R
+
+Call Connect's runtime caches API using `connectapi` and transform the response into a data frame.
+
+```{.r}
+library(connectapi)
+library(purrr)
+
+
+client <- connect()
+
+response <- client$GET("/v1/system/caches/runtime")
+caches_df <- map_dfr(response$caches, ~.x)
+```
+
+The data includes information on the language and version of the cache. For Connect servers using [off-host execution](https://docs.posit.co/connect/admin/getting-started/off-host-install/), the `image_name` column includes the name of the execution image. The name `Local` indicates that the cache is for local execution mode.
+
+```{.r}
+> caches_df
+# A tibble: 23 × 3
+   language version image_name
+   <chr>    <chr>   <chr>     
+ 1 R        3.0.2   Local     
+ 2 R        3.1.0   Local     
+ 3 R        3.1.2   Local     
+ 4 R        3.1.3   Local     
+ 5 R        3.2.0   Local     
+ 6 R        3.2.1   Local     
+ 7 R        3.2.2   Local     
+ 8 R        3.3.3   Local     
+ 9 R        3.4.0   Local     
+10 R        3.4.4   Local     
+# ℹ 13 more rows
+# ℹ Use `print(n = ...)` to see more rows
+```
+
+:::
