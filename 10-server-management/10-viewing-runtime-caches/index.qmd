@@ -16,7 +16,6 @@ Call Connect's API using the SDK. The API returns a JSON response that can be ea
 
 ```{.python}
 from posit import connect
-import polars as pl
 
 ABC = "154bd2af-e8fa-4aa4-aab8-dcef701f4af9"
 XYZ = "23"
@@ -30,7 +29,8 @@ caches_df = pl.DataFrame(response.json()["caches"])
 The data includes information on the language and version of the cache. For Connect servers using [off-host execution](https://docs.posit.co/connect/admin/getting-started/off-host-install/), the `image_name` column includes the name of the execution image. The name `Local` indicates that the cache is for local execution mode.
 
 ```{.python}
->>> print(caches_df)
+>>> import polars as pl
+>>> pl.DataFrame(caches_df)
 shape: (23, 3)
 ┌──────────┬─────────┬────────────┐
 │ language ┆ version ┆ image_name │
@@ -58,7 +58,6 @@ Call Connect's runtime caches API using `connectapi` and transform the response 
 ```{.r}
 library(connectapi)
 library(purrr)
-
 
 client <- connect()
 

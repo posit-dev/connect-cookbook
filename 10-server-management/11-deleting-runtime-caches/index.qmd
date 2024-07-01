@@ -33,7 +33,7 @@ instructions = {
 
 response = client.delete(
     "v1/system/caches/runtime",
-    json = instructions,
+    json=instructions,
 )
 ```
 
