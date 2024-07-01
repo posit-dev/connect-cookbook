@@ -14,7 +14,7 @@ website:
 
   sidebar:
     search: true
-    collapse-level: 1
+    collapse-level: 2
     file: index.qmd
     contents:
       - section: "Getting Started"
@@ -26,8 +26,8 @@ website:
       - section: "Users"
         file: ./02-users/index.qmd
         contents:
-      #   - ./02-users/01-viewing-user-information/index.qmd
-      #   - ./02-users/02-finding-users/index.qmd
+        - ./02-users/01-viewing-user-information/index.qmd
+        - ./02-users/02-finding-users/index.qmd
       #   - ./02-users/03-finding-users-using-a-remote-authentication-provider-ldap-/index.qmd
       #   - ./02-users/04-creating-a-user-using-password-authentication/index.qmd
       #   - ./02-users/05-creating-a-user-using-pam-authentication/index.qmd

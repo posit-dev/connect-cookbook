@@ -1,5 +1,5 @@
 ---
-title: Creating a user using LDAP
+title: Creating a User using LDAP
 ---
 
 ## Problem

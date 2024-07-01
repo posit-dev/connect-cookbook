@@ -1,0 +1,64 @@
+---
+title: Viewing User Information
+---
+
+## Problem
+
+You want to view information about a user.
+
+## Solution
+
+:::{.panel-tabset group="language"}
+
+## Python
+
+Use the `users.get` method to retrieve a user by their unique identifier (guid).
+
+```{.python}
+from posit import connect
+
+GUID = "f155520a-ca2e-4084-b0a0-12120b7d1add"
+
+client = connect.Client()
+user = client.users.get(GUID)
+```
+
+```{.python}
+>>> import json
+>>> print(json.dumps(user, indent=4))
+{
+    "email": "hadley@posit.co",
+    "username": "hadley",
+    "first_name": "Hadley",
+    "last_name": "Wickham",
+    "user_role": "publisher",
+    "created_time": "2017-03-08T04:52:04Z",
+    "updated_time": "2023-02-17 16:23:09",
+    "active_time": "2023-02-17 16:23:09",
+    "confirmed": true,
+    "locked": false,
+    "guid": "f155520a-ca2e-4084-b0a0-12120b7d1add"
+}
+```
+## R
+
+Use the `get_users` function to find a user
+
+```{.r}
+library(connectapi)
+
+GUID <- "f155520a-ca2e-4084-b0a0-12120b7d1add"
+
+client <- connect()
+users <- get_users(client)
+```
+The `users` variable is a dataframe of users.
+
+```{.r}
+> users[users$guid == GUID, ]
+# A tibble: 1 × 11
+  email           username first_name last_name user_role created_time        updated_time        active_time         confirmed locked guid
+  <chr>           <chr>    <chr>      <chr>     <chr>     <dttm>              <dttm>              <dttm>              <lgl>     <lgl>  <chr>
+1 hadley@posit.co hadley   Hadley     Wickham   publisher 2015-05-20 19:44:37 2023-02-17 16:23:09 2023-02-17 16:23:09 TRUE      FALSE  f155520a-ca2e-4084-b0a0-12120b7d1add
+```
+:::
