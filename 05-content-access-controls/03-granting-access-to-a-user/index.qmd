@@ -1,5 +1,5 @@
 ---
-title: Granting content access to a user
+title: Granting Access to a User
 ---
 
 ## Problem
@@ -21,7 +21,6 @@ Use the Python or R SDKs to grant access. You need to specify the following info
 ```{.python}
 from posit import connect
 
-#### User-defined inputs ####
 # 1. specify the guid for the content item
 content_guid = "CONTENT_GUID_HERE"
 # 2. specify either the guid or username for the user being added (username will be used if user_guid is blank)
@@ -29,7 +28,6 @@ user_guid = ""
 username = "USERNAME_HERE"
 # 3. specify if the user should be added as a "viewer" or "owner" (collaborator)
 access_type = "viewer"
-############################
 
 client = connect.Client()
 
@@ -50,7 +48,7 @@ client.content.get(content_guid).permissions.create(
     principal_guid=user_guid,
     principal_type="user",
     role=access_type,
-    )
+)
 
 # Confirm new permissions
 client.content.get(content_guid).permissions.find()
@@ -61,7 +59,6 @@ client.content.get(content_guid).permissions.find()
 ```{.r}
 library(connectapi)
 
-#### User-defined inputs ####
 # 1. specify the guid for the content item
 content_guid = "CONTENT_GUID_HERE"
 # 2. specify either the guid or name for the user being added (username will be used if user_guid is blank)
@@ -69,7 +66,6 @@ user_guid = ""
 username = "USERNAME_HERE"
 # 3. specify if the user should be added as a "viewer" or "owner" (collaborator)
 access_type = "viewer"
-############################
 
 client <- connect()
 

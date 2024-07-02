@@ -1,5 +1,5 @@
 ---
-title: Granting content access to a group
+title: Granting Access to a Group
 ---
 
 ## Problem
@@ -21,7 +21,6 @@ Use the Python or R SDKs to grant access. You need to specify the following info
 ```{.python}
 from posit import connect
 
-#### User-defined inputs ####
 # 1. specify the guid for the content item
 content_guid = "CONTENT_GUID_HERE"
 # 2. specify either the guid or name for the group to be added (group_name will be used if group_guid is blank)
@@ -29,7 +28,6 @@ group_guid = ""
 group_name = "GROUP_NAME_HERE"
 # 3. specify if the group should be added as a "viewer" or "owner" (collaborator)
 access_type = "viewer"
-############################
 
 client = connect.Client()
 
@@ -61,7 +59,6 @@ client.content.get(content_guid).permissions.find()
 ```{.r}
 library(connectapi)
 
-#### User-defined inputs ####
 # 1. specify the guid for the content item
 content_guid = "CONTENT_GUID_HERE"
 # 2. specify either the guid or name for the group to be added (group_name will be used if group_guid is blank)
@@ -69,7 +66,6 @@ group_guid = ""
 group_name = "GROUP_NAME_HERE"
 # 3. specify if the group should be added as a "viewer" or "owner" (collaborator)
 access_type = "viewer"
-############################
 
 client <- connect()
 

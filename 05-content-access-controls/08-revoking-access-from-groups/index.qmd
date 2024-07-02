@@ -1,5 +1,5 @@
 ---
-title: Revoking content access from a group
+title: Revoking Access from a Group
 ---
 
 ## Problem
@@ -57,13 +57,11 @@ client.content.get(content_guid).permissions.find()
 ```{.r}
 library(connectapi)
 
-#### User-defined inputs ####
 # 1. specify the guid for the content item
 content_guid = "CONTENT_GUID_HERE"
 # 2. specify either the guid or name for the group to be removed (group_name will be used if group_guid is blank)
 group_guid = ""
 group_name = "GROUP_NAME_HERE"
-############################
 
 client <- connect()
 

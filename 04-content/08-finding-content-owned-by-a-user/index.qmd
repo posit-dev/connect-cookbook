@@ -1,5 +1,5 @@
 ---
-title: Identify all content owned by a user
+title: Finding Content Owned by a User
 ---
 
 ## Problem

@@ -1,5 +1,5 @@
 ---
-title: Revoking content access from a user
+title: Revoking Access from a User
 ---
 
 ## Problem
@@ -20,13 +20,11 @@ Use the Python or R SDKs to revoke access. You need to specify the following inf
 ```{.python}
 from posit import connect
 
-#### User-defined inputs ####
 # 1. specify the guid for the content item
 content_guid = "CONTENT_GUID_HERE"
 # 2. specify either the guid or name for the user being removed (username will be used if user_guid is blank)
 user_guid = ""
 username = "USERNAME_HERE"
-############################
 
 client = connect.Client()
 
