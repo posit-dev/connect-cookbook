@@ -42,12 +42,11 @@ response <- client$DELETE(
 ```
 
 ```r
-print(response)
+> print(response)
 Response [https://connect.company.co/__api__/v1/content/fdc3f938-3ace-4a22-8af2-1a8f17828b6a/jobs/CwCoI9tizMRRcvLw]
   Date: 2024-06-21 17:48
   Status: 200
   Content-Type: application/json; charset=utf-8
   Size: 199 B
-```
 
 :::
