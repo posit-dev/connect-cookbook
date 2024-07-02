@@ -23,9 +23,9 @@ website:
         - ./01-getting-started/01-installing-the-posit-sdk/index.qmd
         - ./01-getting-started/02-creating-an-api-key/index.qmd
         - ./01-getting-started/03-initializing-a-client/index.qmd
-      # - section: "Users"
-      #   file: ./02-users/index.qmd
-      #   contents:
+      - section: "Users"
+        file: ./02-users/index.qmd
+        contents:
       #   - ./02-users/01-viewing-user-information/index.qmd
       #   - ./02-users/02-finding-users/index.qmd
       #   - ./02-users/03-finding-users-using-a-remote-authentication-provider-ldap-/index.qmd
@@ -34,7 +34,7 @@ website:
       #   - ./02-users/06-creating-a-user-using-oauth2-authentication/index.qmd
       #   - ./02-users/07-creating-a-user-using-google-oauth2-authentication/index.qmd
       #   - ./02-users/08-creating-a-user-using-proxied-authentication/index.qmd
-      #   - ./02-users/09-creating-a-user-using-a-remote-authentication-provider-ldap-/index.qmd
+        - ./02-users/09-creating-a-user-using-ldap/index.qmd
       #   - ./02-users/10-updating-a-user/index.qmd
       #   - ./02-users/11-locking-a-user/index.qmd
       - section: "Groups"
