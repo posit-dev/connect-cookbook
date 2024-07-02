@@ -62,7 +62,7 @@ Next, deploy the bundle on the target server. This starts a new deployment task 
 deployment_task = target_bundle.deploy()
 ```
 
-Finally, call the `wait_for` method on the deployment task. The `wait_for` method watches the deployment process and returns once it completes. Check the status and returning an error if it fails. See [Viewing Task Information](../../08-tasks/01-viewing-task-information/) for additional information.
+Finally, call the `wait_for` method on the deployment task. The `wait_for` method watches the deployment process and returns once it completes. Once the task is complete, check the `exit_code` to see if it fails. A non-zero exit signifies that the task failed to complete successfully. See [Viewing Task Information](../../08-tasks/01-viewing-task-information/) for additional information.
 
 ```python
 deployment_task.wait_for()
