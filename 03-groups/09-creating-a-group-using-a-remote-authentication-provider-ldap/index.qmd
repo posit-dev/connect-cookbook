@@ -88,49 +88,13 @@ ClientError: A group using the same unique ID already exists
 
 ## R
 
-### Find the remote group to add
-
-```{.r}
-library(connectapi)
-library(purrr)
-library(tibble)
-
-GROUP_PREFIX <- "Data Science"
-
-client <- connect()
-
-remote_groups <- client$groups_remote(GROUP_PREFIX)
-
-remote_groups_df <- tibble(
-  name = map_chr(remote_groups$results, ~.$name),
-  guid = map_chr(remote_groups$results,  ~ifelse(is.null(.$guid), NA, .$guid)),
-  temp_ticket = map_chr(remote_groups$results, ~.$temp_ticket)
-)
-```
-
-The resulting data frame contains information on remote groups whose name matches the prefix `Data Science`.
-
-```
-> remote_groups_df
-A tibble: 2 × 3
-  name                         guid                                 temp_ticket
-  <chr>                        <chr>                                <chr>
-1 Data Science                 51a3747a-88c9-4d6c-a791-17c194f0a663 isMU7qo46iGlOZosHGz8NbIG3ciOimKNCn90kln57D…
-2 Data Science Apprentices     NA                                   p5OYtB634uqqfCf72p/KmCtTT9pn7Bpj/6CrGP9ynX…
->
-```
-
-We have two groups here, `Data Science` and `Data Science Apprentices`. The `Data Science` group has a GUID, which means that it already has a group on Connect, but the second `Data Science Apprentices` group does not have a GUID which means that it is not present as a group on Connect.
-
-### Create the group on Connect
-
-The `connectapi` package has a function to create groups directly:
+The `connectapi` package has a function to create groups directly. The function searches for a group with the specified prefix on the remote authentication provider, and creates a corresponding group on Connect.
 
 ```{.r}
 groups_create_remote(client, prefix = "Data Science Apprentices")
 ```
 
-The function returns a data frame showing the newly-created group with, with a non-NULL GUID.
+The function prints a message indicating the status of the request, and returns a data frame showing the newly-created group with, with a non-NULL GUID.
 
 ```{.r}
 Creating remote group: Data Science Apprentices
