@@ -65,9 +65,9 @@ shape: (3, 3)
 library(connectapi)
 library(purrr)
 
-client <- connect()
-
 GROUP_GUID <- "01c24f7d-700a-47d9-a695-2d25d3c14da5"
+
+client <- connect()
 
 results <- client$GET(glue::glue("v1/experimental/groups/{GROUP_GUID}/content"))
 
