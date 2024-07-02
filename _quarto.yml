@@ -148,12 +148,12 @@ website:
       #   - ./13-metrics/02-analyzing-content-usage-information/index.qmd
       #   - ./13-metrics/03-analyzing-popular-content/index.qmd
       #   - ./13-metrics/04-analyzing-popular-publishers/index.qmd
-      # - section: "MLOps"
+      - section: "MLOps"
       #   file: ./14-mlops/index.qmd
-      #   contents:
+        contents:
       #   - ./14-mlops/01-deploying-content/index.qmd
       #   - ./14-mlops/02-rendering-content-on-demand/index.qmd
-      #   - ./14-mlops/03-promoting-content/index.qmd
+        - ./14-mlops/03-promoting-content-from-staging-to-production/index.qmd
       #   - ./14-mlops/04-blue-green-deployments/index.qmd
 
 format:

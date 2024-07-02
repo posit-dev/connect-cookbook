@@ -1,10 +1,10 @@
 ---
-title: 13.3 Promoting Content from Staging to Production
+title: Promoting Content from Staging to Production
 ---
 
 ## Problem
 
-You’re using with two Connect servers for staging and production, and want to promote deployed content from one to the other
+You’re using two Connect servers for staging and production, and want to promote deployed content from one to the other.
 
 ## Solution
 
@@ -30,7 +30,7 @@ source_client = connect.Client(api_key=SOURCE_API_KEY, url=SOURCE_URL)
 target_client = connect.Client(api_key=TARGET_API_KEY, url=TARGET_URL)
 ```
 
-Next, obtain the content from the source server and the target server. See ["Finding Content"](../../04-content/05-finding-content) for additional information.
+Next, obtain the content from the source server and the target server. See [Finding Content](../../04-content/05-finding-content) for additional information.
 
 ```python
 SOURCE_CONTENT_GUID = "154bd2af-e8fa-4aa4-aab8-dcef701f4af9"
@@ -40,7 +40,7 @@ source_content = source_client.content.get(SOURCE_CONTENT_GUID)
 target_content = target_client.content.get(TARGET_CONTENT_GUID)
 ```
 
-Next, obtain the bundle you want to promote using a bundle identifier (id), then download the bundle archive. See ["Finding Bundles"](../../07-bundles/02-finding-bundles) and ["Downloading Bundles"](../../07-bundles/06-downloading-bundles) for additional information.
+Next, obtain the bundle you want to promote using a bundle identifier (id), then download the bundle archive. See [Finding Bundles](../../07-bundles/02-finding-bundles) and [Downloading Bundles](../../07-bundles/06-downloading-bundles) for additional information.
 
 ```python
 BUNDLE_ID = '1000'
@@ -50,19 +50,19 @@ source_bundle = source_content.bundles.get(SOURCE_BUNDLE_ID)
 source_bundle.download(BUNDLE_FILE_NAME)
 ```
 
-Next, create a new bundle on the target server by uploading the bundle archive. See ["Creating Bundles"](../../07-bundles/03-creating-bundles) for additional information.
+Next, create a new bundle on the target server by uploading the bundle archive. See [Creating Bundles](../../07-bundles/03-creating-bundles) for additional information.
 
 ```python
 target_bundle = target_content.bundles.create(BUNDLE_FILE_NAME)
 ```
 
-Next, deploy the bundle on the target server. This starts a new deployment task on the target server to render the bundle. See ["Deploying Bundles"](../../07-bundles/07-deploying-bundles) for additional information.
+Next, deploy the bundle on the target server. This starts a new deployment task on the target server to render the bundle. See [Deploying Bundles](../../07-bundles/07-deploying-bundles) for additional information.
 
 ```python
 deployment_task = target_bundle.deploy()
 ```
 
-Finally, wait for the deployment task to complete. The `wait_for()` method will watch the deployment process and return once it completes. Check the status and returning an error if it fails. See ["Viewing Task Information"](../../08-tasks/01-viewing-task-information/) for additional information.
+Finally, call the `wait_for` method on the deployment task. The `wait_for` method watches the deployment process and returns once it completes. Check the status and returning an error if it fails. See [Viewing Task Information](../../08-tasks/01-viewing-task-information/) for additional information.
 
 ```python
 deployment_task.wait_for()
