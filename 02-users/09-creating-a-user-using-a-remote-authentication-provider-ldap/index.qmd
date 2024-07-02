@@ -1,5 +1,5 @@
 ---
-title: Creating a User using LDAP
+title: Creating a User Using a Remote Authentication Provider (LDAP)
 ---
 
 ## Problem

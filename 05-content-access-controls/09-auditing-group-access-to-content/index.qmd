@@ -1,0 +1,101 @@
+---
+title: Auditing Group Access to Content
+---
+
+## Problem
+
+You need to know what content a group is able to access. You might use this to audit access control lists, or validate that groups you manage have access to all the content they should.
+
+## Solution
+
+Search Connect for content that is accessible to a group, and generate a data frame summarizing the content.
+
+You will need the group's GUID. See [Finding Groups](../../03-groups/02-finding-groups/index.qmd) and [Viewing Group Information](../../03-groups/01-viewing-group-information/index.qmd) for details.
+
+::: {.callout-note}
+Administrator permissions are needed in order to perform this action.
+:::
+
+:::{.panel-tabset group="language"}
+
+## Python
+
+```{.python}
+from posit import connect
+import polars as pl
+
+GROUP_GUID = "01c24f7d-700a-47d9-a695-2d25d3c14da5"
+
+client = connect.Client()
+
+results = client.get(f"v1/experimental/groups/{GROUP_GUID}/content")
+results_df = pl.DataFrame(results.json())
+
+results_out = (
+  # extract the access_type (viewer or publisher) from the
+  # nested struct and rename that column to access_type
+  results_df
+  .explode('permissions')
+  .unnest('permissions')
+  .filter(pl.col('principal_guid') == GROUP_GUID)
+  .select("content_guid", "content_title", "principal_role")
+  .rename({"principal_role": "access_type"})
+)
+```
+
+The resulting DataFrame contains the content GUID, the title, and the type of access the group has to the content.
+
+```{.python}
+>>> results_out
+shape: (3, 3)
+┌─────────────────────────────────┬──────────────────────────┬─────────────┐
+│ content_guid                    ┆ content_title            │ access_type │
+│ ---                             ┆ ---                      │ ---         │
+│ str                             ┆ str                      │ str         │
+╞═════════════════════════════════╪══════════════════════════╡═════════════╡
+│ 0bef0ba7-1470-458f-95b3-6e93c3… ┆ quarto-stock-report-r    │ viewer      │
+│ 2aa38512-46e4-4be7-9bb9-0b32a9… ┆ Stock Report             │ viewer      │
+│ f33285e4-6916-4241-b241-858f03… ┆ top-5-income-share-shiny │ viewer      │
+└─────────────────────────────────┴──────────────────────────┘─────────────┘
+```
+
+## R
+
+```{.r}
+library(connectapi)
+library(purrr)
+
+client <- connect()
+
+GROUP_GUID <- "01c24f7d-700a-47d9-a695-2d25d3c14da5"
+
+results <- client$GET(glue::glue("v1/experimental/groups/{GROUP_GUID}/content"))
+
+results_out <- data.frame(
+  content_guid = map_chr(results, ~.$content_guid),
+  content_title = map_chr(results, ~.$content_title),
+  # extract the access_type (viewer or publisher) from the
+  # nested list and name that access_type
+  access_type = map_chr(results, ~pluck(
+    keep(.$permissions, ~.$principal_guid == GROUP_GUID),
+    1,
+    "principal_role"
+  ))
+)
+```
+
+The resulting DataFrame contains the content GUID, the title, and the type of access the group has to the content.
+
+```{.r}
+> results_out
+                          content_guid            content_title access_type
+1 f33285e4-6916-4241-b241-858f0335ba38 top-5-income-share-shiny      viewer
+2 0bef0ba7-1470-458f-95b3-6e93c31c78b7    quarto-stock-report-r      viewer
+3 2aa38512-46e4-4be7-9bb9-0b32a9370fc7             Stock Report      viewer
+```
+
+:::
+
+## Discussion
+
+Now that you have the content that a group can see, you can use the content GUID in other recipes like [Revoking Access from Groups](../../05-content-access-controls/08-revoking-access-from-groups/) to prevent the group (and others) from being able to access that that content.
