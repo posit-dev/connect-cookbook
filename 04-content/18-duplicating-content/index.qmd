@@ -1,0 +1,23 @@
+---
+title: 4.17 Duplicating Content
+---
+
+## Problem
+
+You want to duplicate, or copy, content.
+
+## Solution
+
+:::{.panel-tabset group="language"}
+
+## Python
+
+# TODO
+
+## R
+
+# TODO
+
+:::
+
+## Discussion
