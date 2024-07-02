@@ -1,0 +1,80 @@
+---
+title: "Viewing Tag Information"
+---
+
+## Problem
+
+You want to find information on a tag for use in a tag-related workflow.
+
+## Solution
+
+::: {.panel-tabset group="language"}
+
+## Python
+
+Tagging workflows in the Python SDK generally use the tag ID.
+
+```{.python}
+from posit import connect
+client = connect.Client()
+
+res = client.get("/v1/tags")
+```
+
+The API results can be transformed into a DataFrame for easy viewing and filtering.
+
+```{.python}
+>>> pl.DataFrame(res.json())
+shape: (309, 5)
+┌─────┬─────────────────────────────────┬───────────┬──────────────────────┬──────────────────────┐
+│ id  ┆ name                            ┆ parent_id ┆ created_time         ┆ updated_time         │
+│ --- ┆ ---                             ┆ ---       ┆ ---                  ┆ ---                  │
+│ str ┆ str                             ┆ str       ┆ str                  ┆ str                  │
+╞═════╪═════════════════════════════════╪═══════════╪══════════════════════╪══════════════════════╡
+│ 1   ┆ Technology                      ┆ null      ┆ 2017-04-18T19:53:45Z ┆ 2017-05-01T11:29:36Z │
+│ 2   ┆ Health                          ┆ null      ┆ 2017-04-18T19:54:05Z ┆ 2017-05-02T13:57:31Z │
+│ 4   ┆ Software                        ┆ 1         ┆ 2017-04-18T19:54:24Z ┆ 2017-05-19T18:15:39Z │
+│ 5   ┆ Mobile Apps                     ┆ 4         ┆ 2017-04-18T19:54:32Z ┆ 2017-05-03T20:15:27Z │
+│ 6   ┆ Version 1.6.0                   ┆ 207       ┆ 2017-05-18T04:53:31Z ┆ 2017-05-18T05:00:20Z │
+│ …   ┆ …                               ┆ …         ┆ …                    ┆ …                    │
+│ 751 ┆ Artificial Intelligence         ┆ 736       ┆ 2024-06-03T03:26:58Z ┆ 2024-06-03T04:03:24Z │
+│ 752 ┆ Machine Learning                ┆ 736       ┆ 2024-06-03T03:27:43Z ┆ 2024-06-03T04:04:04Z │
+│ 753 ┆ Deep Learning                   ┆ 736       ┆ 2024-06-03T03:28:12Z ┆ 2024-06-03T04:04:16Z │
+└─────┴─────────────────────────────────┴───────────┴──────────────────────┴──────────────────────┘
+```
+
+## R
+
+Tagging workflows in R generally use the `Tag` objects, which are obtained using the `get_tags()` function.
+
+Use the `get_tags()` function to get a tree of all tags on Connect. You can browse the hierarchy using R's `$` operator.Alternately, use the `get_tag_data()` function to get a data frame of tag data.
+
+
+```{.r}
+library(connectapi)
+client <- connect()
+
+tag_tree <- get_tags(client)
+tag <- tag_tree$Departments$Administrative
+tag_data <- get_tag_data(client)
+```
+
+The tag tree and individual tags returned by `get_tags()` print a tree-based view. Meanwhile, `get_tag_data()` returns a data frame.
+
+```{.r}
+> tag_tree
+Posit Connect Tag Tree (target_content)
+└── Departments
+   └── Administrative
+> tag
+Posit Connect Tag Tree (filtered)
+└── Administrative
+> tag_data
+# A tibble: 2 × 5
+  id    name           created_time         updated_time         parent_id
+  <chr> <chr>          <chr>                <chr>                <chr>    
+1 757   Departments    2024-06-20T14:25:20Z 2024-06-20T14:25:20Z NA       
+2 758   Administrative 2024-06-20T14:27:22Z 2024-06-20T14:27:22Z 757 
+``` 
+
+:::
