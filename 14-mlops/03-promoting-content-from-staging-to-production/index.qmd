@@ -1,0 +1,114 @@
+---
+title: Promoting Content from Staging to Production
+---
+
+## Problem
+
+You’re using two Connect servers for staging and production, and want to promote deployed content from one to the other.
+
+## Solution
+
+:::{.panel-tabset group="language"}
+
+## Python
+
+Unlike other examples, this recipe creates two client objects. One for the statging server and one for the production location. In this example, the *source* server is the staging server and *target* server is the production server. These concepts can be adjusted to fit your organizational needs.
+
+::: {.callout-warning}
+Here we define the API keys and URL information inline. In your environment, please follow best practices to keep your credential information secure.
+:::
+
+```{.python}
+from posit import connect
+
+SOURCE_API_KEY = "0d23c00de05a787ec2079ef75a881cdb"
+SOURCE_URL = "https://staging.connect.example.com/"
+TARGET_API_KEY = "f19eb24c1fde2370e621ccdaf347f15e"
+TARGET_URL = "https://connect.example.com/"
+
+source_client = connect.Client(api_key=SOURCE_API_KEY, url=SOURCE_URL)
+target_client = connect.Client(api_key=TARGET_API_KEY, url=TARGET_URL)
+```
+
+Next, obtain the content from the source server and the target server. See [Finding Content](../../04-content/05-finding-content) for additional information.
+
+```python
+SOURCE_CONTENT_GUID = "154bd2af-e8fa-4aa4-aab8-dcef701f4af9"
+TARGET_CONTENT_GUID = "2d178c46-4dca-40b0-bf22-a21e1cfb5b46"
+
+source_content = source_client.content.get(SOURCE_CONTENT_GUID)
+target_content = target_client.content.get(TARGET_CONTENT_GUID)
+```
+
+Next, obtain the bundle you want to promote using a bundle identifier (id), then download the bundle archive. See [Finding Bundles](../../07-bundles/02-finding-bundles) and [Downloading Bundles](../../07-bundles/06-downloading-bundles) for additional information.
+
+```python
+BUNDLE_ID = '1000'
+BUNDLE_FILE_NAME = 'bundle.tar.gz'
+
+source_bundle = source_content.bundles.get(SOURCE_BUNDLE_ID)
+source_bundle.download(BUNDLE_FILE_NAME)
+```
+
+Next, create a new bundle on the target server by uploading the bundle archive. See [Creating Bundles](../../07-bundles/03-creating-bundles) for additional information.
+
+```python
+target_bundle = target_content.bundles.create(BUNDLE_FILE_NAME)
+```
+
+Next, deploy the bundle on the target server. This starts a new deployment task on the target server to render the bundle. See [Deploying Bundles](../../07-bundles/07-deploying-bundles) for additional information.
+
+```python
+deployment_task = target_bundle.deploy()
+```
+
+Finally, call the `wait_for` method on the deployment task. The `wait_for` method watches the deployment process and returns once it completes. Once the task is complete, check the `exit_code` to see if it fails. A non-zero exit signifies that the task failed to complete successfully. See [Viewing Task Information](../../08-tasks/01-viewing-task-information/) for additional information.
+
+```python
+deployment_task.wait_for()
+assert deployment_task.exit_code == 0
+```
+
+### Full example
+
+```python
+from posit import connect
+
+BUNDLE_FILE_NAME = 'bundle.tar.gz'
+BUNDLE_ID = '1000'
+SOURCE_API_KEY = "0d23c00de05a787ec2079ef75a881cdb"
+SOURCE_CONTENT_GUID = "154bd2af-e8fa-4aa4-aab8-dcef701f4af9"
+SOURCE_URL = "https://staging.connect.example.com/"
+TARGET_API_KEY = "f19eb24c1fde2370e621ccdaf347f15e"
+TARGET_CONTENT_GUID = "2d178c46-4dca-40b0-bf22-a21e1cfb5b46"
+TARGET_URL = "https://connect.example.com/"
+
+source_client = connect.Client(api_key=SOURCE_API_KEY, url=SOURCE_URL)
+target_client = connect.Client(api_key=TARGET_API_KEY, url=TARGET_URL)
+
+source_content = source_client.content.get(SOURCE_CONTENT_GUID)
+target_content = target_client.content.get(TARGET_CONTENT_GUID)
+
+source_bundle = source_content.bundles.get(SOURCE_BUNDLE_ID)
+source_bundle.download(BUNDLE_FILE_NAME)
+
+target_bundle = target_content.bundles.create(BUNDLE_FILE_NAME)
+
+deployment_task = target_bundle.deploy()
+deployment_task.wait_for()
+assert deployment_task.exit_code == 0
+```
+
+## R
+
+TODO
+
+:::
+
+## Discussion
+
+Your organization may have multiple Connect servers where permissions and environments are segregated into a staging and production system.
+
+Data scientists within your organization are responsible for creating applications and reports. They frequently iterate, experiment, and share updates. Content updates are continuously published to the staging server, which enables them to share work without affecting your business's critical production content.
+
+Once an application or report is ready for general use, the team undergoes peer review, testing, and final approval for production use. The data science team does not have user permissions to publish content to the production environment. Instead, the deployment team is responsible for this process to ensure a secure and predictable deployment. They have secure user accounts with access to the statging and production servers. An engineering on the deployment engineering team downloads the bundle archive from the staging environment and deploys it into production.
