@@ -75,7 +75,7 @@ Tags on Connect can be nested arbitrarily deep. When creating a tag, you can spe
 
 ## Python
 
-Specify the parent tag with its will need the identifier. See [Viewing Tag Information](../01-viewing-tag-information/index.qmd) for details.
+Specify the parent tag with its `id`. See [Viewing Tag Information](../01-viewing-tag-information/index.qmd) for details.
 
 ```{.python}
 from posit import connect
