@@ -1,0 +1,89 @@
+---
+title: Revoking Access from a User
+---
+
+## Problem
+
+You need to revoke a user's access to a content item.
+
+## Solution
+
+Use the Python or R SDKs to revoke access. You need to specify the following information:
+
+1. The `content_guid` for the content item from which you want to remove permissions.
+2. Either the `user_guid` or `username` for the user whose access is being revoked. The `username` is used if `user_guid` is blank.
+
+:::{.panel-tabset group="language"}
+
+## Python
+
+```{.python}
+from posit import connect
+
+# 1. specify the guid for the content item
+content_guid = "CONTENT_GUID_HERE"
+# 2. specify either the guid or name for the user being removed (username will be used if user_guid is blank)
+user_guid = ""
+username = "USERNAME_HERE"
+
+client = connect.Client()
+
+# search by username to find the user_guid if blank
+if not user_guid and username:
+    user_match = client.users.find(prefix=username)
+    if not user_match:
+        raise Exception("Invalid username")
+    elif len(user_match) != 1:
+        raise Exception("More than one username found, ensure you enter a unique name")
+    else:
+        user_guid = user_match[0]["guid"]
+elif not username:
+    raise Exception("Either user_guid or username must be specified")
+
+# For the specified content item remove the desired user
+for perm in client.content.get(content_guid).permissions.find():
+    if perm.principal_guid == user_guid:
+        perm.delete()
+
+# Confirm new permissions
+client.content.get(content_guid).permissions.find()
+```
+
+## R
+
+```{.r}
+library(connectapi)
+
+#### User-defined inputs ####
+# 1. specify the guid for the content item
+content_guid = "CONTENT_GUID_HERE"
+# 2. specify either the guid or name for the user being removed (username will be used if user_guid is blank)
+user_guid = ""
+username = "USERNAME_HERE"
+############################
+
+client <- connect()
+
+# search by username to find the user_guid if blank
+if (user_guid == "" && username != "") {
+  user_match <- get_users(client, prefix = username)
+  if (nrow(user_match) == 0) {
+    stop("Invalid username")
+  } else if (length(unique(user_match$username)) != 1) {
+    stop("More than one username found, ensure you enter a unique name")
+  } else {
+    user_guid <- unique(user_match$guid)
+  }
+} else if (username == "") {
+  stop("Either user_guid or username must be specified")
+}
+
+# For the specified content item remove the desired user
+content <- content_item(client, content_guid)
+content_delete_user(content, user_guid)
+
+# Confirm new permissions
+get_content_permissions(content)
+```
+
+:::

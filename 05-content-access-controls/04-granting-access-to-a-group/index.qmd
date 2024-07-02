@@ -1,0 +1,94 @@
+---
+title: Granting Access to a Group
+---
+
+## Problem
+
+You need to grant a group access to a content item.
+
+## Solution
+
+Use the Python or R SDKs to grant access. You need to specify the following information:
+
+1. The `content_guid` for the content item from which you want to add permissions.
+2. Either the `group_guid` or `group_name` for the group being granted access. The `group_name` is used if `group_guid` is blank.
+3. The `access_type` which determines the type of permissions the group receives. Valid values are "viewer" and "owner" (collaborator).
+
+:::{.panel-tabset group="language"}
+
+## Python
+
+```{.python}
+from posit import connect
+
+# 1. specify the guid for the content item
+content_guid = "CONTENT_GUID_HERE"
+# 2. specify either the guid or name for the group to be added (group_name will be used if group_guid is blank)
+group_guid = ""
+group_name = "GROUP_NAME_HERE"
+# 3. specify if the group should be added as a "viewer" or "owner" (collaborator)
+access_type = "viewer"
+
+client = connect.Client()
+
+# search by group_name to find the group_guid if blank
+if not group_guid and group_name:
+    group_match = client.get("/v1/groups", params={"prefix": group_name}).json()
+    if not group_match["results"]:
+        raise Exception("Invalid group name")
+    elif len(group_match["results"]) != 1:
+        raise Exception("More than one group name found, ensure you enter a unique name")
+    else:
+        group_guid = group_match["results"][0]["guid"]
+elif not group_name:
+    raise Exception("Either group_guid or group_name must be specified")
+
+# For the specified content item add the desired group
+client.content.get(content_guid).permissions.create(
+    principal_guid=group_guid,
+    principal_type="group",
+    role=access_type,
+    )
+
+# Confirm new permissions
+client.content.get(content_guid).permissions.find()
+```
+
+## R
+
+```{.r}
+library(connectapi)
+
+# 1. specify the guid for the content item
+content_guid = "CONTENT_GUID_HERE"
+# 2. specify either the guid or name for the group to be added (group_name will be used if group_guid is blank)
+group_guid = ""
+group_name = "GROUP_NAME_HERE"
+# 3. specify if the group should be added as a "viewer" or "owner" (collaborator)
+access_type = "viewer"
+
+client <- connect()
+
+# search by group_name to find the group_guid if blank
+if (group_guid == "" && group_name != "") {
+  group_match <- get_groups(client, prefix = group_name)
+  if (nrow(group_match) == 0) {
+    stop("Invalid group name")
+  } else if (length(unique(group_match$name)) != 1) {
+    stop("More than one group name found, ensure you enter a unique name")
+  } else {
+    group_guid <- unique(group_match$guid)
+  }
+} else if (group_name == "") {
+  stop("Either group_guid or group_name must be specified")
+}
+
+# For the specified content item add the desired group
+content <- content_item(client, content_guid)
+content_add_group(content, group_guid, role = access_type)
+
+# Confirm new permissions
+get_content_permissions(content)
+```
+
+:::

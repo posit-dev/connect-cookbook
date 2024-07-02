@@ -1,0 +1,94 @@
+---
+title: Granting Access to a User
+---
+
+## Problem
+
+You need to grant a user access to a content item.
+
+## Solution
+
+Use the Python or R SDKs to grant access. You need to specify the following information:
+
+1. The `content_guid` for the content item from which you want to add permissions.
+2. Either the `user_guid` or `username` for the user being granted access. The `username` is used if `user_guid` is blank.
+3. The `access_type` which determines the type of permissions the user receives. Valid values are "viewer" and "owner" (collaborator).
+
+:::{.panel-tabset group="language"}
+
+## Python
+
+```{.python}
+from posit import connect
+
+# 1. specify the guid for the content item
+content_guid = "CONTENT_GUID_HERE"
+# 2. specify either the guid or username for the user being added (username will be used if user_guid is blank)
+user_guid = ""
+username = "USERNAME_HERE"
+# 3. specify if the user should be added as a "viewer" or "owner" (collaborator)
+access_type = "viewer"
+
+client = connect.Client()
+
+# search by username to find the user_guid if blank
+if not user_guid and username:
+    user_match = client.users.find(prefix=username)
+    if not user_match:
+        raise Exception("Invalid username")
+    elif len(user_match) != 1:
+        raise Exception("More than one username found, ensure you enter a unique name")
+    else:
+        user_guid = user_match[0]["guid"]
+elif not username:
+    raise Exception("Either user_guid or username must be specified")
+
+# For the specified content item add the desired user
+client.content.get(content_guid).permissions.create(
+    principal_guid=user_guid,
+    principal_type="user",
+    role=access_type,
+)
+
+# Confirm new permissions
+client.content.get(content_guid).permissions.find()
+```
+
+## R
+
+```{.r}
+library(connectapi)
+
+# 1. specify the guid for the content item
+content_guid = "CONTENT_GUID_HERE"
+# 2. specify either the guid or name for the user being added (username will be used if user_guid is blank)
+user_guid = ""
+username = "USERNAME_HERE"
+# 3. specify if the user should be added as a "viewer" or "owner" (collaborator)
+access_type = "viewer"
+
+client <- connect()
+
+# search by username to find the user_guid if blank
+if (user_guid == "" && username != "") {
+  user_match <- get_users(client, prefix = username)
+  if (nrow(user_match) == 0) {
+    stop("Invalid username")
+  } else if (length(unique(user_match$username)) != 1) {
+    stop("More than one username found, ensure you enter a unique name")
+  } else {
+    user_guid <- unique(user_match$guid)
+  }
+} else if (username == "") {
+  stop("Either user_guid or username must be specified")
+}
+
+# For the specified content item add the desired user
+content <- content_item(client, content_guid)
+content_add_user(content, user_guid, role = access_type)
+
+# Confirm new permissions
+get_content_permissions(content)
+```
+
+:::

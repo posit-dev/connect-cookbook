@@ -1,0 +1,79 @@
+---
+title: Finding Content Owned by a User
+---
+
+## Problem
+
+You need to identify all content owned by a user
+
+This may be useful for auditing purposes, changing content ownership when an employee leaves the company, or creating a list of content that would be the input for another recipe in this guide.
+
+## Solution
+
+These solutions assume that you have the username for the user in question.
+
+::: {.panel-tabset group="language"}
+
+## Python
+
+Using the SDK to look up a user, you can directly access that user's owned content.
+
+```{.python}
+from posit import connect
+
+USERNAME = "publisher1"
+
+client = connect.Client()
+
+content = client.users.find_one(prefix = username).content.find()
+```
+
+The recipe produces a DataFrame containing all of the user's owned content.
+
+```{.python}
+content_df = pl.DataFrame(content)
+>>> content
+shape: (3, 45)
+            guid	           name	            title	     description	access_type	connection_timeout	read_timeout	init_timeout	idle_timeout	max_processes	min_processes	max_conns_per_process	load_factor	memory_request	memory_limit	cpu_request	cpu_limit	amd_gpu_limit	nvidia_gpu_limit	service_account_name	default_image_name	    created_time	last_deployed_time	bundle_id	       app_mode	content_category	parameterized	cluster_name	image_name	r_version	py_version	quarto_version	r_environment_management	default_r_environment_management	py_environment_management	default_py_environment_management	run_as	run_as_current_user	      owner_guid	     content_url	   dashboard_url	app_role	  id	                                                                                                                                  tags	                                                                       owner
+             str	            str	              str	             str	       str	              null	        null	        null	        null           	 null	         null	                 null	       null	          null	        null	       null	     null	         null	            null	                null	              null	             str	               str	      str	            str	             str	         bool	         str	      null	     null	       str	           str	                    null	                            null	                     bool	                             null	  null	               bool	             str	             str	             str	     str	 str	                                                                                                                       list[struct[5]]	                                                                   struct[4]
+"f55cdaed-c13e-…	"cgrndhmmpnsgp"	"Literate Progr…	"An open-source…	     "all"	              null	        null	        null	        null           	 null	         null	                 null	       null	          null	        null	       null	     null	         null	            null	                null	              null	"2024-04-02T17:…	  "2024-04-02T17:…	     "11"	"quarto-static"	              ""	        false	     "Local"	      null	     null	  "3.11.6"	     "1.4.549"	                    null	                            null	                     true	                             null	  null	              false	"010b18bf-96b9-…	"https://wonder…	"https://wonder…	 "owner"	"11"	 [{"7","Python","1","2024-04-02T17:52:08Z","2024-04-02T17:52:08Z"}, {"12","Quarto","7","2024-04-02T17:55:25Z","2024-04-02T17:55:25Z"}]	{"010b18bf-96b9-499f-bb0f-7519a22ca870","publisher1","Publisher1","Account"}
+"1c5278e5-a654-…	"cjbxgjmdaqodv"	"Loan Risk Pred…	"An API serving…	     "all"	              null	        null	        null	        null           	 null	         null	                 null	       null	          null	        null	       null	     null	         null	            null	                null	              null	"2024-04-02T17:…	  "2024-04-02T17:…	     "10"	"python-fastapi…              ""	        false	     "Local"	      null	     null	  "3.11.6"	          null	                    null	                            null	                     true	                             null	  null	              false	"010b18bf-96b9-…	"https://wonder…	"https://wonder…	 "owner"	"10"	[{"7","Python","1","2024-04-02T17:52:08Z","2024-04-02T17:52:08Z"}, {"11","FastAPI","7","2024-04-02T17:54:39Z","2024-04-02T17:54:39Z"}]	{"010b18bf-96b9-499f-bb0f-7519a22ca870","publisher1","Publisher1","Account"}
+"19afaa4e-e189-…	"ydcfowlsqtnow"	"Interactive Da…	"Easy web apps …	     "all"	              null	        null	        null	        null           	 null	         null	                 null	       null	          null	        null	       null	     null	         null	            null	                null	              null	"2024-04-02T17:…	  "2024-04-02T17:…	      "9"	 "python-shiny"	              ""	        false	     "Local"	      null	     null	  "3.11.6"	          null	                    null	                            null	                     true	                             null	  null	              false	"010b18bf-96b9-…	"https://wonder…	"https://wonder…	 "owner"	 "9"	  [{"7","Python","1","2024-04-02T17:52:08Z","2024-04-02T17:52:08Z"}, {"10","Shiny","7","2024-04-02T17:53:54Z","2024-04-02T17:53:54Z"}]	{"010b18bf-96b9-499f-bb0f-7519a22ca870","publisher1","Publisher1","Account"}
+
+```
+
+## R
+
+Look up the user's unique identifier (GUID), and use that to find all their owned content.
+
+```{.r}
+library(connectapi)
+
+USERNAME <- "publisher1"
+
+client <- connect()
+
+user_guid <- user_guid_from_username(client, username)
+content <- get_content(client, owner_guid = user_guid)
+```
+
+The recipe produces a data frame of the user's owned content.
+
+```{.r}
+> content
+# A tibble: 3 × 45
+  guid               name  title description access_type connection_timeout read_timeout init_timeout idle_timeout
+  <chr>              <chr> <chr> <chr>       <chr>                    <int>        <int>        <int>        <int>
+1 f55cdaed-c13e-483… cgrn… Lite… An open-so… all                         NA           NA           NA           NA
+2 1c5278e5-a654-426… cjbx… Loan… An API ser… all                         NA           NA           NA           NA
+3 19afaa4e-e189-49f… ydcf… Inte… Easy web a… all                         NA           NA           NA           NA
+# ℹ 36 more variables: max_processes <int>, min_processes <int>, max_conns_per_process <int>, load_factor <dbl>,
+#   memory_request <lgl>, memory_limit <lgl>, cpu_request <lgl>, cpu_limit <lgl>, amd_gpu_limit <lgl>,
+#   nvidia_gpu_limit <lgl>, service_account_name <lgl>, default_image_name <lgl>, created_time <dttm>,
+#   last_deployed_time <dttm>, bundle_id <chr>, app_mode <chr>, content_category <chr>, parameterized <lgl>,
+#   cluster_name <chr>, image_name <chr>, r_version <chr>, py_version <chr>, quarto_version <chr>,
+#   r_environment_management <lgl>, default_r_environment_management <lgl>, py_environment_management <lgl>,
+#   default_py_environment_management <lgl>, run_as <chr>, run_as_current_user <lgl>, owner_guid <chr>, …
+```
+
+:::
