@@ -1,0 +1,83 @@
+---
+title: Finding Content by Tag
+---
+
+## Problem
+
+You want to find all content items that have a specific tag assigned.
+
+## Solution
+
+::: {.panel-tabset group="language"}
+
+## Python
+
+A tag identifier is required to find content items. See [Viewing Tag Information](../../06-content-organization/01-viewing-tag-information/index.qmd) for details.
+
+```{.python}
+from posit import connect
+client = connect.Client()
+
+TAG_ID = "42"
+
+res = client.get(f"/v1/tags/{TAG_ID}/content")
+```
+
+The response can be easily turned into a DataFrame.
+
+```{.python}
+>>> pl.DataFrame(res.json())
+shape: (24, 45)
+┌─────────────────────────────────┬──────────────────────────────┬──────────────────────────────┬──────────────────────────────────────────────────────────────────────────────┐
+│ guid                            ┆ name                         ┆ title                        ┆ description                                                                  │
+│ ---                             ┆ ---                          ┆ ---                          ┆ ---                                                                          │
+│ str                             ┆ str                          ┆ str                          ┆ str                                                                          │
+╞═════════════════════════════════╪══════════════════════════════╪══════════════════════════════╪══════════════════════════════════════════════════════════════════════════════╡
+│ 5b6f05d1-1fea-480b-b8fa-51aec6… ┆ AI-Overview                  ┆ Introduction to AI           ┆ An introductory overview of Artificial Intelligence and its core concepts.   │
+│ 7ec59570-b199-4f16-8fff-86e3c6… ┆ ML-Models                    ┆ Machine Learning Models      ┆ Detailed explanation of various machine learning models and their applicatio │
+│ 3f4140dd-5924-4b31-bb2e-2031b2… ┆ DeepLearning-Techniques      ┆ Advanced Deep Learning       ┆ Exploration of advanced techniques in deep learning, including neural network│
+│ 62ebbc03-818b-41f2-91fe-4718bb… ┆ Tech-Trends2024              ┆ Technology Trends in 2024    ┆ A look into the upcoming technology trends expected to dominate in 2024.     │
+│ 2bd2a699-b46e-4e6a-8eb6-caca49… ┆ Health-Innovations           ┆ Innovations in Healthcare    ┆ Innovations and breakthroughs in the healthcare industry for better outcomes.│
+│ …                               ┆ …                            ┆ …                            ┆ …                                                                            │
+│ d235306c-7155-4aa3-aac0-a6b587… ┆ Software-Development         ┆ Software Development Basics  ┆ Basics of software development, including best practices and methodologies.  │
+│ 3bed9e07-b793-43ea-839a-37e41b… ┆ Mobile-Apps-Trends           ┆ Trends in Mobile Apps        ┆ Current trends in mobile app development and popular frameworks.             │
+│ 1d79c2c7-c649-40be-a0b5-3be159… ┆ Stats-Overview               ┆ Overview of Statistics       ┆ Comprehensive overview of statistics and its importance in data analysis.    │
+│ 2c67c0c5-3d8b-44c7-a4b3-a80787… ┆ AI-Applications              ┆ Applications of AI           ┆ Various applications of artificial intelligence across different industries. │
+│ 2bee37f3-1f44-4ba5-bbdc-092dd0… ┆ Data-Visualization           ┆ Data Visualization Techniques┆ Techniques and tools for effective data visualization and presentation.      │
+└─────────────────────────────────┴──────────────────────────────┴──────────────────────────────┴──────────────────────────────────────────────────────────────────────────────┘
+
+```
+
+## R
+
+The `content_list_by_tag()` function requires a `Tag` object representing. See [Viewing Tag Information](../../06-content-organization/01-viewing-tag-information/index.qmd) for details.
+
+```{.r}
+library(connectapi)
+client <- connect()
+
+tag_tree <- get_tags(client)
+target_tag <- tag_tree$Departments$Administrative
+
+tagged_content <- content_list_by_tag(client, target_tag)
+```
+
+The `content_list_by_tag()` function returns a data frame of content information.
+
+```{.r}
+> tagged_content
+# A tibble: 1 × 46
+  guid       name  title description access_type locked locked_message connection_timeout
+  <chr>      <chr> <chr> <chr>       <chr>       <lgl>  <chr>                       <int>
+1 154bd2af-… cont… Cont… ""          logged_in   FALSE  ""                             NA
+# ℹ 38 more variables: read_timeout <int>, init_timeout <int>, idle_timeout <int>,
+#   max_processes <int>, min_processes <int>, max_conns_per_process <int>,
+#   load_factor <dbl>, memory_request <lgl>, memory_limit <lgl>, cpu_request <lgl>,
+#   cpu_limit <lgl>, amd_gpu_limit <lgl>, nvidia_gpu_limit <lgl>,
+#   service_account_name <lgl>, default_image_name <lgl>, created_time <dttm>,
+#   last_deployed_time <dttm>, bundle_id <chr>, app_mode <chr>, content_category <chr>,
+#   parameterized <lgl>, cluster_name <chr>, image_name <chr>, r_version <chr>, …
+
+```
+
+:::
