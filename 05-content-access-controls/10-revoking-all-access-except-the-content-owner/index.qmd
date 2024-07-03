@@ -37,7 +37,6 @@ if type(also_remove_collabs) != bool:
     print("The value of `also_remove_collabs` must be a boolean. Setting it to False to be safe.")
     also_remove_collabs = False
 
-
 client = connect.Client()
 
 # For the specified content item, iteratively adjust permissions.
@@ -45,10 +44,8 @@ for perm in client.content.get(content_guid).permissions.find():
     if also_remove_collabs or perm.role == "viewer":
         perm.delete()
 
-
 # Confirm new permissions
 client.content.get(content_guid).permissions.find()
-
 
 # If the access type for the content is not set to an Access Control List ("acl"), modify this to ensure that only the owner has access
 access_type = client.content.get(content_guid).access_type
@@ -84,12 +81,11 @@ content <- content_item(client, content_guid)
 # Get permissions
 perms <- content$permissions()
 
-#TODO: this can be cleaned up per GH issue https://github.com/rstudio/connectapi/issues/253
 # Get id of each viewer and owner (collaborator)
 viewer_ids <- map(perms, ~.x$id[.x$role == "viewer"]) |> unlist()
 collab_ids <- map(perms, ~.x$id[.x$role == "owner"]) |> unlist()
 
-# remove all viewers
+# Remove all viewers
 walk(viewer_ids, ~content$permissions_delete(.x))
 if (also_remove_collabs) {
   # remove collaborators too
