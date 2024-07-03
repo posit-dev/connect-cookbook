@@ -48,7 +48,7 @@ import numpy as np
 
 #### User-defined inputs ####
 # 1. specify the guid for the content
-content_guid = "INSERT_CONTENT_GthUID"
+content_guid = "INSERT_CONTENT_GUID"
 
 # 2. Specify timeframe for the report. Default is 30 days prior to today
 as_of_date = date.today()
