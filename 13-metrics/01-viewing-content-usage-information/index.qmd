@@ -1,0 +1,54 @@
+---
+title: Viewing Content Usage Information
+---
+
+## Problem
+
+You want to view usage information.
+
+## Solution
+
+:::{.panel-tabset group="language"}
+
+## Python
+
+Use the `metrics.usage` attribute to view usage event information. The `find_one` method retrieves a single usage event.
+
+```{.python}
+from posit import connect
+
+client = connect.Client()
+usage_event = client.metrics.usage.find_one()
+```
+
+The usage event describes access to content by a user.
+
+```{.python}
+>>> import json
+>>> print(json.dumps(usage_event, indent=4))
+{
+    "content_guid": "2243770d-ace0-4782-87f9-fe2aeca14fc8",
+    "user_guid": "434f97ab-4b97-4443-8490-ed1052f37b29",
+    "variant_key": "dZnFUBMR",
+    "rendering_id": "3029259",
+    "bundle_id": "49747",
+    "started": "2023-10-27T16:19:40Z",
+    "ended": "2023-10-27T16:19:40Z",
+    "data_version": 3,
+    "path": null
+}
+```
+
+## R
+
+```{.r}
+# TODO
+```
+
+:::
+
+## See also
+
+- [Viewing Content Information](../../04-content/01-viewing-content-information/)
+- [Viewing User Information](../../02-users/01-viewing-user-information/)
+- [Viewing Bundle Information](../../07-bundles/01-viewing-bundle-information/)

@@ -1,0 +1,83 @@
+---
+title: Analyzing Content Usage Information
+---
+
+## Problem
+
+You want to analyze and understand content usage trends on your Connect server.
+
+## Solution
+
+:::{.panel-tabset group="language"}
+
+## Python
+
+Use the `metrics.usage` attribute to find usage events. Filter the results to specific content using the unique identfier (guid).
+
+```{.python}
+import polars as pl
+from posit import connect
+
+CONTENT_GUID = "8c30146e-1537-4986-a9d4-4e997bc9c2a5"
+
+client = connect.Client()
+events = client.metrics.usage.find()
+df = pl.DataFrame(events, infer_schema_length=len(events))
+```
+
+The resulting dataframe contains usage events for the specified content. Each row represents when a user viewed the content.
+
+```python
+>>> df
+shape: (45, 9)
+┌─────────────────────────────────┬─────────────────────────────────┬─────────────┬──────────────┬───┬──────────────────────┬──────────────────────┬──────────────┬─────────────────────────────────┐
+│ content_guid                    ┆ user_guid                       ┆ variant_key ┆ rendering_id ┆ … ┆ started              ┆ ended                ┆ data_version ┆ path                            │
+│ ---                             ┆ ---                             ┆ ---         ┆ ---          ┆   ┆ ---                  ┆ ---                  ┆ ---          ┆ ---                             │
+│ str                             ┆ str                             ┆ str         ┆ str          ┆   ┆ str                  ┆ str                  ┆ i64          ┆ str                             │
+╞═════════════════════════════════╪═════════════════════════════════╪═════════════╪══════════════╪═══╪══════════════════════╪══════════════════════╪══════════════╪═════════════════════════════════╡
+│ 32884a40-f74f-4da4-8d14-061d66… ┆ f55ca95d-ce52-43ed-b31b-48dc4a… ┆ txvRW8SG    ┆ 3053950      ┆ … ┆ 2024-07-02T19:26:52Z ┆ 2024-07-02T19:26:52Z ┆ 3            ┆ /                               │
+│ 32884a40-f74f-4da4-8d14-061d66… ┆ f55ca95d-ce52-43ed-b31b-48dc4a… ┆ txvRW8SG    ┆ 3053950      ┆ … ┆ 2024-07-02T19:26:56Z ┆ 2024-07-02T19:26:56Z ┆ 3            ┆ /                               │
+│ 32884a40-f74f-4da4-8d14-061d66… ┆ f55ca95d-ce52-43ed-b31b-48dc4a… ┆ txvRW8SG    ┆ 3053950      ┆ … ┆ 2024-07-02T19:26:59Z ┆ 2024-07-02T19:26:59Z ┆ 3            ┆ /runbooks/refresh-quarto-conte… │
+│ 32884a40-f74f-4da4-8d14-061d66… ┆ f55ca95d-ce52-43ed-b31b-48dc4a… ┆ txvRW8SG    ┆ 3053950      ┆ … ┆ 2024-07-02T19:27:11Z ┆ 2024-07-02T19:27:11Z ┆ 3            ┆ /                               │
+│ 32884a40-f74f-4da4-8d14-061d66… ┆ f55ca95d-ce52-43ed-b31b-48dc4a… ┆ txvRW8SG    ┆ 3053950      ┆ … ┆ 2024-07-02T19:27:15Z ┆ 2024-07-02T19:27:15Z ┆ 3            ┆ /                               │
+│ …                               ┆ …                               ┆ …           ┆ …            ┆ … ┆ …                    ┆ …                    ┆ …            ┆ …                               │
+│ 32884a40-f74f-4da4-8d14-061d66… ┆ f55ca95d-ce52-43ed-b31b-48dc4a… ┆ txvRW8SG    ┆ 3053985      ┆ … ┆ 2024-07-03T14:17:23Z ┆ 2024-07-03T14:17:23Z ┆ 3            ┆ /runbooks/refresh-quarto-conte… │
+│ 32884a40-f74f-4da4-8d14-061d66… ┆ 0f66fbcd-1e57-452a-957d-41d19e… ┆ txvRW8SG    ┆ 3053985      ┆ … ┆ 2024-07-03T14:35:57Z ┆ 2024-07-03T14:35:57Z ┆ 3            ┆ /                               │
+│ 32884a40-f74f-4da4-8d14-061d66… ┆ 0f66fbcd-1e57-452a-957d-41d19e… ┆ txvRW8SG    ┆ 3053985      ┆ … ┆ 2024-07-03T14:35:59Z ┆ 2024-07-03T14:35:59Z ┆ 3            ┆ /runbooks/refresh-quarto-conte… │
+│ 32884a40-f74f-4da4-8d14-061d66… ┆ f55ca95d-ce52-43ed-b31b-48dc4a… ┆ txvRW8SG    ┆ 3053985      ┆ … ┆ 2024-07-03T14:51:25Z ┆ 2024-07-03T14:51:25Z ┆ 3            ┆ /                               │
+│ 32884a40-f74f-4da4-8d14-061d66… ┆ d1453872-a115-4aa6-8a8f-183989… ┆ txvRW8SG    ┆ 3053985      ┆ … ┆ 2024-07-03T16:40:16Z ┆ 2024-07-03T16:40:16Z ┆ 3            ┆ /                               │
+└─────────────────────────────────┴─────────────────────────────────┴─────────────┴──────────────┴───┴──────────────────────┴──────────────────────┴──────────────┴─────────────────────────────────┘
+```
+
+We can analyze this dataframe to understand the time of the day when the content is viewed.
+
+```python
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+df = df.with_columns(pl.col("started").str.to_datetime("%Y-%m-%dT%H:%M:%SZ"))
+df = df.with_columns(pl.col("started").dt.hour().alias('hour').cast(pl.Int64))
+df = df.with_columns(pl.col("started").dt.day().alias('day').cast(pl.Int64))
+df = df.group_by('day', 'hour').len()
+df = df.with_columns(pl.col('len').log10())
+
+days = pl.DataFrame({"day": pl.Series(name="day", values=list(range(1, 32)))})
+hours = pl.DataFrame({"hour": pl.Series(name="hour", values=list(range(0, 24)))})
+grid = days.join(hours, how="cross")
+grid = grid.join(df, on=["day", "hour"], how="left").fill_null(0)
+grid = grid.pivot(index='hour', columns='day', values='len')
+
+sns.heatmap(grid, cmap='coolwarm')
+plt.title('Heatmap of Data by Hour and Day')
+plt.xlabel('Day')
+plt.ylabel('Hour of Day')
+plt.show()
+```
+
+## R
+
+```{.r}
+library(connectapi)
+```
+
+:::

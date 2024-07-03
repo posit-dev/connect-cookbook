@@ -143,11 +143,11 @@ website:
       #   contents:
       #   - ./12-auditing/01-viewing-audit-logs/index.qmd
       #   - ./12-auditing/02-analyzing-audit-logs/index.qmd
-      # - section: "Metrics"
+      - section: "Metrics"
       #   file: ./13-metrics/index.qmd
-      #   contents:
-      #   - ./13-metrics/01-viewing-content-usage-information/index.qmd
-      #   - ./13-metrics/02-analyzing-content-usage-information/index.qmd
+        contents:
+        - ./13-metrics/01-viewing-content-usage-information/index.qmd
+        - ./13-metrics/02-analyzing-content-usage-information/index.qmd
       #   - ./13-metrics/03-analyzing-popular-content/index.qmd
       #   - ./13-metrics/04-analyzing-popular-publishers/index.qmd
       - section: "MLOps"
