@@ -10,7 +10,7 @@ You want to request the removal of a specified runtime cache.
 
 Call the `DELETE /v1/system/caches/runtime` endpoint.
 
-You must specify the language, version, and image name for the runtime cache you wish to delete. See [Viewing Runtime Caches](../10-viewing-runtime-caches/index.qmd) to view runtime caches on your Connect server.
+You must specify the language, version, and image name for the runtime cache you wish to delete. See [Viewing Runtime Caches](../07-viewing-runtime-caches/) to view runtime caches on your Connect server.
 
 :::{.panel-tabset group="language"}
 

@@ -10,7 +10,7 @@ You want to assign a tag to a content item.
 
 ::: {.callout-tip}
 
-A tag must be [created](../create/index.qmd) before it can be assigned to content.
+A tag must be [created](../03-creating-tags/) before it can be assigned to content.
 
 :::
 
@@ -76,7 +76,7 @@ Posit Connect Tag Tree (target_content)
    └── my_tag
 
 > target_content
-Posit Connect Content: 
+Posit Connect Content:
   Content GUID: 154bd2af-e8fa-4aa4-aab8-dcef701f4af9
   Content URL: https://connect.example.org/connect/#/apps/154bd2af-e8fa-4aa4-aab8-dcef701f4af9/
   Content Title: Example Content
@@ -89,4 +89,4 @@ content_item(client, guid = "154bd2af-e8fa-4aa4-aab8-dcef701f4af9")
 #### See Also
 
 - [Content](../../04-content/index.qmd)
-- [Tags](../index.qmd)
+- [Content Organization](../index.qmd)
