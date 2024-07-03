@@ -1,0 +1,86 @@
+---
+title: Viewing Container Image Usage
+---
+
+## Problem
+
+Your Connect server is configured to use off-host execution. You want to know what container images are in use by content.
+
+## Solution
+
+Query Connect for content items and count the number of times items use each image. The result is a table, sorted by most commonly used images.
+
+:::{.callout-note}
+The table will include only content your API key has permission to view.
+:::
+
+::: {.panel-tabset group="language"}
+
+## Python
+
+```{.python}
+from posit import connect
+import polars as pl
+
+client = connect.Client()
+
+images_df = (pl.DataFrame(client.content.find(), infer_schema_length=None)
+    .group_by("image_name").count().sort("count", descending=True))
+```
+
+```{.python}
+>>> print(images_df)
+shape: (24, 2)
+┌───────────────────────────────────┬───────┐
+│ image_name                        ┆ count │
+│ ---                               ┆ ---   │
+│ str                               ┆ u32   │
+╞═══════════════════════════════════╪═══════╡
+│ null                              ┆ 927   │
+│ ghcr.io/rstudio/content-pro:r4.1… ┆ 245   │
+│ ghcr.io/rstudio/content-pro:r3.4… ┆ 178   │
+│ ghcr.io/rstudio/content-pro:r3.2… ┆ 156   │
+│ ghcr.io/rstudio/content-pro:r3.6… ┆ 140   │
+│ …                                 ┆ …     │
+│ ghcr.io/rstudio/content-pro:r3.3… ┆ 13    │
+│ ghcr.io/rstudio/content-pro:r3.5… ┆ 12    │
+│ ghcr.io/edavidaja/r-quarto:r4.3.… ┆ 9     │
+│ ghcr.io/rstudio/content-pro:r4.1… ┆ 1     │
+│ ghcr.io/rstudio/content-pro:r4.0… ┆ 1     │
+└───────────────────────────────────┴───────┘
+```
+
+## R
+
+```{.r}
+library(connectapi)
+library(dplyr)
+
+client <- connect()
+
+images_df <- client |>
+  get_content() |>
+  count(image_name) |>
+  arrange(desc(n))
+```
+
+```{.r}
+> images_df
+# A tibble: 24 × 2
+   image_name                                                  n
+   <chr>                                                   <int>
+ 1 NA                                                        927
+ 2 ghcr.io/rstudio/content-pro:r4.1.3-py3.10.4-bionic        245
+ 3 ghcr.io/rstudio/content-pro:r3.4.4-py3.6.13-bionic        178
+ 4 ghcr.io/rstudio/content-pro:r3.2.5-py2.7.18-bionic        156
+ 5 ghcr.io/rstudio/content-pro:r3.6.3-py2.7.18-bionic        140
+ 6 ghcr.io/rstudio/content-pro:r3.5.3-py2.7.18-bionic        129
+ 7 ghcr.io/rstudio/content-pro:r4.0.5-py3.6.13-bionic        104
+ 8 ghcr.io/rstudio/content-pro:r4.1.3-py3.10.11-ubuntu2204   103
+ 9 ghcr.io/rstudio/content-pro:r4.1.0-py3.8.8-bionic         100
+10 ghcr.io/rstudio/content-pro:r4.2.2-py3.11.3-ubuntu2204     90
+# ℹ 14 more rows
+# ℹ Use `print(n = ...)` to see more rows
+```
+
+:::

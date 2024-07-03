@@ -1,5 +1,0 @@
----
-title: Server Management Recipes
-listing:
-    template: ../ejs/links.ejs
----
