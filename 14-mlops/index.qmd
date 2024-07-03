@@ -1,5 +1,3 @@
 ---
-title: MLOps
+title: 14. MLOps
 ---
-
-# TODO - Write a summary

@@ -1,5 +1,5 @@
 ---
-title: Getting Started
+title: 01. Getting Started
 ---
 
 Prior to diving into problem solving, use the following recipes to setup your environment and obtain an understanding of fundamental concepts used in the Posit SDK.
