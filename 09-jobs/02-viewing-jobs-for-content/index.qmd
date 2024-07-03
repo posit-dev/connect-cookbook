@@ -1,35 +1,29 @@
 ---
-title: "Find jobs"
-execute:
-  eval: false
+title: "Viewing Jobs for Content"
 ---
 
-## Description
+## Problem
 
 You want to find jobs for a content item.
 
-## Prerequisites
-
- Before executing, ensure you have the following information:
-
- - The globally unique identifier (guid) for the content item.
-
-## Recipe: Find jobs
+## Solution
 
 ::: {.panel-tabset group="language"}
 
 ## Python
 
-```{.python}
-CONTENT_ITEM_GUID = 'your-content-item-guid'
+```python
+from posit import connect
 
-res = client.get(f"v1/content/{CONTENT_ITEM_GUID}/jobs/").json()
+GUID = "154bd2af-e8fa-4aa4-aab8-dcef701f4af9"
+
+client = connect.Client()
+response = client.get(f"v1/content/{GUID}/jobs/")
+result = response.json()
 ```
 
-### Example output
-
-```{.python}
->>> pl.DataFrame(res.json())
+```python
+>>> pl.DataFrame(result)
 shape: (1, 20)
 ┌──────────┬────────┬────────┬──────────────────┬───┬───────────┬─────────┬───────┬─────────────────┐
 │ id       ┆ ppid   ┆ pid    ┆ key              ┆ … ┆ hostname  ┆ cluster ┆ image ┆ run_as          │
@@ -42,17 +36,13 @@ shape: (1, 20)
 
 ## R
 
-```{.r}
+```r
 library(connectapi)
 library(dplyr)
 client <- connect()
 
-#### User-defined inputs ####
-# 1. Content GUID, available in the Dashboard's Info tab.
-guid <- "154bd2af-e8fa-4aa4-aab8-dcef701f4af9"
-###########################
-
-item <- content_item(client, guid)
+GUID <- "154bd2af-e8fa-4aa4-aab8-dcef701f4af9"
+item <- content_item(client, GUID)
 
 # The `jobs` API call returns all jobs for a content item, including jobs that
 # have finished. We can filter only for currently-running jobs by filtering
@@ -64,11 +54,11 @@ jobs |>
 
 ### Example output
 
-```console
+```r
 # A tibble: 2 × 14
         id     pid key              app_id app_guid                             variant_id bundle_id start_time          end_time tag     exit_code finalized hostname  variant_key
-     <int>   <int> <chr>             <int> <chr>                                     <int>     <int> <dttm>              <dttm>   <chr>       <int> <lgl>     <chr>     <chr>      
-1 32593289 1179184 wiSznovdN3IxIliY  21537 154bd2af-e8fa-4aa4-aab8-dcef701f4af9          0    102197 2024-06-20 21:51:33 NA       run_app        NA FALSE     connect01 NA         
-2 32586170  863024 DZnNuuVtA6apt2Ew  21537 154bd2af-e8fa-4aa4-aab8-dcef701f4af9          0    102197 2024-06-20 14:22:53 NA       run_app        NA FALSE     connect01 NA         
+     <int>   <int> <chr>             <int> <chr>                                     <int>     <int> <dttm>              <dttm>   <chr>       <int> <lgl>     <chr>     <chr>
+1 32593289 1179184 wiSznovdN3IxIliY  21537 154bd2af-e8fa-4aa4-aab8-dcef701f4af9          0    102197 2024-06-20 21:51:33 NA       run_app        NA FALSE     connect01 NA
+2 32586170  863024 DZnNuuVtA6apt2Ew  21537 154bd2af-e8fa-4aa4-aab8-dcef701f4af9          0    102197 2024-06-20 14:22:53 NA       run_app        NA FALSE     connect01 NA
 ```
 :::
