@@ -20,8 +20,6 @@ from posit import connect
 USERNAME = "francism"
 
 client = connect.Client()
-
-client = connect.Client()
 response = client.get("v1/users/remote", params={"prefix": USERNAME})
 results = response.json()['results']
 ```
