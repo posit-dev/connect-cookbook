@@ -1,50 +1,41 @@
 ---
-title: Remove all viewers from a content item
-
+title: Revoking All Access Except the Content Owner
 ---
 
-## Description
+## Problem
 
-This recipe removes all viewers, or optionally, all viewers and collaborators, from a piece of content. Additionally, if the access type is either "all" or "logged_in", this is changed to "acl" to ensure that only the owner, and optionally, collaborators, have access.
+You need to remove all access privileges from a piece of content, except for the original owner.
 
-This recipe is useful when you want to take bulk action to restrict access to content.
+## Solution
 
-## Output
+Use a script to lock down access privileges for the piece of content. You will want to take the following steps:
 
-There is no generated output from this recipe, however the permissions for the specified content item are updated on the Connect server.
+- Remove all viewers from the content. Optionally, remove all collaborators too.
+- If the content's access type is either `all` or `logged_in`, change it to `acl` to ensure that only the owner and any remaining collaborators have access.
 
-## Workflow
-
-This recipe requires the following inputs:
+The scripts below should be edited to customize the following inputs:
 
 1. The `content_guid` for the content item from which you want to alter permissions.
-2. Optionally, a boolean value for `also_remove_collabs`. If set to `True`, all collaborators will also be removed from the content item, leaving only the publisher. If set to `False`, only viewers will be removed.
-
-This recipe then does the following:
-1. Removes all viewers (or optionally all viewers and collaborators) from a piece of content.
-2. Modifies the access settings to ensure only the owner, and optionally, collaborators, have access.
-
-## Recipe
+2. The boolean value for `also_remove_collabs`. Set to `True`/`TRUE` to remove all collaborators, leaving only the publisher. Left `False`/`FALSE` (the default), only viewers will be removed.
 
 ::: {.panel-tabset group="language"}
+
 ## Python
 
 ```{.python}
 from posit import connect
 
 #### User-defined inputs ####
-# 1. specify the guid for the content
+# 1. Specify the guid for the content
 content_guid = "INSERT_CONTENT_GUID"
-
-# 2. Remove only viewers or also remove collaborators, leaving only the publisher? Default is only viewers (`also_remove_collabs = False`).
+# 2. Remove collaborators in addition to viewers, leaving only the publisher? Default is only viewers (`also_remove_collabs = False`).
 also_remove_collabs = False
 ############################
 
-# if the value of also_remove_collabs is not a boolean, print a message and set it to False as a fail-safe
+# If the value of also_remove_collabs is not a boolean, print a message and set it to False as a fail-safe
 if type(also_remove_collabs) != bool:
     print("The value of `also_remove_collabs` must be a boolean. Setting it to False to be safe.")
     also_remove_collabs = False
-
 
 client = connect.Client()
 
@@ -53,19 +44,15 @@ for perm in client.content.get(content_guid).permissions.find():
     if also_remove_collabs or perm.role == "viewer":
         perm.delete()
 
-
 # Confirm new permissions
 client.content.get(content_guid).permissions.find()
-
 
 # If the access type for the content is not set to an Access Control List ("acl"), modify this to ensure that only the owner has access
 access_type = client.content.get(content_guid).access_type
 
 if access_type != "acl":
     client.content.get(content_guid).update(access_type="acl")
-
 ```
-
 
 ## R
 
@@ -74,14 +61,13 @@ library(connectapi)
 library(purrr)
 
 #### User-defined inputs ####
-# 1. specify the guid for the content
+# 1. Specify the guid for the content
 content_guid <- "INSERT_CONTENT_GUID"
-
-# 2. Remove only viewers or also remove collaborators, leaving only the publisher? Default is only viewers (`also_remove_collabs = FALSE`).
+# 2. Remove collaborators in addition to viewers, leaving only the publisher? Default is only viewers (`also_remove_collabs = False`).
 also_remove_collabs <- FALSE
 ############################
 
-# if the value of also_remove_collabs is not a boolean, print a message and set it to False as a fail-safe
+# If the value of also_remove_collabs is not a boolean, print a message and set it to False as a fail-safe
 if (!is.logical(also_remove_collabs)) {
   message("The value of `also_remove_collabs` must be a boolean. Setting it to FALSE to be safe.")
   also_remove_collabs <- FALSE
@@ -92,15 +78,14 @@ client <- connect()
 # Adjust permissions for the specified content item.
 content <- content_item(client, content_guid)
 
-# get permissions
+# Get permissions
 perms <- content$permissions()
 
-#TODO: this can be cleaned up per GH issue https://github.com/rstudio/connectapi/issues/253
-# get id of each viewer and owner (collaborator)
+# Get id of each viewer and owner (collaborator)
 viewer_ids <- map(perms, ~.x$id[.x$role == "viewer"]) |> unlist()
 collab_ids <- map(perms, ~.x$id[.x$role == "owner"]) |> unlist()
 
-# remove all viewers
+# Remove all viewers
 walk(viewer_ids, ~content$permissions_delete(.x))
 if (also_remove_collabs) {
   # remove collaborators too
@@ -116,13 +101,9 @@ access_type <- content$content$access_type
 if (access_type != "acl") {
   content_update_access_type(content, access_type = "acl")
 }
-
 ```
 
-
 :::
-
-### Example
 
 The images below show the results when `also_remove_collabs` is set to `True`.
 

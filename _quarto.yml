@@ -83,11 +83,12 @@ website:
         - ./05-content-access-controls/02-transferring-content-ownership/index.qmd
         - ./05-content-access-controls/03-granting-access-to-a-user/index.qmd
         - ./05-content-access-controls/04-granting-access-to-a-group/index.qmd
-        - ./05-content-access-controls/05-revoking-access-from-users/index.qmd
+        - ./05-content-access-controls/05-revoking-access-from-a-user/index.qmd
       #   - ./05-content-access-controls/06-revoking-access-from-viewers/index.qmd
       #   - ./05-content-access-controls/07-revoking-access-from-collaborators/index.qmd
-        - ./05-content-access-controls/08-revoking-access-from-groups/index.qmd
+        - ./05-content-access-controls/08-revoking-access-from-a-group/index.qmd
         - ./05-content-access-controls/09-auditing-group-access-to-content/index.qmd
+        - ./05-content-access-controls/10-revoking-all-access-except-the-content-owner/index.qmd
       - section: "Content Organization"
         file: ./06-content-organization/index.qmd
         contents:
