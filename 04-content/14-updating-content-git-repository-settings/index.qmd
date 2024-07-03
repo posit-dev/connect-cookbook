@@ -1,0 +1,114 @@
+---
+title: Updating Content Git Repository Settings
+---
+
+## Problem
+
+You need to change the Git repository settings for a Git-backed content item.
+
+You might need to do this in situations where the git repository has migrated from one location or host to another, or if the branch of the repository has been renamed, deleted, or otherwise changed.
+
+## Solution
+
+Use the `PUT /v1/content/{content_guid}/repository` endpoint to modify Git settings. The endpoint lets you modify:
+
+- the respository URL.
+- the branch the content is deployed from.
+- the path within the repository where the content is located.
+- whether Connect should periodically check the repository for updates.
+
+This recipe requires the following inputs:
+
+1. The `content_guid` for the content item that you want to modify.
+2. The git repository settings to modify from the existing settings. You may change any or all of the following:
+    - `repository`: The URL of the git repository.
+    - `branch`: The branch of the git repository.
+    - `directory`: The directory path within the repository.
+    - `polling`: A boolean TRUE/FALSE indicating whether the repository should be periodically polled for updates.
+
+
+:::{.panel-tabset group="language"}
+
+## Python
+
+```{.python}
+from posit import connect
+client = connect.Client()
+
+#### User-defined inputs ####
+# 1. Specify the guid for the content item you want to modify
+content_guid = "INSERT_CONTENT_GUID"
+# 2. Below in the code, find the section titled "Update data to reflect new settings."
+# Modify any lines you wish to modify. Comment out any lines you do not wish to modify.
+###########################
+
+# Retrieve current git settings for content
+data = client.get(f"/v1/content/{content_guid}/repository").json()
+
+# Update data to reflect new settings.
+# Update the lines below for the settings you want to change and specify the values.
+# Comment out any lines you do not wish to modify.
+data["repository"] = "https://example.gitrepository.com/my-repo.git"
+data["branch"] = "branch-name"
+data["directory"] = "."
+data["polling"] = True
+
+# Update the git settings for the content. A 200 status code indicates success.
+client.put(f"/v1/content/{content_guid}/repository", json=data)
+
+# View updated git settings for content
+updated_settings = client.get(f"/v1/content/{content_guid}/repository").json()
+```
+
+```{.python}
+>>> updated_settings
+{'repository': 'https://gitlab.com/my-new-organization/my-relocated-repo.git',
+ 'branch': 'main',
+ 'directory': '.',
+ 'polling': True}
+```
+
+## R
+
+```{.r}
+library(connectapi)
+library(glue)
+library(tibble)
+
+client <- connect()
+
+#### User-defined inputs ####
+# 1. specify the guid for the content item you want to modify
+content_guid <- "INSERT_CONTENT_GUID"
+# 2. Below in the code, find the section titled "Update data to reflect new settings."
+# Modify any lines you wish to modify. Comment out any lines you do not wish to modify.
+###########################
+
+# Retrieve current git settings for content
+data <- client$GET(glue::glue("/v1/content/{content_guid}/repository"))
+
+# Update data to reflect new settings.
+# Update the lines below for the settings you want to change and specify the values.
+# Comment out any lines you do not wish to modify.
+data$repository <- "https://example.gitrepository.com/my-repo.git"
+data$branch <- "branch-name"
+data$directory <- "."
+data$polling <- TRUE
+
+# Update and view the git settings for the content.
+client$PUT(glue::glue("/v1/content/{content_guid}/repository"), body=data)
+
+# View updated git settings for content
+updated_settings <- client$GET(glue::glue("/v1/content/{content_guid}/repository")) |>
+    as_tibble()
+```
+
+```{.r}
+> updated_settings
+# A tibble: 1 × 4
+  repository                                                    branch directory polling
+  <chr>                                                         <chr>  <chr>     <lgl>
+1 https://gitlab.com/my-new-organization/my-relocated-repo.git  main   .         TRUE
+```
+
+:::

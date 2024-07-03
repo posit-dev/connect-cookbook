@@ -1,6 +1,5 @@
 ---
 title: Modify git repository settings for git-backed content
-
 ---
 
 ## Description
