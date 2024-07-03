@@ -11,7 +11,7 @@ You need to create a group on Connect from a group that already exists in your L
 Create a group on Connect from the corresponding remote group. You will need to know the remote group's name.
 
 ::: {.callout-note}
-This recipe is very similar to the one to [Creating a User Using LDAP](../../02-users/09-creating-a-user-using-ldap/index.qmd). If you also need to create users, combining these two or doing them in sequence might be helpful.
+This recipe is very similar to the one to [Creating a User Using LDAP](../09-creating-a-group-using-a-remote-authentication-provider-ldap/). If you also need to create users, combining these two or doing them in sequence might be helpful.
 :::
 
 :::{.panel-tabset group="language"}

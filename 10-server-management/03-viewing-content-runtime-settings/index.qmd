@@ -12,7 +12,7 @@ Content with custom runtime settings includes content with [`RunAsCurrentUser`](
 
 ## Solution
 
-Create a table summarizing the usage of custom runtime settings on your Connect server. The table includes totals of the number of content items with `RunAsCurrentUser` enabled and for each `RunAs` account in use. 
+Create a table summarizing the usage of custom runtime settings on your Connect server. The table includes totals of the number of content items with `RunAsCurrentUser` enabled and for each `RunAs` account in use.
 
 :::{.panel-tabset group="language"}
 
@@ -88,4 +88,4 @@ This may be useful when auditing the server in preparation for a migration, to u
 
 ## See Also
 
-- [Finding Content with Custom Runtime Settings](../09-finding-content-with-custom-runtime-settings/index.qmd) to enumerate all content items with `RunAsCurrentUser` enabled or a customized `RunAs` user. 
+- [Finding Content with Custom Runtime Settings](../06-finding-content-with-custom-runtime-settings/) to enumerate all content items with `RunAsCurrentUser` enabled or a customized `RunAs` user.
