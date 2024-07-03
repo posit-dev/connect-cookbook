@@ -1,5 +1,5 @@
 ---
-title: Removing All Access Except the Content Owner
+title: Revoking All Access Except the Content Owner
 ---
 
 ## Problem

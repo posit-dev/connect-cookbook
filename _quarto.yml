@@ -88,7 +88,7 @@ website:
       #   - ./05-content-access-controls/07-revoking-access-from-collaborators/index.qmd
         - ./05-content-access-controls/08-revoking-access-from-a-group/index.qmd
         - ./05-content-access-controls/09-auditing-group-access-to-content/index.qmd
-        - ./05-content-access-controls/10-removing-all-access-except-the-content-owner/index.qmd
+        - ./05-content-access-controls/10-revoking-all-access-except-the-content-owner/index.qmd
       - section: "Content Organization"
         file: ./06-content-organization/index.qmd
         contents:
