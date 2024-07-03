@@ -1,7 +1,0 @@
----
-title: User Recipes
-listing:
-    template: ../ejs/links.ejs
----
-
-The recipes in this section can help you to work with the users and groups on the Connect server.

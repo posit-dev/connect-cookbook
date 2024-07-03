@@ -1,55 +1,43 @@
 ---
-title: Create a Posit Connect group from LDAP
+title: Creating a Group Using a Remote Authentication Provider (LDAP)
 ---
 
-## Description
+## Problem
 
-This recipe searches for a group that is present in an LDAP authentication provider but not yet on Connect and creates that group on Connect.
+You need to create a group on Connect from a group that already exists in your LDAP authentication provider (the "remote group").
 
-## Output
+## Solution
 
-The output is the side effect of creating the new group on Connect that was present in an LDAP authentication provider but not Connect along with  information about the group added to Connect displayed on the console.
-
-## Workflow
-To run this, the name of the group you want to add is required.
-
-This recipe then does the following:
-
-1. Queries the remote LDAP server for a group
-2. Creates a new group in Connect with the supplied details from the LDAP server
+Create a group on Connect from the corresponding remote group. You will need to know the remote group's name.
 
 ::: {.callout-note}
-This recipe is very similar to the one to [create users from an LDAP authentication provider](../create-user-ldap/).
-If you also need to create users, combining these two or doing them in sequence might be helpful.
+This recipe is very similar to the one to [Creating a User Using LDAP](../../02-users/09-creating-a-user-using-ldap/index.qmd). If you also need to create users, combining these two or doing them in sequence might be helpful.
 :::
-
-## Recipe
 
 :::{.panel-tabset group="language"}
 
 ## Python
 
-### Find the group to add
+### Find the remote group to add
+
+First, search your LDAP authentication provider for the group you wish to create.
 
 ```{.python}
 from posit import connect
 import polars as pl
+
+GROUP_PREFIX = "Data Science"
+
 client = connect.Client()
 
-### User-defined inputs ###
-# 1. The group you want to search for
-group_prefix = "Data Science"
-###########################
-
-response = client.get("v1/groups/remote", params={"prefix": group_prefix})
-results_df = pl.DataFrame(response.json()["results"])
-
-results_df
+response = client.get("v1/groups/remote", params={"prefix": GROUP_PREFIX})
+remote_groups_df = pl.DataFrame(response.json()["results"])
 ```
 
-#### Example output
+The resulting DataFrame contains information on LDAP remote groups whose name matches the prefix `Data Science`. The `guid` column indicates the GUID of the corresponding group on Connect, if any exists. Groups with a `null` GUID have no group on Connect.
 
 ```
+>>> remote_groups_df
 shape: (2, 3)
 ┌──────────────────────────────┬─────────────────────────────────┬─────────────────────────────────┐
 │ name                         ┆ guid                            ┆ temp_ticket                     │
@@ -61,32 +49,27 @@ shape: (2, 3)
 └──────────────────────────────┴─────────────────────────────────┴─────────────────────────────────┘
 ```
 
-We have two groups here, `Data Science` and `Data Science Apprentices`. The `Data Science` group has a GUID, which means that it already has a group on Connect, but the second `Data Science Apprentices` group does not have a GUID which means that it is not present as a group on Connect.
+In this example, the `Data Science` group has a GUID, which means that it already has a group on Connect, but the `Data Science Apprentices` group's GUID is `null`, which means it does not have a corresponding group on Connect.
 
 Included in the API response for each group is a `temp_ticket` value, which can be used to create the group in Connect. In the example above, the second group, `Data Science Apprentices`, does not exist in Connect, so you need the `temp_ticket` for this group to create the group in Connect.
 
 ```{.python}
-temp_ticket = results_df["temp_ticket"][1]
+temp_ticket = remote_groups_df["temp_ticket"][1]
 ```
 
-### Creating the group
+### Create the group on Connect
 
-Using the `temp_ticket` value from the previous section, you can create
-a Connect group with a **[`PUT /v1/groups`](/api/#put-/v1/groups)** endpoint:
+Next, using the `temp_ticket` value from the previous section, create a Connect group with a request to the **[`PUT /v1/groups`](/api/#put-/v1/groups)** endpoint:
 
 ```{.python}
 # The 'temp_ticket' value comes from an earlier /groups/remote search.
 response = client.put("v1/groups", json={"temp_ticket": temp_ticket})
+```
 
+When the call succeeds, the response contains a non-NULL `guid` value, which is a unique identifier for the group.
+
+```{.python}
 pl.DataFrame(response.json())
-```
-
-#### Example output
-
-When the call succeeds, the response contains a non-NULL `guid` value,
-which is a unique identifier for the group.
-
-```
 ┌─────────────────────────────────┬──────────────────────────────┬────────────┐
 │ guid                            ┆ name                         ┆ owner_guid │
 │ ---                             ┆ ---                          ┆ ---        │
@@ -105,55 +88,15 @@ ClientError: A group using the same unique ID already exists
 
 ## R
 
-### Find the group to add
-```{.r}
-library(connectapi)
-library(purrr)
-library(tibble)
-client <- connect()
-
-
-### User-defined inputs ###
-# 1. The group you want to search for
-group_prefix <- "Data Science"
-###########################
-
-remote_groups <- client$groups_remote(group_prefix)
-
-tibble(
-  name = map_chr(remote_groups$results, ~.$name),
-  guid = map_chr(remote_groups$results,  ~ifelse(is.null(.$guid), NA, .$guid)),
-  temp_ticket = map_chr(remote_groups$results, ~.$temp_ticket)
-)
-```
-
-#### Example output
-
-```
-A tibble: 2 × 3
-  name                         guid                                 temp_ticket
-  <chr>                        <chr>                                <chr>
-1 Data Science                 51a3747a-88c9-4d6c-a791-17c194f0a663 isMU7qo46iGlOZosHGz8NbIG3ciOimKNCn90kln57D…
-2 Data Science Apprentices     NA                                   p5OYtB634uqqfCf72p/KmCtTT9pn7Bpj/6CrGP9ynX…
->
-```
-
-We have two groups here, `Data Science` and `Data Science Apprentices`. The `Data Science` group has a GUID, which means that it already has a group on Connect, but the second `Data Science Apprentices` group does not have a GUID which means that it is not present as a group on Connect.
-
-### Creating the group
-
-The `connectapi` SDK has a function to create groups directly:
+The `connectapi` package's function `groups_create_remote()` searches the remote authentication provider for a group with the specified prefix, and creates a corresponding group on Connect.
 
 ```{.r}
 groups_create_remote(client, prefix = "Data Science Apprentices")
 ```
 
-#### Example output
+The function prints a message indicating the status of the request, and returns a data frame showing the newly-created group with, with a non-NULL GUID.
 
-When the call succeeds, the response contains a non-NULL `guid` value,
-which is a unique identifier for the group.
-
-```
+```{.r}
 Creating remote group: Data Science Apprentices
 Done creating remote groups
 # A tibble: 1 × 3
@@ -162,15 +105,14 @@ Done creating remote groups
 1 b806d590-5d52-478e-a9d8-491228b090e7 Data Science Apprentices NA
 ```
 
-If the group already exists in Connect, the same call returns:
+If the group already exists in Connect, the same data is returned, but a different message is printed.
 
-```
+```{.r}
 At least one group with name prefix 'Data Science Apprentices' already exists
 # A tibble: 1 × 3
   guid                                 name                     owner_guid
   <chr>                                <chr>                    <chr>
 1 b806d590-5d52-478e-a9d8-491228b090e7 Data Science Apprentices NA
 ```
-
 
 :::

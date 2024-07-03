@@ -28,13 +28,13 @@ website:
         contents:
         - ./02-users/01-viewing-user-information/index.qmd
         - ./02-users/02-finding-users/index.qmd
-      #   - ./02-users/03-finding-users-using-a-remote-authentication-provider-ldap-/index.qmd
+      #   - ./02-users/03-finding-users-using-a-remote-authentication-provider-ldap/index.qmd
       #   - ./02-users/04-creating-a-user-using-password-authentication/index.qmd
       #   - ./02-users/05-creating-a-user-using-pam-authentication/index.qmd
       #   - ./02-users/06-creating-a-user-using-oauth2-authentication/index.qmd
       #   - ./02-users/07-creating-a-user-using-google-oauth2-authentication/index.qmd
       #   - ./02-users/08-creating-a-user-using-proxied-authentication/index.qmd
-        - ./02-users/09-creating-a-user-using-ldap/index.qmd
+        - ./02-users/09-creating-a-user-using-a-remote-authentication-provider-ldap/index.qmd
       #   - ./02-users/10-updating-a-user/index.qmd
       #   - ./02-users/11-locking-a-user/index.qmd
       - section: "Groups"
@@ -42,13 +42,13 @@ website:
         contents:
         - ./03-groups/01-viewing-group-information/index.qmd
         - ./03-groups/02-finding-groups/index.qmd
-        # - ./03-groups/03-finding-groups-using-a-remote-authentication-provider-ldap-/index.qmd
+        # - ./03-groups/03-finding-groups-using-a-remote-authentication-provider-ldap/index.qmd
         # - ./03-groups/04-creating-a-group-using-password-authentication/index.qmd
         # - ./03-groups/05-creating-a-group-using-pam-authentication/index.qmd
         # - ./03-groups/06-creating-a-group-using-oauth2-authentication/index.qmd
         # - ./03-groups/07-creating-a-group-using-google-oauth2-authentication/index.qmd
         # - ./03-groups/08-creating-a-group-using-proxied-authentication/index.qmd
-        # - ./03-groups/09-creating-a-group-using-a-remote-authentication-provider-ldap-/index.qmd
+        - ./03-groups/09-creating-a-group-using-a-remote-authentication-provider-ldap/index.qmd
         # - ./03-groups/10-finding-group-members/index.qmd
         # - ./03-groups/11-create-group-members/index.qmd
         # - ./03-groups/12-deleting-group-members/index.qmd
@@ -65,26 +65,27 @@ website:
       #   - ./04-content/07-finding-authorized-content/index.qmd
         - ./04-content/08-finding-content-owned-by-a-user/index.qmd
         - ./04-content/09-finding-content-by-tag/index.qmd
-      #   - ./04-content/10-creating-content/index.qmd
-      #   - ./04-content/11-creating-content-git-repository-settings/index.qmd
-      #   - ./04-content/12-creating-content-vanity-urls/index.qmd
-      #   - ./04-content/13-updating-content/index.qmd
-      #   - ./04-content/14-updating-content-git-repository-settings/index.qmd
-      #   - ./04-content/15-deleting-content/index.qmd
-      #   - ./04-content/16-deleting-content-git-repository-settings/index.qmd
-      #   - ./04-content/17-deleting-content-vanity-urls/index.qmd
-      #   - ./04-content/18-duplicating-content/index.qmd
+      #   - ./04-content/09-creating-content/index.qmd
+      #   - ./04-content/10-creating-content-git-repository-settings/index.qmd
+      #   - ./04-content/11-creating-content-vanity-urls/index.qmd
+      #   - ./04-content/12-updating-content/index.qmd
+      #   - ./04-content/13-updating-content-git-repository-settings/index.qmd
+      #   - ./04-content/14-deleting-content/index.qmd
+      #   - ./04-content/15-deleting-content-git-repository-settings/index.qmd
+      #   - ./04-content/16-deleting-content-vanity-urls/index.qmd
+      #   - ./04-content/17-duplicating-content/index.qmd
       - section: "Content Access Controls"
       #   file: ./05-content-access-controls/index.qmd
         contents:
       #   - ./05-content-access-controls/01-analyzing-content-ownership/index.qmd
-      #   - ./05-content-access-controls/02-transferring-content-ownership/index.qmd
+        - ./05-content-access-controls/02-transferring-content-ownership/index.qmd
         - ./05-content-access-controls/03-granting-access-to-a-user/index.qmd
         - ./05-content-access-controls/04-granting-access-to-a-group/index.qmd
         - ./05-content-access-controls/05-revoking-access-from-users/index.qmd
       #   - ./05-content-access-controls/06-revoking-access-from-viewers/index.qmd
       #   - ./05-content-access-controls/07-revoking-access-from-collaborators/index.qmd
         - ./05-content-access-controls/08-revoking-access-from-groups/index.qmd
+        - ./05-content-access-controls/09-auditing-group-access-to-content/index.qmd
       - section: "Content Organization"
         file: ./06-content-organization/index.qmd
         contents:

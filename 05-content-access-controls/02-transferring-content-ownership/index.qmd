@@ -1,0 +1,69 @@
+---
+title: Transferring Content Ownership
+---
+
+## Problem
+
+You need to transfer content ownership from one user to another. You might need to do this after a user's account has been deactivated.
+
+## Solution
+
+Identify all content owned by a specified user (the "source" user), and change the owner to another user (the "destination") user.
+
+You'll need the GUID for the source and destination user accounts. See [Finding Users](../../02-users/02-finding-users/index.qmd) and [Viewing User Information](../../02-users/01-viewing-user-information/index.qmd) for details.
+
+:::{.panel-tabset group="language"}
+
+## Python
+
+```{.python}
+from posit import connect
+
+SOURCE_USER_GUID = "42c10ef7-8161-4d5b-b559-7f8a28a0cee3"
+DESTINATION_USER_GUID = "6b80279a-fab0-4f46-83bd-86668eb7a66c"
+
+client = connect.Client()
+
+content_to_transfer = client.content.find(owner_guid = SOURCE_USER_GUID)
+for item in content_to_transfer:
+    item.update(owner_guid = DESTINATION_USER_GUID)
+```
+
+Confirm that the workflow succeeded by checking that the source user no longer owns any content on Connect.
+
+```{.python}
+>>> len(client.content.find(owner_guid = SOURCE_USER_GUID)) == 0
+True
+```
+
+## R
+
+```{.r}
+library(connectapi)
+
+SOURCE_USER_GUID <- "42c10ef7-8161-4d5b-b559-7f8a28a0cee3"
+DESTINATION_USER_GUID <- "6b80279a-fab0-4f46-83bd-86668eb7a66c"
+
+client <- connect()
+
+content_to_transfer <- client |>
+  get_content(owner_guid = SOURCE_USER_GUID)
+
+for (guid in content_to_transfer$guid) {
+  client |>
+    content_item(guid) |>
+    content_update_owner(DESTINATION_USER_GUID)
+}
+```
+
+Confirm that the workflow succeeded by checking that the source user no longer owns any content on Connect.
+
+```{.r}
+> client |>
++   get_content(owner_guid = SOURCE_USER_GUID) |>
++   nrow()
+
+[1] 0
+```
+
+:::

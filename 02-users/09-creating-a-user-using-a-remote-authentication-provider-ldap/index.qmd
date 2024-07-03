@@ -1,5 +1,5 @@
 ---
-title: Creating a User using LDAP
+title: Creating a User Using a Remote Authentication Provider (LDAP)
 ---
 
 ## Problem
@@ -16,8 +16,6 @@ Obtain a *temporary ticket* using the *remote users* API and then create the use
 
 ```{.python}
 from posit import connect
-
-client = connect.Client()
 
 USERNAME = "francism"
 
@@ -75,6 +73,7 @@ from posit import connect
 USERNAME = "francism"
 
 client = connect.Client()
+
 response = client.get("v1/users/remote", params={"prefix": USERNAME})
 ticket = response.json()['results'][0]['temp_ticket']
 response = client.put("v1/users", json={"temp_ticket": ticket})
