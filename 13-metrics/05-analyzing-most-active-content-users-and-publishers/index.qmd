@@ -1,35 +1,38 @@
 ---
-title: Most active content, users, and publishers
-
+title: Analyzing Most Active Content, Users, and Publishers
 ---
 
-## Description
-This recipe identifies the most used content deployed on the Connect server, the users with the highest viewing history, and the publishers with the most content usage during the selected time period.
+## Problem
 
-This recipe is useful for overall usage analysis, and can identify the content and users that would be most impacted by changes to the server or content.
+You want to identify the most used content deployed on the Connect server, the users with the highest viewing history, and the publishers with the most content usage during the selected time period.
 
-::: {.callout-note}
-Note that if your Connect version is prior to 2023.10, content usage for Plumber, Voila, Streamlit, Dash, and Bokeh were over-counted in instrumentation metrics. Metrics collected after upgrading to version 2023.10 or greater are accurate.
-:::
+You might want to identify the content and users that would be most impacted by changes to the server or content.
 
-## Output
-This recipe yields:
-- A dataframe with historical content usage of all content on the server during a period
-- A dataframe with top N content usage during a period
-- A dataframe with top N content viewers during a period
-- A dataframe with top N publishers, based on usage, during a period
-- A Quarto dashboard with visualizations of the above dataframes
+## Solution
 
-## Workflow
+Analyze usage data from the Connect server. Here, we present four approaches, each of which builds a data frame for the metric over a specified time period
+
+- Historical usage of all content on the server
+- Most popular content, by number of hits
+- Top *n* content users based on content loads
+- Top *n* publishers based on loads of their content
+
+We also provide an example Quarto dashboard with visualizations of these approaches.
+
 This recipe requires the following inputs:
+
 1. The desired timeframe for the report, defined by:
   - the `as_of_date`
   - the number of `days_back` from the `as_of_date` to include in the report
 2. The number of top N items and users include in the report, defined by `top_n`.
 
-## Recipe: Top content
+::: {.callout-note}
+Note that if your Connect version is prior to 2023.10, content usage for Plumber, Voila, Streamlit, Dash, and Bokeh were over-counted in instrumentation metrics. Metrics collected after upgrading to version 2023.10 or greater are accurate.
+:::
 
-The code sample below yields the top N content items, based on usage over a selected time period.
+### Getting the most used content
+
+The code sample below yields the top *n* content items, based on usage over a selected time period.
 
 :::{.panel-tabset group="language"}
 
@@ -90,13 +93,11 @@ top_n_content = (
 )
 
 ```
+<!-- ```{.python}
+>>> print(top_n_content)
+TODO: Add this. But from what demo environment?
+``` -->
 
-### Example output
-
-```
-<!-- TODO: Add this. But from what demo environment? -->
-
-```
 An example bar graph visualizing this data is included in the Quarto dashboard code at the end of this recipe.
 
 ## R
@@ -158,19 +159,18 @@ top_n_content <- usage |>
 
 ```
 
-### Example output
-
-```
-<!-- TODO: Add this. But from what demo environment? -->
-```
+<!-- ```{.r}
+> top_n_content
+TODO: Add this. But from what demo environment?
+``` -->
 
 An example bar graph visualizing this data is included in the Quarto dashboard code at the end of this recipe.
 
 :::
 
-## Recipe: Top users
+### Getting the most active content viewers
 
-The code sample below yields the top N content users, based on usage over a selected time period. It builds from the previous code block.
+The code sample below yields the top *n* content viewers, based on usage over a selected time period. It builds from the previous code block.
 
 ::: {.panel-tabset group="language"}
 
@@ -219,15 +219,13 @@ top_n_users = (
   .select(["username", "title", "top_item_percent_of_usage", "users_tot_usage"])
   .rename({"title": "users_most_frequent_content"})
 )
-
 ```
 
-### Example output
+<!-- ```{.python}
+>>> print(top_n_users)
+TODO: add sample, but from what demo environment?
+``` -->
 
-```
-<!-- TODO: add sample, but from what demo environment? -->
-
-```
 An example bar graph visualizing this data is included in the Quarto dashboard code at the end of this recipe.
 
 ## R
@@ -265,21 +263,18 @@ top_n_users <- usage |>
 
 ```
 
-## Example output
-
-```
-<!-- TODO: add sample, but from what demo environment? -->
-
-```
+<!-- ```{.r}
+> top_n_users
+TODO: add sample, but from what demo environment?
+``` -->
 
 An example bar graph visualizing this data is included in the Quarto dashboard code at the end of this recipe.
 
 :::
 
+### Getting the publishers with the most content hits
 
-## Recipe: Top publishers
-
-The code sample below yields the top N most publishers, based on usage over a selected time period. This builds from the previous code blocks.
+The code sample below yields the top *n* publishers, based on usage of their content over the selected time period. This builds on the previous code blocks.
 
 ::: {.panel-tabset group="language"}
 
@@ -327,14 +322,13 @@ top_n_publishers = (
   # remove name column
   .drop(["name","content_guid"])
 )
-
 ```
 
-### Example output
-
-```
+<!-- ```{.python}
+>>> print(top_n_publishers)
 TODO: Add this. But from what demo environment?
-```
+``` -->
+
 An example bar graph visualizing this data is included in the Quarto dashboard code at the end of this recipe.
 
 ## R
@@ -360,36 +354,46 @@ top_n_publishers <- usage |>
     select(-content_guid, -name)
 ```
 
-### Example output
-
-```
+<!-- ```{.r}
+> top_n_publishers
 TODO: Add this. But from what demo environment?
-```
+``` -->
 
 An example bar graph visualizing this data is included in the Quarto dashboard code at the end of this recipe.
 
 :::
 
-
-## Extending the recipe
-
-### Deploy a sample Quarto dashboard with these metrics
+### Deploying a sample Quarto dashboard with these metrics
 
 The Quarto document below builds visualizations around the data frames retrieved above. This can be deployed in your own environment, or customized to your needs.
 
 <!-- TODO: Add github repo and manifest.json link -->
 
-
-
 ::: {.panel-tabset group="language"}
+
 ## Python
 
+```{.python}
+# requirements.txt
+pandas==2.2.2
+plotly==5.22.0
+polars==0.20.23
+posit-sdk==0.2.0
+pyarrow==16.0.0
+```
+
 <!-- TODO: Add a screenshot -->
+
+````{.markdown}
 {{< include _most-used-dashboard-py.qmd >}}
+````
 
 ## R
 
 <!-- TODO: Add a screenshot -->
+
+````{.markdown}
 {{< include _most-used-dashboard-r.qmd >}}
+````
 
 :::
