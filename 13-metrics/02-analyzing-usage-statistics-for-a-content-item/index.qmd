@@ -1,42 +1,35 @@
 ---
-title: Retrieve Content Usage Statistics for a Content Item
-
+title: Analyzing Usage Statistics for a Content Item
 ---
 
-## Description
+## Problem
 
-This recipe yields summary usage statistics for a content item deployed on Connect. This is useful when seeking to understand overall usage trends for a content item, and understanding which users are most active in accessing the content.
+You want to analyze usage statistics for a specific content item.
+
+You might want to understand overall usage trends for a content item, or understanding which users access it most frequently.
+
+## Solution
+
+Analyze usage data for the content item. Here, we present two approaches:
+
+- A data frame with historical content usage for an item, including by-user identification and session duration for Shiny for Python and Shiny for R content.
+- A summary table of content usage by user, including total usage and daily usage.
+
+We also provide an example Quarto dashboard with visualizations of these approaches.
+
+This recipe requires the following inputs:
+
+1. The `content_guid` for the content item of interest.
+2. The desired timeframe for the report, defined by:
+    - the `as_of_date`.
+    - the number of `days_back` from the `as_of_date` to include in the report.
+3. The number of top users to include in the report, defined by `top_n`. If `top_n` is set to `np.nan` (Python), or , all users will be included in the report.
 
 ::: {.callout-note}
 If your Connect version is prior to 2023.10, content usage for Plumber, Voila, Streamlit, Dash, and Bokeh were over-counted in instrumentation metrics. Metrics collected after upgrading to version 2023.10 or greater are accurate.
-Note that if your Connect version is prior to 2023.10, content usage for Plumber, Voila, Streamlit, Dash, and Bokeh were over-counted in instrumentation metrics. Metrics collected after upgrading to version 2023.10 or greater are accurate.
 :::
 
-## Output
-
-This recipe yields:
-- A dataframe with historical content usage for an item, including by-user identification and session duration for Shiny for Python and Shiny for R content.
-- A summary table of content usage by user, including total usage and daily usage.
-- A Quarto dashboard with visualizations of the content usage data.
-
-## Workflow
-
-This recipe requires the following inputs:
-1. The `content_guid` for the content item of interest.
-2. The desired timeframe for the report, defined by:
-  - the `as_of_date`.
-  - the number of `days_back` from the `as_of_date` to include in the report.
-3. The number of top users to include in the report, defined by `top_n`. If `top_n` is set to `np.nan` (Python), or , all users will be included in the report.
-
-This recipe provides methods for:
-
-1. Retrieving historical content usage.
-2. Identifying usage by user.
-3. Deploying a sample Quarto dashboard using these methods.
-
-## Recipe
-
-### Retrieve historical content views data
+### Retrieving data on historical content views
 
 The code samples below yields content usage data as a data frame.
 
@@ -78,15 +71,10 @@ df = client.metrics.usage.find(
 usage = (pl.DataFrame(df, infer_schema_length=None)
         .with_columns(pl.col("started").str.to_datetime("%Y-%m-%dT%H:%M:%SZ"))
         .with_columns(pl.col("started").cast(pl.Date).alias("day")))
-
-
-usage
-
 ```
 
-### Example output
-
-```
+```{.python}
+>>> print(usage)
 shape: (10, 10)
     content_guid	       user_guid	variant_key	rendering_id	bundle_id	            started	           ended	data_version	path	       day
              str	             str	       null	        null	     null	       datetime[μs]	             str	         i64	null	      date
@@ -100,9 +88,8 @@ shape: (10, 10)
 "0477855b-caeb-…	"fc80bd89-4488-…	       null	        null	     null	2024-04-24 20:19:10	"2024-04-24T20:…	           1	null	2024-04-24
 "0477855b-caeb-…	"1ec56831-7a34-…	       null	        null	     null	2024-04-26 15:10:18	"2024-04-26T15:…	           1	null	2024-04-26
 "0477855b-caeb-…	"1ec56831-7a34-…	       null	        null	     null	2024-04-26 15:18:59	"2024-04-26T15:…	           1	null	2024-04-26
-
-
 ```
+
 The output above can be plotted for a historical perspective on content usage. An example is included in the Quarto dashboard code at the end of this recipe.
 
 ## R
@@ -154,14 +141,10 @@ if (type == "shiny" || type == "python-shiny") {
   ) |>
     mutate(day = floor_date(time, "day"))
 }
-
-usage
-
 ```
 
-### Example output for a Shiny app
-
-```
+```{.r}
+> usage
 # A tibble: 14 × 6
    content_guid      user_guid         started             ended               data_version day
    <chr>             <chr>             <dttm>              <dttm>                     <int> <dttm>
@@ -180,6 +163,7 @@ usage
 13 0477855b-caeb-... fc80bd89-4488-... 2024-03-29 18:16:10 2024-03-29 20:43:52            1 2024-03-29 00:00:00
 14 0477855b-caeb-... 3dc75833-f6c2-... 2024-04-11 00:36:00 2024-04-11 00:36:59            1 2024-04-11 00:00:00
 ```
+
 Usage data for non-Shiny content will also include columns identifying `variant_key`, `rendering_id`, `bundle_id`, and `path`. These columns are not used for this recipe.
 <!-- TODO: remove this note once connectapi has wrapper for usage -->
 
@@ -187,7 +171,7 @@ The output above can be plotted for a historical perspective on content usage. A
 
 :::
 
-### Identify usage by user
+### Identifying usage by user
 
 The code samples below yield by-user content usage data as a data frame.
 
@@ -229,14 +213,10 @@ by_user_usage = (
     .sort("tot_usage",descending=True)
     .head(truncation_rows)
 )
-
-by_user_usage
-
 ```
 
-### Example output
-
-```
+```{.python}
+>>> print(by_user_usage)
 shape: (11, 4)
  username	       day	tot_usage	daily_usage
       str	      date	       u32	         u32
@@ -284,9 +264,7 @@ by_user_usage
 
 ```
 
-### Example output
-
-```
+```{.r}
 # A tibble: 11 × 4
    username  day                 total_usage daily_usage
    <chr>    <dttm>                     <int>        <int>
@@ -307,25 +285,41 @@ The output above can be plotted for a historical perspective on content views. A
 
 :::
 
-## Extending the recipe
-
-### Deploy a sample Quarto dashboard with these metrics
+### Deploying a sample Quarto dashboard with these metrics
 
 The Quarto document below builds visualizations around the data frames retrieved above. This can be deployed in your own environment as is, or customized to your needs.
 
 <!-- TODO: Add github repo and manifest.json link -->
 
-
-
 ::: {.panel-tabset group="language"}
 ## Python
 
+```{.python}
+# requirements.txt
+great-tables==0.4.0
+jupyter==1.0.0
+numpy==1.26.4
+pandas==2.2.1
+plotnine==0.13.3
+polars==0.20.18
+posit-sdk==0.2.0
+pyarrow==15.0.2
+PyYAML==6.0.1
+setuptools==69.2.0
+```
+
 <!-- TODO: Add a screenshot -->
+
+````{.markdown}
 {{< include ./_usage-dashboard-py.qmd >}}
+````
 
 ## R
 
 <!-- TODO: Add a screenshot -->
+
+````{.markdown}
 {{< include ./_usage-dashboard-r.qmd >}}
+````
 
 :::
