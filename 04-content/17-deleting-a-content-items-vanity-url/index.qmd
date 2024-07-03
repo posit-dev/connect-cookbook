@@ -1,0 +1,55 @@
+---
+title: Deleting a Content Item's Vanity URL
+---
+
+## Problem
+
+You need to remove the vanity URL from a content item.
+
+## Solution
+
+Use the unique identifier of the content item to delete the vanity URL. The content will remain available at the default Dashboard URL.
+
+:::{.panel-tabset group="language"}
+
+## Python
+
+```{.python}
+from posit import connect
+client = connect.Client()
+
+CONTENT_GUID = "154bd2af-e8fa-4aa4-aab8-dcef701f4af9"
+
+client.delete(f"/v1/content/{CONTENT_GUID}/vanity")
+```
+
+A successful response returns a 204 HTTP status code with an empty response.
+
+```{.python}
+<Response [204]>
+```
+
+## R
+
+```{.r}
+library(connectapi)
+client <- connect()
+
+CONTENT_GUID <- "154bd2af-e8fa-4aa4-aab8-dcef701f4af9"
+
+content <- content_item(client, CONTENT_GUID)
+delete_vanity_url(content)
+```
+
+A successful response prints the following output.
+
+```{.r}
+Posit Connect Content: 
+  Content GUID: 154bd2af-e8fa-4aa4-aab8-dcef701f4af9
+  Content URL: https://rsc.radixu.com/connect/#/apps/154bd2af-e8fa-4aa4-aab8-dcef701f4af9/
+  Content Title: Example Content
+
+content_item(client, guid = "154bd2af-e8fa-4aa4-aab8-dcef701f4af9")
+```
+
+:::

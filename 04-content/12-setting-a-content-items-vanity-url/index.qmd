@@ -1,19 +1,14 @@
 ---
-title: Set a content item's vanity URL
+title: Setting a Content Item's Vanity URL
 ---
 
-## Description
+## Problem
 
-Use this recipe to set the vanity URL for a content item.
+You need to set a vanity URL for a content item.
 
-## Prerequisites
+## Solution
 
-You'll need the following:
-
-1. The unique identifier (GUID) of your content item. You can find this in the Info tab of the Dashboard.
-2. The new vanity URL you wish to use. Vanity URLs on a Connect server must be unique.
-
-## Recipe
+Use the unique identifier (GUID) for the content item to set its vanity URL.
 
 :::{.panel-tabset group="language"}
 
@@ -22,24 +17,19 @@ You'll need the following:
 ```{.python}
 from posit import connect
 import polars as pl
+
 client = connect.Client()
 
-#### User-defined inputs ####
-# 1. Specify the guid for the content item you want to modify
-content_guid = "154bd2af-e8fa-4aa4-aab8-dcef701f4af9"
-# 2. Specify the new vanity URL you wish to assign
-vanity_url = "/my-new-vanity-url/"
-###########################
+CONTENT_GUID = "154bd2af-e8fa-4aa4-aab8-dcef701f4af9"
+VANITY_URL = "/my-new-vanity-url/"
 
-response = client.put(f"v1/content/{content_guid}/vanity", json={"path": vanity_url})
+response = client.put(f"v1/content/{CONTENT_GUID}/vanity", json={"path": VANITY_URL})
 results_df = pl.DataFrame(response.json())
-
-results_df
 ```
 
-### Example output
+A successful response includes the content GUID, the new vanity URL, and the creation time.
 
-```
+```{.python}
 >>> results_df
 shape: (1, 3)
 ┌─────────────────────────────────┬─────────────────────┬──────────────────────┐
@@ -51,15 +41,11 @@ shape: (1, 3)
 └─────────────────────────────────┴─────────────────────┴──────────────────────┘
 ```
 
-:::{.callout-note}
-
 If the vanity URL you wish to use is already in use, the Connect server will return a 409 Conflict HTTP status.
 
-```
+```{.python}
 ClientError: Vanity path conflicts with one or more already in use. (Error Code: 51, HTTP Status: 409 Conflict)
 ```
-
-:::
 
 ## R
 
@@ -67,41 +53,30 @@ ClientError: Vanity path conflicts with one or more already in use. (Error Code:
 library(connectapi)
 client <- connect()
 
-#### User-defined inputs ####
-# 1. Specify the guid for the content item you want to modify
-content_guid <- "154bd2af-e8fa-4aa4-aab8-dcef701f4af9"
-# 2. Specify the new vanity URL you wish to assign
-vanity_url <- "/my-new-vanity-url/"
-###########################
+CONTENT_GUID <- "154bd2af-e8fa-4aa4-aab8-dcef701f4af9"
+VANITY_URL <- "/my-new-vanity-url/"
 
 # The vanity_is_available() function returns TRUE if vanity_url is available
 # on the server.
-if (vanity_is_available(client, vanity_url)) {
-  content <- content_item(client, content_guid)
-  set_vanity_url(content, vanity_url)
+if (vanity_is_available(client, VANITY_URL)) {
+  content <- content_item(client, CONTENT_GUID)
+  set_vanity_url(content, VANITY_URL)
 }
 ```
 
+A successful response prints the content GUID and vanity URL.
 
-
-### Example output
-
-```
-> set_vanity_url(content, vanity_url)
+```{.r}
 Posit Connect Content Vanity URL: 
   Content GUID: 154bd2af-e8fa-4aa4-aab8-dcef701f4af9
   Vanity URL: /my-new-vanity-url/
 ```
 
-:::{.callout-note}
+If you call `set_vanity_url()` with an unavailabile vanity path, the Connect server will return a 409 Conflict HTTP status. However, the example above uses the `vanity_is_available()` function to avoid this.
 
-If you call `set_vanity_url()` with an unavailabile vanity path, the Connect server will return a 409 Conflict HTTP status.
-
-```
+```{.r}
 Error in `self$raise_error()`:
 ! https://rsc.radixu.com/__api__/v1/content/154bd2af-e8fa-4aa4-aab8-dcef701f4af9/vanity request failed with Client error: (409) Conflict
 ```
-
-:::
 
 :::

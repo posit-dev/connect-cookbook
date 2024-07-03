@@ -1,0 +1,56 @@
+---
+title: Viewing a Content Item's Vanity URL
+---
+
+## Problem
+
+You need to get the vanity URL for a content item.
+
+## Solution
+
+Use the unique identifier (GUID) of the content item to look up its vanity URL.
+
+:::{.panel-tabset group="language"}
+
+## Python
+
+```{.python}
+from posit import connect
+
+CONTENT_GUID = "154bd2af-e8fa-4aa4-aab8-dcef701f4af9"
+
+client = connect.Client()
+
+vanity = client.get(f"/v1/content/{CONTENT_GUID}/vanity").json()
+```
+
+The resulting object is a JSON dictionary with information on the vanity URL.
+
+```{.python}
+>>> vanity
+{'content_guid': '154bd2af-e8fa-4aa4-aab8-dcef701f4af9',
+ 'path': '/my-vanity-url/',
+ 'created_time': '2024-04-25T18:27:16Z'}
+```
+
+## R
+
+```{.r}
+library(connectapi)
+
+CONTENT_GUID <- "154bd2af-e8fa-4aa4-aab8-dcef701f4af9"
+
+client <- connect()
+
+content <- content_item(client, CONTENT_GUID)
+vanity <- get_vanity_url(content)
+```
+
+The `get_vanity_url()` function returns a character vector containing the vanity URL.
+
+```{.r}
+> vanity
+[1] "/my-vanity-url/"
+```
+
+:::
