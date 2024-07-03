@@ -59,7 +59,7 @@ website:
       #   - ./04-content/01-viewing-content-information/index.qmd
         - ./04-content/02-viewing-content-runtime-settings/index.qmd
       #   - ./04-content/03-viewing-content-git-repository-settings/index.qmd
-      #   - ./04-content/04-viewing-content-vanity-urls/index.qmd
+        - ./04-content/04-viewing-all-vanity-urls/index.qmd
         # - ./04-content/05-finding-content/index.qmd
         - ./04-content/06-finding-public-content/index.qmd
       #   - ./04-content/07-finding-authorized-content/index.qmd
@@ -67,13 +67,15 @@ website:
         - ./04-content/09-finding-content-by-tag/index.qmd
       #   - ./04-content/09-creating-content/index.qmd
       #   - ./04-content/10-creating-content-git-repository-settings/index.qmd
-      #   - ./04-content/11-creating-content-vanity-urls/index.qmd
-      #   - ./04-content/12-updating-content/index.qmd
-      #   - ./04-content/13-updating-content-git-repository-settings/index.qmd
-      #   - ./04-content/14-deleting-content/index.qmd
-      #   - ./04-content/15-deleting-content-git-repository-settings/index.qmd
-      #   - ./04-content/16-deleting-content-vanity-urls/index.qmd
-      #   - ./04-content/17-duplicating-content/index.qmd
+        # - ./04-content/10-creating-content-git-repository-settings/index.qmd
+        - ./04-content/12-setting-a-content-items-vanity-url/index.qmd
+      #   - ./04-content/13-updating-content/index.qmd
+      #   - ./04-content/14-updating-content-git-repository-settings/index.qmd
+      #   - ./04-content/15-deleting-content/index.qmd
+      #   - ./04-content/16-deleting-content-git-repository-settings/index.qmd
+        - ./04-content/17-deleting-a-content-items-vanity-url/index.qmd
+      #   - ./04-content/18-duplicating-content/index.qmd
+        - ./04-content/19-viewing-a-content-items-vanity-url/index.qmd
       - section: "Content Access Controls"
       #   file: ./05-content-access-controls/index.qmd
         contents:

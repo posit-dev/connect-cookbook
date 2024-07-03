@@ -1,12 +1,14 @@
 ---
-title: List all vanity URLs
+title: Viewing All Vanity URLs
 ---
 
-## Description
+## Problem
 
-Use this recipe to list all vanity URLs across all content on the Connect server.
+You need to list all vanity URLs in use across all content on the Connect server.
 
-## Recipe
+## Solution
+
+Use the `GET v1/vanities` API endpoint to create a data frame of vanity URLs.
 
 :::{.panel-tabset group="language"}
 
@@ -15,16 +17,14 @@ Use this recipe to list all vanity URLs across all content on the Connect server
 ```{.python}
 from posit import connect
 import polars as pl
+
 client = connect.Client()
 
 response = client.get(f"/v1/vanities")
 results_df = pl.DataFrame(response.json())
-results_df
 ```
 
-### Example output
-
-```
+```{.python}
 >>> results_df
 ┌─────────────────────────────────┬──────────────────────────────┬──────────────────────┐
 │ content_guid                    ┆ path                         ┆ created_time         │
@@ -45,12 +45,11 @@ client <- connect()
 
 response <- client$GET("v1/vanities")
 results_df <- map_dfr(response, ~.x)
-results_df
 ```
 
 ### Example output
 
-```
+```{.r}
 > results_df
 # A tibble: 1,120 × 3
    content_guid                         path                  created_time        
