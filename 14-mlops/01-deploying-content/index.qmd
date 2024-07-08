@@ -1,0 +1,234 @@
+---
+title: Deploying Content
+---
+
+## Problem
+
+You want to deploy content to Posit Connect programmatically.
+
+## Solution
+
+:::{.panel-tabset group="language"}
+
+## Python
+
+Create content using the `content` attribute.
+
+```python
+from posit import connect
+
+client = connect.Client()
+content = client.content.create(name='shakespeare', title='Shakespeare Word Clouds')
+```
+
+Let's use [Polars](https://pola.rs) to view the created content.
+
+```python
+>>> import polars as pl
+>>> pl.DataFrame(content)
+shape: (1, 45)
+┌─────────────────────────────────┬─────────────┬─────────────────────────┬─────────────┬───┬─────────────────────────────────┬─────────────────────────────────┬──────────┬───────┐
+│ guid                            ┆ name        ┆ title                   ┆ description ┆ … ┆ content_url                     ┆ dashboard_url                   ┆ app_role ┆ id    │
+│ ---                             ┆ ---         ┆ ---                     ┆ ---         ┆   ┆ ---                             ┆ ---                             ┆ ---      ┆ ---   │
+│ str                             ┆ str         ┆ str                     ┆ str         ┆   ┆ str                             ┆ str                             ┆ str      ┆ str   │
+╞═════════════════════════════════╪═════════════╪═════════════════════════╪═════════════╪═══╪═════════════════════════════════╪═════════════════════════════════╪══════════╪═══════╡
+│ bfe31d08-c7fc-4449-a4fe-bc461d… ┆ shakespeare ┆ Shakespeare Word Clouds ┆             ┆ … ┆ http://connect.example.com/con… ┆ http://connect.example.com/con… ┆ owner    ┆ 50290 │
+└─────────────────────────────────┴─────────────┴─────────────────────────┴─────────────┴───┴─────────────────────────────────┴─────────────────────────────────┴──────────┴───────┘
+```
+
+Next, create a bundle. In this example, our bundle is named *bundle.tar.gz*. See the discussion on [Packaging a Bundle](#packaging-a-bundle) for additional instructions.
+
+```python
+bundle = content.bundles.create('bundle.tar.gz')
+```
+If your code depends on environment variables for runtime execution, set them using the [Environment Variables API](/api/#patch-/v1/content/-guid-/environment)
+
+```python
+client.patch(f"v1/content/{content.guid}/environment", json=[{'name': 'DATABASE_URL', 'value': 'postgresql://localhost:5432'}})
+```
+
+Next, deploy the bundle. This starts a new deployment task on the server to render the bundle. See [Deploying Bundles](../../07-bundles/07-deploying-bundles) for additional information.
+
+```python
+task = bundle.deploy()
+```
+
+Finally, call the `wait_for` method on the deployment task. The `wait_for` method watches the deployment process and returns once it completes. Once the task is complete, check the `exit_code` to see if it fails. A non-zero exit signifies that the task failed to complete successfully. See [Viewing Task Information](../../08-tasks/01-viewing-task-information/) for additional information.
+
+```python
+task.wait_for()
+assert task.exit_code == 0
+```
+
+Once the task is complete, we can view the task output.
+
+```python
+>>> for line in task.output:
+>>>     print(line)
+Building Shiny application...
+Bundle requested R version 3.5.1; using ...
+Removing prior manifest.json to packrat transformation.
+Performing manifest.json to packrat transformation.
+Removing prior manifest.json to packrat transformation.
+Performing manifest.json to packrat transformation.
+Completed packrat build against R version: '3.4.4'
+Launching Shiny application...
+```
+
+The deployed content can be viewed that the location provided by the *dashboard_url* property.
+
+```python
+>>> item.dashboard_url
+'https:/connect.example.com/connect/#/apps/5b6f05d1-1fea-480b-b8fa-51aec687a0bd'
+```
+
+### Full Example
+
+```python
+from posit import connect
+
+NAME = "shakespeare"
+TITLE = "Shakespeare Word Clouds"
+BUNDLE_FILE_NAME = 'bundle.tar.gz'
+
+client = connect.Client()
+content = client.content.create(name=NAME, title=TITLE)
+bundle = content.bundles.create(BUNDLE_FILE_NAME)
+client.patch(f"v1/content/{content.guid}/environment", json=[{'name': 'DATABASE_URL', 'value': 'postgresql://localhost:5432'}})
+task = bundle.deploy()
+task.wait_for()
+assert task.exit_code == 0
+```
+
+:::
+
+## Discussion
+
+Here are a few scenarios where this recipe can be applied:
+
+1. Quarterly Sales Analysis Applications
+
+    Automate the creation of a new, uniquely named application every quarter to analyze sales leads. The latest quarter includes new dashboard functionality, but you cannot alter previous quarters' applications as they need to capture that specific point-in-time.
+
+2. Continuous Integration for API Updates
+
+    Use an API that receives updates only after the supporting code is fully tested by your continuous integration environment. These tests ensure all updates remain backwards-compatible.
+
+3. Team Collaboration in a Sprint Cycle
+
+    Collaborate on an application over a two-week sprint cycle. Code is shared via Git, and progress is tracked in GitHub issues. The team performs production updates at the end of each sprint using a container-based deployment environment.
+
+4. Restricted Production Deployment
+
+    In an organization where data scientists cannot publish directly to the production server, production updates are scheduled events gated by successful user-acceptance testing. A deployment engineer, who is not an R user, uses scripts to create and publish content in production by interacting with the Connect Server APIs.
+
+
+### Packaging a bundle
+
+The Connect content bundle represents a point-in-time representation
+of your code. You can associate a number of bundles with your content, though
+only one bundle is active. The active bundle is used to render your report,
+run your application, and supplies what you see when you visit that content in
+your browser.
+
+Create bundles to match your workflow:
+
+* As you improve / enhance your content
+* Corresponding to a Git commit or merge
+* Upon completion of tests run in your continuous integration environment
+* After review and approval by your stakeholders
+
+The bundle is uploaded to Connect as a `.tar.gz` archive. You will use
+the `tar` utility to create this file. Before creating the archive,
+consider what should go inside.
+
+*   All source files used by your content. This is usually a collection of
+    `.R`, `.Rmd`, `.py`, and `.ipynb` files. Include any required HTML, CSS,
+    and Javascript resources, as well.
+
+*   Data files, images, or other resources that are loaded when executing or
+    viewing your content. This might be `.png`, `.jpg`, `.gif`, `.csv` files.
+    If your report uses an Excel spreadsheet as input, include it!
+
+*   A `manifest.json`. This JSON file describes the requirements of your
+    content.
+
+    We recommend committing the `manifest.json` into your source control
+    system and regenerating it whenever you push new versions of your code --
+    especially when updating packages or otherwise changing its dependencies!
+    Refer to the [Git-backed](../../../user/git-backed/index.md) section of the User Guide
+    for more information on creating the manifest.
+
+    -   For Python-based content, you can use the `rsconnect-python` package
+        to create the `manifest.json`. Ensure that the Python environment you
+        are using for your project is activated, then create a manifest
+        specific to your type of project (`notebook`, `api`, `dash`, `bokeh`,
+        or `streamlit`):
+
+        ```bash
+        rsconnect write-manifest ${TYPE} ./
+        ```
+
+        See the [rsconnect-python documentation](https://docs.posit.co/rsconnect-python/) for details.
+
+    -   For R content, this includes a full snapshot of all of your package
+        requirements. The `manifest.json` is created with the
+        `rsconnect::writeManifest()` function.
+
+        -   From the command-line:
+
+            ```bash
+            # This directory should be your current working directory.
+            Rscript -e 'rsconnect::writeManifest()'
+            ```
+
+        -   From an R console:
+
+            ```r
+            # This directory should be your current working directory.
+            rsconnect::writeManifest()
+            ```
+
+        ::: {.callout-note}
+        The `manifest.json` associated with an R Markdown site (e.g.
+        [Bookdown](https://bookdown.org)) must specify a "site" content category.
+
+        ```r
+        # From an R console:
+        rsconnect::writeManifest(contentCategory = "site")
+        ```
+        :::
+
+        ::: {.callout-note}
+        If your Posit Connect installation uses off-host content execution with
+        Kubernetes, you can optionally specify which image you want Connect to use
+        when building your content:
+
+        ```r
+        # From an R console (with the content in your current working directory):
+        rsconnect::writeManifest(
+        image = "ghcr.io/rstudio/content-base:r4.0.5-py3.8.8-jammy")
+        ```
+
+        ```bash
+        # Using the `rsconnect-python` package:
+        rsconnect write-manifest ${TYPE} \
+            --image "ghcr.io/rstudio/content-base:r4.0.5-py3.8.8-jammy" \
+            ./
+        ```
+
+        You can only use an image that has been configured by your administrator.
+        You can see a list of available images by logging in to Connect and
+        clicking the **Documentation** button at the top of the page. See the User
+        Guide pages for [publishing from R](/user/publishing-r/index.md#target-image)
+        and [publishing from the command line](/user/publishing-cli/index.md#target-image) for more details.
+        :::
+
+Create your bundle `.tar.gz` file once you have collected the set of files to
+include. Below is an example that archives a simple Shiny application. The
+`app.R` contains the R source and `data` is a directory with data files loaded
+by the application:
+
+```bash
+tar czf bundle.tar.gz manifest.json app.R data
+```
