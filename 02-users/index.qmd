@@ -1,3 +1,10 @@
 ---
-title: 02. Users
+title: Users
+listing:
+    sort: false
+    template: ../template.ejs
+    contents:
+    - ./01-viewing-user-information
+    - ./02-finding-users
+    - ./09-creating-a-user-using-a-remote-authentication-provider-ldap
 ---

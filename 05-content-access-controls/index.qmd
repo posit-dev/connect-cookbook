@@ -1,3 +1,14 @@
 ---
-title: 05. Content Access Controls
+title: Content Access Controls
+listing:
+    sort: false
+    template: ../template.ejs
+    contents:
+    - ./02-transferring-content-ownership
+    - ./03-granting-access-to-a-user
+    - ./04-granting-access-to-a-group
+    - ./05-revoking-access-from-a-user
+    - ./08-revoking-access-from-a-group
+    - ./09-auditing-group-access-to-content
+    - ./10-revoking-all-access-except-the-content-owner
 ---
