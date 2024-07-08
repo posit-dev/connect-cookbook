@@ -4,7 +4,7 @@ title: Deploying Content
 
 ## Problem
 
-You want to deploy content to Posit Connect using a program.
+You want to deploy content to Posit Connect programmatically.
 
 ## Solution
 
@@ -199,30 +199,30 @@ consider what should go inside.
         ```
         :::
 
-    ::: {.callout-note}
-    If your Posit Connect installation uses off-host content execution with
-    Kubernetes, you can optionally specify which image you want Connect to use
-    when building your content:
+        ::: {.callout-note}
+        If your Posit Connect installation uses off-host content execution with
+        Kubernetes, you can optionally specify which image you want Connect to use
+        when building your content:
 
-    ```r
-    # From an R console (with the content in your current working directory):
-    rsconnect::writeManifest(
-      image = "ghcr.io/rstudio/content-base:r4.0.5-py3.8.8-jammy")
-    ```
+        ```r
+        # From an R console (with the content in your current working directory):
+        rsconnect::writeManifest(
+        image = "ghcr.io/rstudio/content-base:r4.0.5-py3.8.8-jammy")
+        ```
 
-    ```bash
-    # Using the `rsconnect-python` package:
-    rsconnect write-manifest ${TYPE} \
-        --image "ghcr.io/rstudio/content-base:r4.0.5-py3.8.8-jammy" \
-        ./
-    ```
+        ```bash
+        # Using the `rsconnect-python` package:
+        rsconnect write-manifest ${TYPE} \
+            --image "ghcr.io/rstudio/content-base:r4.0.5-py3.8.8-jammy" \
+            ./
+        ```
 
-    You can only use an image that has been configured by your administrator.
-    You can see a list of available images by logging in to Connect and
-    clicking the **Documentation** button at the top of the page. See the User
-    Guide pages for [publishing from R](/user/publishing-r/index.md#target-image)
-    and [publishing from the command line](/user/publishing-cli/index.md#target-image) for more details.
-    :::
+        You can only use an image that has been configured by your administrator.
+        You can see a list of available images by logging in to Connect and
+        clicking the **Documentation** button at the top of the page. See the User
+        Guide pages for [publishing from R](/user/publishing-r/index.md#target-image)
+        and [publishing from the command line](/user/publishing-cli/index.md#target-image) for more details.
+        :::
 
 Create your bundle `.tar.gz` file once you have collected the set of files to
 include. Below is an example that archives a simple Shiny application. The
