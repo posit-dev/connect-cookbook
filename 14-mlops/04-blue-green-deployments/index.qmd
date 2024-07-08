@@ -1,0 +1,111 @@
+---
+title: Blue / Green Deployments
+---
+
+## Problem
+
+You want to utilize a blue-green deployment method to safely deploy changes to production content.
+
+## Solution
+
+Use [Vanity URLs API](/api/#get-/v1/content/-guid-/vanity) to switch traffic between deployments. In this example, we assume that *blue* content has an assigned vanity URL. See [Viewing a Content Items Vanity URL](../../04-content/19-viewing-a-content-items-vanity-url/index.qmd).
+
+Get *Vanity URL* from the *blue* content using the unique identifier (guid) for the content.
+
+:::{.panel-tabset group="language"}
+
+## Python
+
+```python
+from posit import connect
+
+BLUE_CONTENT_GUID = "154bd2af-e8fa-4aa4-aab8-dcef701f4af9"
+
+client = connect.Client()
+response = client.get(f"/v1/content/{BLUE_CONTENT_GUID}/vanity").json()
+path = response.json()['path']
+```
+
+## R
+
+```r
+library(connectapi)
+
+BLUE_CONTENT_GUID = "154bd2af-e8fa-4aa4-aab8-dcef701f4af9"
+
+client <- connect()
+blue <- content_item(client, BLUE_CONTENT_GUID)
+vanity <- get_vanity_url(content)
+```
+
+:::
+
+Then swap the *Vanity URL* to point to the *green* content using the unique identifier (guid) for the content.
+
+:::{.panel-tabset group="language"}
+
+## Python
+
+```python
+GREEN_CONTENT_GUID = "2d178c46-4dca-40b0-bf22-a21e1cfb5b46"
+
+client.put(f'v1/content/{GREEN_CONTENT_GUID}/vanity', json={
+    'force': True,
+    'path': path
+})
+```
+
+## R
+
+```r
+GREEN_CONTENT_GUID = "154bd2af-e8fa-4aa4-aab8-dcef701f4af9"
+
+green <- content_item(client, BLUE_CONTENT_GUID)
+set_vanity_url(content, vanity, TRUE)
+```
+
+:::
+
+
+### Full example
+
+:::{.panel-tabset group="language"}
+
+## Python
+
+```python
+from posit import connect
+
+BLUE_CONTENT_GUID = "154bd2af-e8fa-4aa4-aab8-dcef701f4af9"
+GREEN_CONTENT_GUID = "2d178c46-4dca-40b0-bf22-a21e1cfb5b46"
+
+client = connect.Client()
+response = client.get(f"/v1/content/{BLUE_CONTENT_GUID}/vanity").json()
+path = response.json()['path']
+client.put(f'v1/content/{GREEN_CONTENT_GUID}/vanity', json={
+    'force': True,
+    'path': path
+})
+```
+
+## R
+
+```r
+library(connectapi)
+
+BLUE_CONTENT_GUID = "154bd2af-e8fa-4aa4-aab8-dcef701f4af9"
+GREEN_CONTENT_GUID = "2d178c46-4dca-40b0-bf22-a21e1cfb5b46"
+
+client <- connect()
+blue <- content_item(client, BLUE_CONTENT_GUID)
+vanity <- get_vanity_url(content)
+green <- content_item(client, BLUE_CONTENT_GUID)
+set_vanity_url(content, vanity, TRUE)
+```
+
+:::
+
+
+## Discussion
+
+A blue-green deployment strategy ensures that production content does not incur downtime during upgrades.
