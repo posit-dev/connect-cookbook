@@ -54,7 +54,7 @@ website:
         # - ./03-groups/12-deleting-group-members/index.qmd
         # - ./03-groups/13-analyzing-group-members/index.qmd
       - section: "Content"
-        # file: ./04-content/index.qmd
+        file: ./04-content/index.qmd
         contents:
       #   - ./04-content/01-viewing-content-information/index.qmd
         - ./04-content/02-viewing-content-runtime-settings/index.qmd
@@ -77,7 +77,7 @@ website:
       #   - ./04-content/18-duplicating-content/index.qmd
         - ./04-content/19-viewing-a-content-items-vanity-url/index.qmd
       - section: "Content Access Controls"
-      #   file: ./05-content-access-controls/index.qmd
+        file: ./05-content-access-controls/index.qmd
         contents:
       #   - ./05-content-access-controls/01-analyzing-content-ownership/index.qmd
         - ./05-content-access-controls/02-transferring-content-ownership/index.qmd
@@ -111,7 +111,7 @@ website:
       #   contents:
       #   - ./08-tasks/01-viewing-task-information/index.qmd
       - section: "Jobs"
-      #   file: ./09-jobs/index.qmd
+        file: ./09-jobs/index.qmd
         contents:
       #   - ./09-jobs/01-viewing-job-information/index.qmd
         - ./09-jobs/02-viewing-jobs-for-content/index.qmd
@@ -152,7 +152,7 @@ website:
       #   - ./13-metrics/04-analyzing-popular-publishers/index.qmd
         - ./13-metrics/05-analyzing-most-active-content-users-and-publishers/index.qmd
       - section: "MLOps"
-      #   file: ./14-mlops/index.qmd
+        file: ./14-mlops/index.qmd
         contents:
       #   - ./14-mlops/01-deploying-content/index.qmd
         # - ./14-mlops/02-rendering-content-on-demand/index.qmd

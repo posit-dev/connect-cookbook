@@ -1,11 +1,12 @@
 ---
-title: 01. Getting Started
+title: Getting Started
+listing:
+    sort: false
+    template: ../template.ejs
+    contents:
+    - ./01-installing-the-posit-sdk
+    - ./02-creating-an-api-key
+    - ./03-initializing-a-client
 ---
 
 Prior to diving into problem solving, use the following recipes to setup your environment and obtain an understanding of fundamental concepts used in the Posit SDK.
-
-[Installing the Posit SDK](./01-installing-the-posit-sdk/)
-
-[Creating an API Key](./02-creating-an-api-key/)
-
-[Initializing a Client](./03-initializing-a-client/)

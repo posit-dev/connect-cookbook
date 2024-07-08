@@ -1,3 +1,9 @@
 ---
-title: 09. Jobs
+title: Jobs
+listing:
+    sort: false
+    template: ../template.ejs
+    contents:
+    - ./02-viewing-jobs-for-content
+    - ./05-registering-a-job-kill-order
 ---

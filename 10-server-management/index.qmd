@@ -1,3 +1,12 @@
 ---
-title: 10. Server Management
+title: Server Management
+listing:
+    sort: false
+    template: ../template.ejs
+    contents:
+    - ./03-viewing-content-runtime-settings
+    - ./04-viewing-available-python-r-quarto-runtime-versions
+    - ./06-finding-content-with-custom-runtime-settings
+    - ./07-viewing-runtime-caches
+    - ./08-deleting-runtime-caches
 ---
