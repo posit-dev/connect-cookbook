@@ -77,7 +77,7 @@ content_guid = "SPECIFY CONTENT GUID"
 variant_key = "default"
 
 # 3. Send an email after the content renders? Options are:
-# ("none" | "me" | "collaborators" | "collaborators_viewers")
+# ( "none" | "me" | "collaborators" | "collaborators_viewers" )
 recipients =  "me"
 ###########################
 
@@ -85,12 +85,6 @@ recipients =  "me"
 if recipients not in ["none", "me", "collaborators", "collaborators_viewers"]:
     recipients = "none"
     print(f"Invalid `recipients` option: {recipients}. Setting to 'none'.")
-
-# Verify that variant key is either "default" or is a 8-character string.
-# If not, stop and print a warning.
-if variant_key != "default" and len(variant_key) != 8:
-    print(f"The specified variant key '{variant_key}' does not appear to be valid. Set to 'default' or enter a valid variant key.")
-    exit()
 
 client = connect.Client()
 
@@ -100,31 +94,27 @@ content = client.content.get(content_guid)
 # Select the variant to render.
 content_variants = client.get(f"/applications/{content_guid}/variants").json()
 if variant_key == "default":
-    default_variant = next((variant for variant in content_variants if variant["is_default"]), None)
-    content_variant = default_variant["id"]
-    variant_key = default_variant["key"]
+    default_variant = next((variant for variant in content_variants if variant["is_default"]))
+    variant_id = default_variant["id"]
 else:
-    content_variant = next((variant["id"] for variant in content_variants if variant["key"] == variant_key), None)
+    try:
+        variant_id = next((variant["id"] for variant in content_variants if variant["key"] == variant_key))
+    except StopIteration:
+        print(f"The specified variant key '{variant_key}' does not appear to be valid. Set to 'default' or enter a valid variant key.")
+        exit()
 
 # Trigger the variant to render and wait for it to complete.
-post_body = {"email": "none", "activate": "true"}
-post_url = f"/variants/{content_variant}/render"
-response = client.post(post_url, params=post_body, data=post_body)
-
-result = response.json()
+result = client.post(f"/variants/{variant_id}/render").json()
 task = client.tasks.get(result["id"])
-
 task.wait_for()
 
 # Send email of rendered content, if applicable.
 if recipients != "none":
-    # Get new list of content variants and identify new variant rendering id.
-    content_variants = client.get(f"/applications/{content_guid}/variants").json()
-    rendering_id = next((variant["rendering_id"] for variant in content_variants if variant["key"] == variant_key), None)
-    post_url = f"variants/{content_variant}/sender"
-    post_body = {"email": recipients, "rendering_id": rendering_id}
+    # Identify the new variant rendering id.
+    rendering_id = client.get(f"/variants/{variant_id}").json()["rendering_id"]
+    post_url = f"variants/{variant_id}/sender"
     # Send email.
-    client.post(post_url, params=post_body, data=post_body)
+    client.post(post_url, params={"email": recipients, "rendering_id": rendering_id})
 ```
 
 ## R
@@ -142,17 +132,9 @@ content_guid <- "SPECIFY CONTENT GUID"
 variant_key <- "default"
 
 # 3. Send an email after the content renders? Options are:
-# ("none" | "me" | "collaborators" | "collaborators_viewers")
+# ( "none" | "me" | "collaborators" | "collaborators_viewers" )
 recipients <-  "me"
 ###########################
-
-# Verify that `recipients` is a valid option and if not, set to "none".
-if (recipients %in% c("none", "me", "collaborators", "collaborators_viewers")) {
-  recipients <- recipients
-} else {
-  recipients <- "none"
-  print(glue::glue("Invalid `recipients` option: {recipients}. Defaulting to 'none'."))
-}
 
 # Verify that variant key is either "default" or appears to be a valid entry.
 if (variant_key != "default" && nchar(variant_key) != 8) {
@@ -161,32 +143,20 @@ if (variant_key != "default" && nchar(variant_key) != 8) {
 
 client <- connect()
 
-# Get content item from server
+# Get content item from server.
 content <- content_item(client, content_guid)
 
-# Select the variant to re-render.
-if (variant_key == "default") {
-  content_variant <- get_variant_default(content)
-  variant_key <- content_variant$key
-} else {
-  content_variant <- get_variant(content, variant_key)
-}
-
-# Trigger the variant to render.
-content_variant |>
+# Select the variant, render it, and wait for it to finish.
+content |>
+  get_variant(variant_key) |>
   variant_render() |>
   poll_task()
 
-
-# Gend email of rendered content, if applicable.
+# Send email of rendered content, if applicable.
 if (recipients != "none") {
-  # Get updated list of content variants and identify new variant rendering id.
+  # Get the variant again so it has the new variant rendering id.
   content_variant <- get_variant(content, variant_key)
-  rendering_id <- content_variant$variant$rendering_id
-  post_url <- glue::glue("variants/{content_variant$variant$id}/sender")
-  post_body <- list(email = recipients, rendering_id = rendering_id)
-  # Send email.
-  client$POST(post_url, query = post_body, body = post_body)
+  content_variant$send_mail(recipients)
 }
 ```
 
