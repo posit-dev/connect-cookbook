@@ -5,4 +5,5 @@ listing:
     template: ../template.ejs
     contents:
     - ./03-promoting-content-from-staging-to-production
+    - ./04-blue-green-deployments
 ---
