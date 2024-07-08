@@ -12,13 +12,13 @@ You want to view group information.
 
 ## Python
 
-Use the `groups` attribute.
+Use the `groups` attribute. Use the `prefix` argument to filter based on group name.
 
 ```{.python}
 from posit import connect
 
 client = connect.Client()
-group = client.groups.find_one()
+group = client.groups.find_one(prefix="data scientists")
 ```
 
 ```{.python}
@@ -33,9 +33,24 @@ group = client.groups.find_one()
 
 ## R
 
+Use the `get_groups()` function. This returns a table that you can filter to find details about a specific group.
 
 ```{.r}
-# TODO
+library(connectapi)
+library(dplyr)
+
+client <- connect()
+
+all_groups <- get_groups(client)
+group <- filter(groups, name == "Data Scientists")
+```
+
+```{.r}
+> group
+# A tibble: 1 × 3
+  guid                                 name            owner_guid                          
+  <chr>                                <chr>           <chr>                               
+1 54ed1e9d-4bee-4797-97a3-f22e990bccfe Data Scientists 6ca57cef-186f-4897-9875-d692f97edd5a
 ```
 
 :::
