@@ -1,5 +1,0 @@
----
-title: Content Recipes
-listing:
-    template: ../ejs/links.ejs
----
