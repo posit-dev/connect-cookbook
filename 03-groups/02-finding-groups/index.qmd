@@ -4,7 +4,7 @@ title: Finding Groups
 
 ## Problem
 
-You want to find a subset of groups.
+You want to find a subset of the groups on the Connect server.
 
 ## Solution
 
@@ -39,8 +39,25 @@ shape: (2, 3)
 
 ## R
 
+Use the `get_groups()` function. This returns a data frame of all groups on the Connect server. You can filter this as you would any other table.
+
 ```{.r}
-# TODO
+library(connectapi)
+library(dplyr)
+
+client <- connect()
+
+all_groups <- get_groups(client)
+```
+
+```{.r}
+> all_groups
+# A tibble: 2 × 3
+   guid                                 name            owner_guid                          
+   <chr>                                <chr>           <chr>                               
+ 1 c6beca6e-0898-4c27-b295-8beec58735d7 Data Scientists 4d81b29b-a2b2-41d3-8ef5-32cc5f63e679
+ 2 8071ec0e-9be2-4c26-a829-4f60a21ccb94 Data Engineers  4b03b981-0cfc-4d51-8dd4-a5521fe6dfb0
+
 ```
 
 :::
