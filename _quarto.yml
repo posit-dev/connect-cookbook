@@ -28,6 +28,7 @@ website:
         contents:
         - ./02-users/01-viewing-user-information/index.qmd
         - ./02-users/02-finding-users/index.qmd
+        - ./02-users/12-finding-licensed-users/index.qmd
       #   - ./02-users/03-finding-users-using-a-remote-authentication-provider-ldap/index.qmd
       #   - ./02-users/04-creating-a-user-using-password-authentication/index.qmd
       #   - ./02-users/05-creating-a-user-using-pam-authentication/index.qmd
@@ -129,12 +130,12 @@ website:
         - ./10-server-management/06-finding-content-with-custom-runtime-settings/index.qmd
         - ./10-server-management/07-viewing-runtime-caches/index.qmd
         - ./10-server-management/08-deleting-runtime-caches/index.qmd
-      # - section: "Off Host Execution"
-      #   file: ./11-off-host-execution/index.qmd
-      #   contents:
+      - section: "Off Host Execution"
+        file: ./11-off-host-execution/index.qmd
+        contents:
         - ./11-off-host-execution/01-viewing-container-image-usage/index.qmd
         - ./11-off-host-execution/02-viewing-execution-environment-runtimes/index.qmd
-      #   - ./11-off-host-execution/03-creating-execution-environments/index.qmd
+        - ./11-off-host-execution/03-creating-execution-environments/index.qmd
       #   - ./11-off-host-execution/04-updating-execution-environments/index.qmd
       #   - ./11-off-host-execution/05-deleting-execution-environments/index.qmd
         - ./11-off-host-execution/06-finding-all-content-using-an-image/index.qmd

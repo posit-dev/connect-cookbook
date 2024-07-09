@@ -1,5 +1,7 @@
 ---
 title: Deleting Runtime Caches
+aliases:
+  - /cookbook/runtime-caches/#delete-runtime-caches
 ---
 
 ## Problem

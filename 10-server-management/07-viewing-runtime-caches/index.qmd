@@ -1,5 +1,8 @@
 ---
 title: Viewing Runtime Caches
+aliases:
+  - /cookbook/runtime-caches/
+  - /cookbook/runtime-caches/#enumerate-runtime-caches
 ---
 
 ## Problem
@@ -71,17 +74,17 @@ The data includes information on the language and version of the cache. For Conn
 > caches_df
 # A tibble: 23 × 3
    language version image_name
-   <chr>    <chr>   <chr>     
- 1 R        3.0.2   Local     
- 2 R        3.1.0   Local     
- 3 R        3.1.2   Local     
- 4 R        3.1.3   Local     
- 5 R        3.2.0   Local     
- 6 R        3.2.1   Local     
- 7 R        3.2.2   Local     
- 8 R        3.3.3   Local     
- 9 R        3.4.0   Local     
-10 R        3.4.4   Local     
+   <chr>    <chr>   <chr>
+ 1 R        3.0.2   Local
+ 2 R        3.1.0   Local
+ 3 R        3.1.2   Local
+ 4 R        3.1.3   Local
+ 5 R        3.2.0   Local
+ 6 R        3.2.1   Local
+ 7 R        3.2.2   Local
+ 8 R        3.3.3   Local
+ 9 R        3.4.0   Local
+10 R        3.4.4   Local
 # ℹ 13 more rows
 # ℹ Use `print(n = ...)` to see more rows
 ```

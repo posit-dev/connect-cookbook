@@ -1,5 +1,8 @@
 ---
 title: Promoting Content from Staging to Production
+aliases:
+  - /cookbook/promoting/
+
 ---
 
 ## Problem
@@ -102,7 +105,7 @@ assert deployment_task.exit_code == 0
 <!--
 ## R
 
-TODO 
+TODO
 -->
 
 :::

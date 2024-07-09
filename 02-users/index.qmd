@@ -1,10 +1,13 @@
 ---
 title: Users
+aliases:
+  - /cookbook/users/
 listing:
     sort: false
     template: ../template.ejs
     contents:
     - ./01-viewing-user-information
     - ./02-finding-users
+    - ./12-finding-licensed-users
     - ./09-creating-a-user-using-a-remote-authentication-provider-ldap
 ---
