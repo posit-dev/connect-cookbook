@@ -98,4 +98,4 @@ The resulting DataFrame contains the content GUID, the title, and the type of ac
 
 ## Discussion
 
-Now that you have the content that a group can see, you can use the content GUID in other recipes like [Revoking Access from Groups](../../content-access-controls/revoking-access-from-groups/) to prevent the group (and others) from being able to access that that content.
+Now that you have the content that a group can see, you can use the content GUID in other recipes like [Revoking Access from Groups](../../content-access-controls/revoking-access-from-a-group/) to prevent the group (and others) from being able to access that that content.
