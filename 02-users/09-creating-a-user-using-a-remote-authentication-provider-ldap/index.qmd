@@ -89,7 +89,8 @@ library(connectapi)
 
 USERNAME = "francism"
 
-users = users_create_remote(client, prefix = USERNAME)
+client <- connect()
+users <- users_create_remote(client, prefix = USERNAME)
 ```
 
 When the call succeeds, the response contains a non-`NULL` `guid` value,
