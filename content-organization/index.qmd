@@ -1,0 +1,14 @@
+---
+title: Content Organization
+aliases:
+  - /cookbook/organizing
+listing:
+    sort: false
+    template: ../template.ejs
+    contents:
+    - ./viewing-tag-information
+    - ./viewing-tags-by-content
+    - ./creating-tags
+    - ./assigning-tags
+    - ./deleting-tags
+---

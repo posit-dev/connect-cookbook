@@ -1,0 +1,16 @@
+---
+title: Content Access Controls
+aliases:
+  - /cookbook/sharing/
+listing:
+    sort: false
+    template: ../template.ejs
+    contents:
+    - ./transferring-content-ownership
+    - ./granting-access-to-a-user
+    - ./granting-access-to-a-group
+    - ./revoking-access-from-a-user
+    - ./revoking-access-from-a-group
+    - ./auditing-group-access-to-content
+    - ./revoking-all-access-except-the-content-owner
+---

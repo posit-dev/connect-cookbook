@@ -1,0 +1,157 @@
+---
+title: Deleting Runtime Caches
+aliases:
+  - /cookbook/runtime-caches/#delete-runtime-caches
+---
+
+## Problem
+
+You want to request the removal of a specified runtime cache.
+
+## Solution
+
+Call the `DELETE /v1/system/caches/runtime` endpoint.
+
+You must specify the language, version, and image name for the runtime cache you wish to delete. See [Viewing Runtime Caches](../viewing-runtime-caches/) to view runtime caches on your Connect server.
+
+:::{.panel-tabset group="language"}
+
+## Python
+
+```{.python}
+from posit import connect
+
+LANGUAGE = "Python"
+VERSION = "3.7.6"
+IMAGE_NAME = "Local"
+
+client = connect.Client()
+
+instructions = {
+    "language": LANGUAGE,
+    "version": VERSION,
+    "image_name": IMAGE_NAME
+}
+
+response = client.delete(
+    "v1/system/caches/runtime",
+    json=instructions,
+)
+```
+
+Runtime cache deletion can take some time. A successful request indicates that deletion was started, and returns a task object. You can use this task to poll Connect's tasks API to check the status of the deletion.
+
+```{.python}
+>>> response.json()
+{'language': 'Python',
+ 'version': '3.7.6',
+ 'image_name': 'Local',
+ 'task_id': 'lFvijYN16kjCoal6'}
+```
+
+## R
+
+```{.r}
+library(connectapi)
+library(httr)
+
+LANGUAGE <- "R"
+VERSION <- "3.0.2"
+IMAGE_NAME <- "Local"
+
+client <- connect()
+
+instructions <- list(
+  language = LANGUAGE,
+  version = VERSION,
+  image_name = IMAGE_NAME
+)
+
+response <- client$DELETE(
+  "/v1/system/caches/runtime",
+  body = instructions,
+  encode = "json"
+)
+response_content <- httr::content(response, as = "parsed")
+```
+
+Runtime cache deletion can take some time. A successful request indicates that deletion was started, and returns a task object. You can use this task to poll Connect's tasks API to check the status of the deletion.
+
+```{.r}
+> response_content
+$language
+[1] "R"
+
+$version
+[1] "3.0.2"
+
+$image_name
+[1] "Local"
+
+$task_id
+[1] "uThXBHopZ2Wgv7wn"
+```
+
+:::
+
+### Polling the task
+
+Use Connect's `GET /v1/tasks/{id}` endpoint to check the status of a deletion task.
+
+:::{.panel-tabset group="language"}
+
+## Python
+
+```{.python}
+task_id = response.json()["task_id"]
+task_status = client.get(f"/v1/tasks/{task_id}")
+```
+
+```{.python}
+>>> task_status.json()
+{'id': 'lFvijYN16kjCoal6',
+ 'output': ['Deleting runtime cache...', 'Successfully deleted runtime cache'],
+ 'result': None,
+ 'finished': True,
+ 'code': 0,
+ 'error': '',
+ 'last': 2}
+```
+
+## R
+
+```{.r}
+task_id = response_content$task_id
+task_status = client$GET(glue::glue("v1/tasks/{task_id}"))
+```
+
+```{.r}
+> task_status
+$id
+[1] "uThXBHopZ2Wgv7wn"
+
+$output
+$output[[1]]
+[1] "Deleting runtime cache..."
+
+$output[[2]]
+[1] "Successfully deleted runtime cache"
+
+
+$result
+NULL
+
+$finished
+[1] TRUE
+
+$code
+[1] 0
+
+$error
+[1] ""
+
+$last
+[1] 2
+```
+
+:::

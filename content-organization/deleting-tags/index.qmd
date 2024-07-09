@@ -1,0 +1,46 @@
+---
+title: "Deleting Tags"
+---
+
+## Problem
+
+You want to delete a tag.
+
+::: {.callout-warning}
+
+You must have administrator privileges to delete a tag.
+
+:::
+
+## Solution
+
+
+::: {.panel-tabset group="language"}
+
+## Python
+
+You will need the identifier of the tag you wish to delete. See [Viewing Tag Information](../viewing-tag-information/index.qmd) for details.
+
+```{.python}
+TAG_ID = "your-tag-id"
+
+client.delete(f"/v1/tags/{TAG_ID}")
+```
+
+## R
+
+Create a `Tag` object representing the tag you wish to delete, and pass that to `delete_tag()`.
+
+```{.r}
+library(connectapi)
+client <- connect()
+
+tags <- get_tags(client)
+target_tag <- tags$Departments
+
+delete_tag(client, depts_tag)
+```
+
+The `delete_tag()` function returns a copy of the `client` object.
+
+:::

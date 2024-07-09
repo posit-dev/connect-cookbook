@@ -1,0 +1,93 @@
+---
+title: Viewing Content Runtime Settings
+aliases:
+  - /cookbook/runas/
+---
+
+## Problem
+
+You want to summarize the custom runtime settings of content on your Connect server.
+
+:::{.callout-note}
+Content with custom runtime settings includes content with [`RunAsCurrentUser`](https://docs.posit.co/connect/admin/process-management/#runas-current) enabled and content with a custom [`RunAs`](https://docs.posit.co/connect/admin/process-management/#runas) Linux user account.
+:::
+
+## Solution
+
+Create a table summarizing the usage of custom runtime settings on your Connect server. The table includes totals of the number of content items with `RunAsCurrentUser` enabled and for each `RunAs` account in use.
+
+:::{.panel-tabset group="language"}
+
+## Python
+
+```{.python}
+from posit import connect
+import polars as pl
+
+client = connect.Client()
+
+content = client.content.find()
+content_out = (pl.DataFrame(content, infer_schema_length=None)
+    # combine RunAsCurrentUser and RunAs into a single column
+           .with_columns(pl.when(pl.col("run_as_current_user") == "true")
+           .then(pl.lit("RunAsCurrentUser"))
+           .otherwise(pl.col("run_as")).alias("run_as"))
+    # Remove NULL (content items run as the default account appear as NULL)
+    .filter(pl.col("run_as").is_not_null())
+    .group_by("run_as").count()
+    .sort("count", descending=True)
+    )
+
+```
+
+```{.python}
+>>> content_out
+shape: (3, 2)
+            run_as	count
+               str	  u32
+  "sa-engineering"	    8
+      "sa-finance"	    3
+"RunAsCurrentUser"	    1
+
+```
+
+## R
+
+```{.r}
+library(connectapi)
+library(dplyr)
+
+client <- connect()
+
+content <- get_content(client)
+
+content_out <- content |>
+  # combine RunAsCurrentUser and RunAs into a single column
+  mutate(run_as = if_else(run_as_current_user, "RunAsCurrentUser", run_as)) |>
+  # Remove NA (content items run as the default account appear as NA)
+  filter(!is.na(run_as)) |>
+  group_by(run_as) |>
+  summarise(count = n()) |>
+  arrange(desc(count))
+
+```
+
+
+```{.r}
+> content_out
+  run_as            count
+  <chr>             <int>
+2 sa-engineering        8
+3 sa-finance            3
+4 RunAsCurrentUser      1
+```
+
+:::
+
+## Discussion
+
+This may be useful when auditing the server in preparation for a migration, to understand which accounts need to be replicated in the new environment. It is also generally helpful to understand if content on the server has specific run-time requirements.
+
+## See Also
+
+- [Finding Content with Custom Runtime Settings](../finding-content-with-custom-runtime-settings/) to enumerate all content items with `RunAsCurrentUser` enabled or a customized `RunAs` user.
