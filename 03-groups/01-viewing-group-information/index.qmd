@@ -17,8 +17,10 @@ Use the `groups` attribute. Use the `prefix` argument to filter based on group n
 ```{.python}
 from posit import connect
 
+PREFIX = "data scientists"
+
 client = connect.Client()
-group = client.groups.find_one(prefix="data scientists")
+group = client.groups.find_one(prefix=PREFIX)
 ```
 
 ```{.python}
@@ -39,10 +41,12 @@ Use the `get_groups()` function. This returns a table that you can filter to fin
 library(connectapi)
 library(dplyr)
 
+GROUP_NAME = "Data Scientists"
+
 client <- connect()
 
 all_groups <- get_groups(client)
-group <- filter(groups, name == "Data Scientists")
+group <- filter(groups, name == GROUP_NAME)
 ```
 
 ```{.r}
