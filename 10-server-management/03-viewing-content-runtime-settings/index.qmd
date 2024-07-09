@@ -1,5 +1,7 @@
 ---
 title: Viewing Content Runtime Settings
+aliases:
+  - /cookbook/runas/
 ---
 
 ## Problem

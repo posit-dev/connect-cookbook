@@ -1,5 +1,7 @@
 ---
 title: Metrics
+aliases:
+  - /cookbook/user-activity/
 listing:
     sort: false
     template: ../template.ejs

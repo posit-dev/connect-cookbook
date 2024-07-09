@@ -1,5 +1,9 @@
 ---
 title: Viewing Available Python, R, and Quarto Runtime Versions
+aliases:
+  - /cookbook/runtimes/
+  - /cookbook/r-versions/
+  - /cookbook/python-versions/
 ---
 
 ## Problem

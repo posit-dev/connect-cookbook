@@ -1,5 +1,7 @@
 ---
 title: Viewing Execution Environment Runtimes
+aliases:
+  - /cookbook/r-versions/#available-r-versions-launcher
 ---
 
 ## Problem
