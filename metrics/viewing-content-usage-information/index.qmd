@@ -41,16 +41,50 @@ shape: (35_087, 9)
 └─────────────────────────────────┴─────────────────────────────────┴─────────────┴──────────────┴───┴──────────────────────┴──────────────────────┴──────────────┴──────┘
 ```
 
-<!-- ## R
+## R
+
+Usage for Shiny applications is returned by the `get_usage_shiny()` function. Usage for all other content is returned by `get_usage_static()`. Renaming the "static" usage `time` variable to `started`, we can bind the rows of the resulting data frames.
 
 ```{.r}
-# TODO
-``` -->
+library(connectapi)
+library(dplyr)
+
+client <- connect()
+
+shiny_usage <- get_usage_shiny(client, limit = 5)
+static_usage <- get_usage_static(client, limit = 5) |>
+  rename(started = time)
+
+usage <- bind_rows(static_usage, shiny_usage)
+```
+
+```{.r}
+> usage
+# A tibble: 10 × 9
+   content_guid                         user_guid          variant_key started             rendering_id bundle_id path  data_version ended              
+   <chr>                                <chr>              <chr>       <dttm>              <chr>        <chr>     <lgl>        <int> <dttm>             
+ 1 4ad40f49-b74d-4454-9211-a4df660b82da 434f97ab-4b97-444… dZnFUBMR    2023-10-27 16:19:40 3029259      49747     NA               3 NA                 
+ 2 5f10153e-09fd-4daa-b3c9-c3e3ce4817a8 7c86da77-ec11-4fe… IothZLX9    2023-10-27 16:21:14 3003691      41696     NA               3 NA                 
+ 3 4ad40f49-b74d-4454-9211-a4df660b82da 434f97ab-4b97-444… dZnFUBMR    2023-10-27 16:23:52 3029265      49747     NA               3 NA                 
+ 4 8ce9bb64-4805-4eb9-8c8f-d9f06b2666c9 434f97ab-4b97-444… NA          2023-10-27 16:24:20 NA           46421     NA               3 NA                 
+ 5 1eb79752-cf15-47d1-888a-5d2e136a1e7c 434f97ab-4b97-444… NA          2023-10-27 16:25:08 NA           37787     NA               3 NA                 
+ 6 5f8660cd-f304-4300-a6b3-962cb5451dae NA                 NA          2023-11-10 15:15:17 NA           NA        NA               1 2023-11-10 15:15:43
+ 7 5f8660cd-f304-4300-a6b3-962cb5451dae NA                 NA          2023-11-10 15:15:30 NA           NA        NA               1 2023-11-10 15:15:56
+ 8 774348be-a509-4f12-a9f7-6eebb5168a38 NA                 NA          2023-11-10 15:15:44 NA           NA        NA               1 2023-11-10 15:16:09
+ 9 571de2dd-be51-40e1-9dae-1c148d633dd2 434f97ab-4b97-444… NA          2023-11-10 23:38:18 NA           NA        NA               1 2023-11-10 23:38:45
+10 5f8660cd-f304-4300-a6b3-962cb5451dae NA                 NA          2023-11-11 03:15:17 NA           NA        NA               1 2023-11-11 03:15:42
+```
 
 :::
 
+## Discussion
+
+Usage data for Shiny applications and other content is reported differently. For instance, only Shiny applications have an `ended` column. The `variant_key`, `rendering_id`, `bundle_id`, and `path` variables are not provided for Shiny applications. See below for resources to learn more about these variables.
 
 ## See Also
 
 - [Analyzing Usage Statistics for a Content Item](../analyzing-usage-statistics-for-a-content-item/index.qmd) for examples of ways to analyze usage data for a single piece of content.
 - [Analyzing Most Active Content, Users, and Publishers](../analyzing-most-active-content-users-and-publishers/index.qmd) for ways to summarize other data on usage of your Connect server.
+- [Usage Data](../../../user/usage-data/index.html) in the User Guide to learn more about the usage data.
+- [Usage Events](../../../admin/operational-metrics/#usage-events) in the Admin Guide to for more detailed information, including the differences between the versions reported in the `data_version`  column.
+
