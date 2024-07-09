@@ -62,11 +62,10 @@ Creating an environment via the `v1/environments` endpoint requires the administ
 
 ## Python
 
-```python
+```{.python}
 from posit import connect
 
 CONTAINER_REGISTRY = "myorg/myrepo"
-
 
 client = connect.Client()
 client.post(
@@ -92,8 +91,34 @@ client.post(
 
 ```
 
-<!-- ## R
+## R
 
-TODO -->
+```{.r}
+library(connectapi)
+
+CONTAINER_REGISTRY = "myorg/myrepo"
+
+client = connect()
+
+json_payload <- toJSON(list(
+  title = "Custom Image Classifier",
+  description = "My custom image classifier",
+  cluster_name = "Kubernetes",
+  name = paste0(CONTAINER_REGISTRY, "/image-classifier:jammy"),
+  matching = "exact",
+  r = list(
+    installations = list(
+      list(version = "4.2.3", path = "/opt/R/4.2.3/bin/R")
+    )
+  ),
+  python = list(
+    installations = list(
+      list(version = "3.9.14", path = "/opt/python/3.9.14/bin/python")
+    )
+  )
+), auto_unbox = TRUE, pretty = TRUE)
+
+client$POST("/v1/environments", json_payload)
+```
 
 :::
