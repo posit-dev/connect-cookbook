@@ -3,10 +3,7 @@ title: Groups
 listing:
     sort: false
     template: ../template.ejs
-    contents:
-    - ./01-viewing-group-information
-    - ./02-finding-groups
-    - ./09-creating-a-group-using-a-remote-authentication-provider-ldap
+    contents: ./*/index.qmd
 ---
 
 Groups are a way to organize users into collections for easier management and access control. Control of group membership depends on how Posit Connect is configured. In some instances, they can be created by administrators. In some cases, they can be synced from external identity providers like LDAP or Active Directory.

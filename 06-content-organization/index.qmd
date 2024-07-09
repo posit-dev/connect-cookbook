@@ -3,10 +3,5 @@ title: Content Organization
 listing:
     sort: false
     template: ../template.ejs
-    contents:
-    - ./01-viewing-tag-information
-    - ./02-viewing-tags-by-content
-    - ./03-creating-tags
-    - ./04-assigning-tags
-    - ./05-deleting-tags
+    contents: ./*/index.qmd
 ---

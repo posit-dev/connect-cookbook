@@ -3,10 +3,7 @@ title: Getting Started
 listing:
     sort: false
     template: ../template.ejs
-    contents:
-    - ./01-installing-the-posit-sdk
-    - ./02-creating-an-api-key
-    - ./03-initializing-a-client
+    contents: ./*/index.qmd
 ---
 
 Prior to diving into problem solving, use the following recipes to setup your environment and obtain an understanding of fundamental concepts used in the Posit SDK.

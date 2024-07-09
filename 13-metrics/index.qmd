@@ -3,8 +3,5 @@ title: Metrics
 listing:
     sort: false
     template: ../template.ejs
-    contents:
-    - ./01-viewing-content-usage-information
-    - ./02-analyzing-usage-statistics-for-a-content-item
-    - ./05-analyzing-most-active-content-users-and-publishers
+    contents: ./*/index.qmd
 ---

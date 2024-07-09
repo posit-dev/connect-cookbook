@@ -3,19 +3,7 @@ title: Posit Connect Cookbook
 listing:
     template: template.ejs
     sort: false
-    contents:
-        - ./01-getting-started/index.qmd
-        - ./02-users/index.qmd
-        - ./03-groups/index.qmd
-        - ./04-content/index.qmd
-        - ./05-content-access-controls/index.qmd
-        - ./06-content-organization/index.qmd
-        - ./08-tasksindex.qmd
-        - ./09-jobs/index.qmd
-        - ./10-server-management/index.qmd
-        - ./11-off-host-execution/index.qmd
-        - ./13-metrics/index.qmd
-        - ./14-mlops/index.qmd
+    contents: ./*/index.qmd
 ---
 
 The *Posit Connect Cookbook* contains recipes for Python and R using the *Posit SDK*, which you can utilize to accomplish everyday tasks on your Connect server. The recipes are lightweight and intend to be straightforward.

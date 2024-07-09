@@ -3,8 +3,5 @@ title: Off Host Execution
 listing:
     sort: false
     template: ../template.ejs
-    contents:
-    - ./01-viewing-container-image-usage
-    - ./02-viewing-execution-environment-runtimes
-    - ./06-finding-all-content-using-an-image
+    contents: ./*/index.qmd
 ---
