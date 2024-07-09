@@ -4,4 +4,63 @@ aliases:
   - /cookbook/licensed/
 ---
 
-<!-- TODO -->
+
+## Problem
+
+You need to find licensed users.
+
+## Solution
+
+Filter users to those with a *licensed* account status.
+
+:::{.panel-tabset group="language"}
+
+## Python
+
+```python
+from posit import connect
+
+client = connect.Client()
+users = client.users.find(account_status="licensed")
+```
+
+Users which have not been active within the past year are not counted. Let's remove them to get an accurate count.
+
+```python
+from datetime import UTC, datetime, timedelta
+from dateutil import parser
+
+
+def is_active(user) -> bool:
+    try:
+        date = parser.isoparse(user.active_time)
+    except (ValueError, TypeError):
+        # If the date parsing fails, consider the user inactive
+        return False
+
+    one_year_ago = datetime.now(UTC) - timedelta(days=365)
+    return date > one_year_ago
+
+
+users = [user for user in users if is_active(user)]
+```
+
+Finally, we can count the total number of active licensed users.
+
+```python
+>>> len(users)
+141
+```
+
+<!--
+## R
+
+TODO -->
+
+:::
+
+## Discussion
+
+A *licensed user* is someone who has signed into the server and has an active account. The number of licensed users is restricted based on the license purchased, affecting who can access the server and specific content like Shiny applications. If the user limit is reached, new users cannot sign in. Users inactive for over 365 days are not counted against this limit. Additional restrictions may apply to accessing interactive content, depending on the license type.
+
+For more details, visit the [Licence Management Documentation](/admin/licensing).
