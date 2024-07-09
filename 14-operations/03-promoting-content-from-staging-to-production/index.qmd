@@ -1,5 +1,8 @@
 ---
 title: Promoting Content from Staging to Production
+aliases:
+  - /cookbook/promoting/
+
 ---
 
 ## Problem

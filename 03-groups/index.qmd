@@ -1,5 +1,7 @@
 ---
 title: Groups
+aliases:
+  - /cookbook/groups/
 listing:
     sort: false
     template: ../template.ejs

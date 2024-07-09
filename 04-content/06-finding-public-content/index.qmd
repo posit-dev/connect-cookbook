@@ -1,5 +1,7 @@
 ---
 title: "Finding Public Content"
+aliases:
+  - /cookbook/public/
 ---
 
 ## Problem
@@ -68,8 +70,8 @@ The recipe produces a data frame with the required data.
 ```{.r}
 > content
 # A tibble: 768 × 4
-   Title           Owner      URL                                                                       Updated   
-   <chr>           <chr>      <chr>                                                                     <date>    
+   Title           Owner      URL                                                                       Updated
+   <chr>           <chr>      <chr>                                                                     <date>
  1  Cool Slideshow john_admin https://connect.example.org/content/bcb281fc-aa3b-4341-93eb-081814608c94/ 2024-06-28
  2 Sales Dashboard john_admin https://connect.example.org/content/83c54639-6030-4054-8066-5011b9fb796d/ 2024-06-28
  3      Manuscript john_admin https://connect.example.org/content/de5bd4e2-6ed5-49cb-99fa-8c6736cbcbaa/ 2024-06-28

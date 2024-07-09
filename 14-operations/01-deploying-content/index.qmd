@@ -1,5 +1,8 @@
 ---
 title: Deploying Content
+aliases:
+  - /cookbook/custom-execution-environments/#deploying-the-content
+  - /cookbook/deploying/
 ---
 
 ## Problem
