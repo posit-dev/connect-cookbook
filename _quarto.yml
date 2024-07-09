@@ -151,13 +151,13 @@ website:
       #   - ./13-metrics/03-analyzing-popular-content/index.qmd
       #   - ./13-metrics/04-analyzing-popular-publishers/index.qmd
         - ./13-metrics/05-analyzing-most-active-content-users-and-publishers/index.qmd
-      - section: "MLOps"
-        file: ./14-mlops/index.qmd
+      - section: "Operations"
+        file: ./14-operations/index.qmd
         contents:
-        - ./14-mlops/01-deploying-content/index.qmd
-        # - ./14-mlops/02-rendering-content-on-demand/index.qmd
-        - ./14-mlops/03-promoting-content-from-staging-to-production/index.qmd
-        - ./14-mlops/04-blue-green-deployments/index.qmd
+        - ./14-operations/01-deploying-content/index.qmd
+        # - ./14-operations/02-rendering-content-on-demand/index.qmd
+        - ./14-operations/03-promoting-content-from-staging-to-production/index.qmd
+        - ./14-operations/04-blue-green-deployments/index.qmd
 
 format:
   html:
