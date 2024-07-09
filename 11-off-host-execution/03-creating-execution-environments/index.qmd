@@ -5,4 +5,95 @@ aliases:
     - /cookbook/custom-execution-environments/#create-the-image
 ---
 
-<!-- TODO -->
+
+## Problem
+
+You want to create a custom enviornment for your content.
+
+## Solution
+
+First, we define our image which can be used to develop our content on Workbench, and then later is also used to execute our content on Connect. We are using the r-session-complete image as the base and we are installing additional Python and R packages that are required by our content.
+
+```Dockerfile
+FROM ghcr.io/rstudio/r-session-complete:jammy-2023.06.1--cd1a0c5
+
+ARG GIT_SHA="4e4be3f59f0fbcf3ccecc724a00b0da7a4ad6f07"
+ARG CRAN_MIRROR="https://p3m.dev/cran/__linux__/jammy/latest"
+ARG PYPI_MIRROR="https://p3m.dev/pypi/latest/simple"
+
+# Install the Python packages
+#   This commands installs the Python packages defined in the requirements.txt
+#   which pins the package versions and provides an immutable set of Python dependencies.
+RUN pip install --upgrade pip && \
+    curl -sSfL https://raw.githubusercontent.com/sol-eng/python-examples/${GIT_SHA}/reticulated-image-classifier/requirements.txt \
+    -o /tmp/requirements.txt && \
+    pip install --default-timeout=1000 --index-url=${PYPI_MIRROR} -r /tmp/requirements.txt && \
+    rm /tmp/requirements.txt
+
+# Install the R packages
+ENV RENV_PATHS_LIBRARY renv/library
+RUN R -e $"install.packages('renv', repos = c(CRAN = '${CRAN_MIRROR}'))" && \
+    curl -sSfL https://raw.githubusercontent.com/sol-eng/python-examples/${GIT_SHA}/reticulated-image-classifier/renv.lock \
+    -o /tmp/renv.lock && \
+    R -e $"renv::restore(lockfile='/tmp/renv.lock', repos = c(CRAN = '${CRAN_MIRROR}'))" && \
+    rm /tmp/renv.lock
+```
+
+Then, build and push the image to your organizations container registry
+
+```bash
+# use a container registry that you have push access to
+CONTAINER_REGISTRY="myorg/myrepo"
+docker build . -t ${CONTAINER_REGISTRY}/image-classifier:jammy
+docker push ${CONTAINER_REGISTRY}/image-classifier:jammy
+```
+
+Next, we use the `v1/environments` endpoint to create an execution environment.
+
+:::{.callout-note}
+The value for matching in the environment created is exact. This indicates that the environment should only be used if it is explicitly requested by a piece of content. Connect never chooses this environment during automatic selection.
+:::
+
+:::{.callout-warning}
+Creating an environment via the `v1/environments` endpoint requires the administrator role.
+:::
+
+::: {.panel-tabset group="language"}
+
+## Python
+
+```python
+from posit import connect
+
+CONTAINER_REGISTRY = "myorg/myrepo"
+
+
+client = connect.Client()
+client.post(
+    "v1/environments",
+    json={
+        "title": "Custom Image Classifier",
+        "description": "My custom image classifier",
+        "cluster_name": "Kubernetes",
+        "name": f"{CONTAINER_REGISTRY}/image-classifier:jammy",
+        "matching": "exact",
+        "r": {
+            "installations": [
+                {"version": "4.2.3", "path": "/opt/R/4.2.3/bin/R"}
+            ]
+        },
+        "python": {
+            "installations": [
+                {"version": "3.9.14", "path": "/opt/python/3.9.14/bin/python"}
+            ]
+        },
+    },
+)
+
+```
+
+<!-- ## R
+
+TODO -->
+
+:::
