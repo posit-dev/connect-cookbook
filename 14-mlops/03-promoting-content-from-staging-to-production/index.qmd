@@ -40,7 +40,8 @@ source_content = source_client.content.get(SOURCE_CONTENT_GUID)
 target_content = target_client.content.get(TARGET_CONTENT_GUID)
 ```
 
-Next, obtain the bundle you want to promote using a bundle identifier (id), then download the bundle archive. See [Finding Bundles](../../07-bundles/02-finding-bundles) and [Downloading Bundles](../../07-bundles/06-downloading-bundles) for additional information.
+Next, obtain the bundle you want to promote using a bundle identifier (id), then download the bundle archive.
+<!-- See [Finding Bundles](../../07-bundles/02-finding-bundles) and [Downloading Bundles](../../07-bundles/06-downloading-bundles) for additional information. -->
 
 ```python
 BUNDLE_ID = '1000'

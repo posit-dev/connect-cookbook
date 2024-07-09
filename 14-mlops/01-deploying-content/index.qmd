@@ -156,7 +156,7 @@ consider what should go inside.
     We recommend committing the `manifest.json` into your source control
     system and regenerating it whenever you push new versions of your code --
     especially when updating packages or otherwise changing its dependencies!
-    Refer to the [Git-backed](../../../user/git-backed/index.md) section of the User Guide
+    Refer to the [Git-backed](/user/git-backed/index.md) section of the User Guide
     for more information on creating the manifest.
 
     -   For Python-based content, you can use the `rsconnect-python` package
