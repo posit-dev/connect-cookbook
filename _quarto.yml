@@ -18,147 +18,147 @@ website:
     file: index.qmd
     contents:
       - section: "Getting Started"
-        file: ./01-getting-started/index.qmd
+        file: ./getting-started/index.qmd
         contents:
-        - ./01-getting-started/01-installing-the-posit-sdk/index.qmd
-        - ./01-getting-started/02-creating-an-api-key/index.qmd
-        - ./01-getting-started/03-initializing-a-client/index.qmd
+        - ./getting-started/installing-the-posit-sdk/index.qmd
+        - ./getting-started/creating-an-api-key/index.qmd
+        - ./getting-started/initializing-a-client/index.qmd
       - section: "Users"
-        file: ./02-users/index.qmd
+        file: ./users/index.qmd
         contents:
-        - ./02-users/01-viewing-user-information/index.qmd
-        - ./02-users/02-finding-users/index.qmd
-        - ./02-users/12-finding-licensed-users/index.qmd
-      #   - ./02-users/03-finding-users-using-a-remote-authentication-provider-ldap/index.qmd
-      #   - ./02-users/04-creating-a-user-using-password-authentication/index.qmd
-      #   - ./02-users/05-creating-a-user-using-pam-authentication/index.qmd
-      #   - ./02-users/06-creating-a-user-using-oauth2-authentication/index.qmd
-      #   - ./02-users/07-creating-a-user-using-google-oauth2-authentication/index.qmd
-      #   - ./02-users/08-creating-a-user-using-proxied-authentication/index.qmd
-        - ./02-users/09-creating-a-user-using-a-remote-authentication-provider-ldap/index.qmd
-      #   - ./02-users/10-updating-a-user/index.qmd
-      #   - ./02-users/11-locking-a-user/index.qmd
+        - ./users/viewing-user-information/index.qmd
+        - ./users/finding-users/index.qmd
+        - ./users/finding-licensed-users/index.qmd
+      #   - ./users/finding-users-using-a-remote-authentication-provider-ldap/index.qmd
+      #   - ./users/creating-a-user-using-password-authentication/index.qmd
+      #   - ./users/creating-a-user-using-pam-authentication/index.qmd
+      #   - ./users/creating-a-user-using-oauth2-authentication/index.qmd
+      #   - ./users/creating-a-user-using-google-oauth2-authentication/index.qmd
+      #   - ./users/creating-a-user-using-proxied-authentication/index.qmd
+        - ./users/creating-a-user-using-a-remote-authentication-provider-ldap/index.qmd
+      #   - ./users/updating-a-user/index.qmd
+      #   - ./users/locking-a-user/index.qmd
       - section: "Groups"
-        file: ./03-groups/index.qmd
+        file: ./groups/index.qmd
         contents:
-        - ./03-groups/01-viewing-group-information/index.qmd
-        - ./03-groups/02-finding-groups/index.qmd
-        # - ./03-groups/03-finding-groups-using-a-remote-authentication-provider-ldap/index.qmd
-        # - ./03-groups/04-creating-a-group-using-password-authentication/index.qmd
-        # - ./03-groups/05-creating-a-group-using-pam-authentication/index.qmd
-        # - ./03-groups/06-creating-a-group-using-oauth2-authentication/index.qmd
-        # - ./03-groups/07-creating-a-group-using-google-oauth2-authentication/index.qmd
-        # - ./03-groups/08-creating-a-group-using-proxied-authentication/index.qmd
-        - ./03-groups/09-creating-a-group-using-a-remote-authentication-provider-ldap/index.qmd
-        # - ./03-groups/10-finding-group-members/index.qmd
-        # - ./03-groups/11-create-group-members/index.qmd
-        # - ./03-groups/12-deleting-group-members/index.qmd
-        # - ./03-groups/13-analyzing-group-members/index.qmd
+        - ./groups/viewing-group-information/index.qmd
+        - ./groups/finding-groups/index.qmd
+        # - ./groups/finding-groups-using-a-remote-authentication-provider-ldap/index.qmd
+        # - ./groups/creating-a-group-using-password-authentication/index.qmd
+        # - ./groups/creating-a-group-using-pam-authentication/index.qmd
+        # - ./groups/creating-a-group-using-oauth2-authentication/index.qmd
+        # - ./groups/creating-a-group-using-google-oauth2-authentication/index.qmd
+        # - ./groups/creating-a-group-using-proxied-authentication/index.qmd
+        - ./groups/creating-a-group-using-a-remote-authentication-provider-ldap/index.qmd
+        # - ./groups/finding-group-members/index.qmd
+        # - ./groups/create-group-members/index.qmd
+        # - ./groups/deleting-group-members/index.qmd
+        # - ./groups/analyzing-group-members/index.qmd
       - section: "Content"
-        file: ./04-content/index.qmd
+        file: ./content/index.qmd
         contents:
-      #   - ./04-content/01-viewing-content-information/index.qmd
-        - ./04-content/02-viewing-content-runtime-settings/index.qmd
-      #   - ./04-content/03-viewing-content-git-repository-settings/index.qmd
-        - ./04-content/04-viewing-all-vanity-urls/index.qmd
-        # - ./04-content/05-finding-content/index.qmd
-        - ./04-content/06-finding-public-content/index.qmd
-      #   - ./04-content/07-finding-authorized-content/index.qmd
-        - ./04-content/08-finding-content-owned-by-a-user/index.qmd
-        - ./04-content/09-finding-content-by-tag/index.qmd
-      #   - ./04-content/09-creating-content/index.qmd
-      #   - ./04-content/10-creating-content-git-repository-settings/index.qmd
-        # - ./04-content/10-creating-content-git-repository-settings/index.qmd
-        - ./04-content/12-setting-a-content-items-vanity-url/index.qmd
-      #   - ./04-content/13-updating-content/index.qmd
-        - ./04-content/14-updating-content-git-repository-settings/index.qmd
-      #   - ./04-content/15-deleting-content/index.qmd
-      #   - ./04-content/16-deleting-content-git-repository-settings/index.qmd
-        - ./04-content/17-deleting-a-content-items-vanity-url/index.qmd
-      #   - ./04-content/18-duplicating-content/index.qmd
-        - ./04-content/19-viewing-a-content-items-vanity-url/index.qmd
+      #   - ./content/viewing-content-information/index.qmd
+        - ./content/viewing-content-runtime-settings/index.qmd
+      #   - ./content/viewing-content-git-repository-settings/index.qmd
+        - ./content/viewing-all-vanity-urls/index.qmd
+        # - ./content/finding-content/index.qmd
+        - ./content/finding-public-content/index.qmd
+      #   - ./content/finding-authorized-content/index.qmd
+        - ./content/finding-content-owned-by-a-user/index.qmd
+        - ./content/finding-content-by-tag/index.qmd
+      #   - ./content/creating-content/index.qmd
+      #   - ./content/creating-content-git-repository-settings/index.qmd
+        # - ./content/creating-content-git-repository-settings/index.qmd
+        - ./content/setting-a-content-items-vanity-url/index.qmd
+      #   - ./content/updating-content/index.qmd
+        - ./content/updating-content-git-repository-settings/index.qmd
+      #   - ./content/deleting-content/index.qmd
+      #   - ./content/deleting-content-git-repository-settings/index.qmd
+        - ./content/deleting-a-content-items-vanity-url/index.qmd
+      #   - ./content/duplicating-content/index.qmd
+        - ./content/viewing-a-content-items-vanity-url/index.qmd
       - section: "Content Access Controls"
-        file: ./05-content-access-controls/index.qmd
+        file: ./content-access-controls/index.qmd
         contents:
-      #   - ./05-content-access-controls/01-analyzing-content-ownership/index.qmd
-        - ./05-content-access-controls/02-transferring-content-ownership/index.qmd
-        - ./05-content-access-controls/03-granting-access-to-a-user/index.qmd
-        - ./05-content-access-controls/04-granting-access-to-a-group/index.qmd
-        - ./05-content-access-controls/05-revoking-access-from-a-user/index.qmd
-      #   - ./05-content-access-controls/06-revoking-access-from-viewers/index.qmd
-      #   - ./05-content-access-controls/07-revoking-access-from-collaborators/index.qmd
-        - ./05-content-access-controls/08-revoking-access-from-a-group/index.qmd
-        - ./05-content-access-controls/09-auditing-group-access-to-content/index.qmd
-        - ./05-content-access-controls/10-revoking-all-access-except-the-content-owner/index.qmd
+      #   - ./content-access-controls/analyzing-content-ownership/index.qmd
+        - ./content-access-controls/transferring-content-ownership/index.qmd
+        - ./content-access-controls/granting-access-to-a-user/index.qmd
+        - ./content-access-controls/granting-access-to-a-group/index.qmd
+        - ./content-access-controls/revoking-access-from-a-user/index.qmd
+      #   - ./content-access-controls/revoking-access-from-viewers/index.qmd
+      #   - ./content-access-controls/revoking-access-from-collaborators/index.qmd
+        - ./content-access-controls/revoking-access-from-a-group/index.qmd
+        - ./content-access-controls/auditing-group-access-to-content/index.qmd
+        - ./content-access-controls/revoking-all-access-except-the-content-owner/index.qmd
       - section: "Content Organization"
-        file: ./06-content-organization/index.qmd
+        file: ./content-organization/index.qmd
         contents:
-        - ./06-content-organization/01-viewing-tag-information/index.qmd
-        - ./06-content-organization/02-viewing-tags-by-content/index.qmd
-        - ./06-content-organization/03-creating-tags/index.qmd
-        - ./06-content-organization/04-assigning-tags/index.qmd
-        - ./06-content-organization/05-deleting-tags/index.qmd
+        - ./content-organization/viewing-tag-information/index.qmd
+        - ./content-organization/viewing-tags-by-content/index.qmd
+        - ./content-organization/creating-tags/index.qmd
+        - ./content-organization/assigning-tags/index.qmd
+        - ./content-organization/deleting-tags/index.qmd
       # - section: "Bundles"
-      #   file: ./07-bundles/index.qmd
+      #   file: ./bundles/index.qmd
       #   contents:
-      #   - ./07-bundles/01-viewing-bundle-information/index.qmd
-      #   - ./07-bundles/02-finding-bundles/index.qmd
-      #   - ./07-bundles/03-creating-bundles/index.qmd
-      #   - ./07-bundles/04-deleting-bundles/index.qmd
-      #   - ./07-bundles/05-downloading-bundles/index.qmd
-      #   - ./07-bundles/06-deploying-bundles/index.qmd
+      #   - ./bundles/viewing-bundle-information/index.qmd
+      #   - ./bundles/finding-bundles/index.qmd
+      #   - ./bundles/creating-bundles/index.qmd
+      #   - ./bundles/deleting-bundles/index.qmd
+      #   - ./bundles/downloading-bundles/index.qmd
+      #   - ./bundles/deploying-bundles/index.qmd
       # - section: "Tasks"
-      #   file: ./08-tasks/index.qmd
+      #   file: ./tasks/index.qmd
       #   contents:
-      #   - ./08-tasks/01-viewing-task-information/index.qmd
+      #   - ./tasks/viewing-task-information/index.qmd
       - section: "Jobs"
-        file: ./09-jobs/index.qmd
+        file: ./jobs/index.qmd
         contents:
-      #   - ./09-jobs/01-viewing-job-information/index.qmd
-        - ./09-jobs/02-viewing-jobs-for-content/index.qmd
-      #   - ./09-jobs/03-viewing-job-logs/index.qmd
-      #   - ./09-jobs/04-viewing-job-errors/index.qmd
-        - ./09-jobs/05-registering-a-job-kill-order/index.qmd
+      #   - ./jobs/viewing-job-information/index.qmd
+        - ./jobs/viewing-jobs-for-content/index.qmd
+      #   - ./jobs/viewing-job-logs/index.qmd
+      #   - ./jobs/viewing-job-errors/index.qmd
+        - ./jobs/registering-a-job-kill-order/index.qmd
       - section: "Server Management"
-        file: ./10-server-management/index.qmd
+        file: ./server-management/index.qmd
         contents:
-      #   - ./10-server-management/01-bootstrapping-the-server/index.qmd
-      #   - ./10-server-management/02-viewing-the-server-version/index.qmd
-        - ./10-server-management/03-viewing-content-runtime-settings/index.qmd
-        - ./10-server-management/04-viewing-available-python-r-quarto-runtime-versions/index.qmd
-      #   - ./10-server-management/05-viewing-feature-flags/index.qmd
-        - ./10-server-management/06-finding-content-with-custom-runtime-settings/index.qmd
-        - ./10-server-management/07-viewing-runtime-caches/index.qmd
-        - ./10-server-management/08-deleting-runtime-caches/index.qmd
+      #   - ./server-management/bootstrapping-the-server/index.qmd
+      #   - ./server-management/viewing-the-server-version/index.qmd
+        - ./server-management/viewing-content-runtime-settings/index.qmd
+        - ./server-management/viewing-available-python-r-quarto-runtime-versions/index.qmd
+      #   - ./server-management/viewing-feature-flags/index.qmd
+        - ./server-management/finding-content-with-custom-runtime-settings/index.qmd
+        - ./server-management/viewing-runtime-caches/index.qmd
+        - ./server-management/deleting-runtime-caches/index.qmd
       - section: "Off Host Execution"
-        file: ./11-off-host-execution/index.qmd
+        file: ./off-host-execution/index.qmd
         contents:
-        - ./11-off-host-execution/01-viewing-container-image-usage/index.qmd
-        - ./11-off-host-execution/02-viewing-execution-environment-runtimes/index.qmd
-        - ./11-off-host-execution/03-creating-execution-environments/index.qmd
-      #   - ./11-off-host-execution/04-updating-execution-environments/index.qmd
-      #   - ./11-off-host-execution/05-deleting-execution-environments/index.qmd
-        - ./11-off-host-execution/06-finding-all-content-using-an-image/index.qmd
+        - ./off-host-execution/viewing-container-image-usage/index.qmd
+        - ./off-host-execution/viewing-execution-environment-runtimes/index.qmd
+        - ./off-host-execution/creating-execution-environments/index.qmd
+      #   - ./off-host-execution/updating-execution-environments/index.qmd
+      #   - ./off-host-execution/deleting-execution-environments/index.qmd
+        - ./off-host-execution/finding-all-content-using-an-image/index.qmd
       # - section: "Auditing"
-      #   file: ./12-auditing/index.qmd
+      #   file: ./auditing/index.qmd
       #   contents:
-      #   - ./12-auditing/01-viewing-audit-logs/index.qmd
-        # - ./12-auditing/02-analyzing-audit-logs/index.qmd
+      #   - ./auditing/viewing-audit-logs/index.qmd
+        # - ./auditing/analyzing-audit-logs/index.qmd
       - section: "Metrics"
-        file: ./13-metrics/index.qmd
+        file: ./metrics/index.qmd
         contents:
-        - ./13-metrics/01-viewing-content-usage-information/index.qmd
-        - ./13-metrics/02-analyzing-usage-statistics-for-a-content-item/index.qmd
-      #   - ./13-metrics/03-analyzing-popular-content/index.qmd
-      #   - ./13-metrics/04-analyzing-popular-publishers/index.qmd
-        - ./13-metrics/05-analyzing-most-active-content-users-and-publishers/index.qmd
+        - ./metrics/viewing-content-usage-information/index.qmd
+        - ./metrics/analyzing-usage-statistics-for-a-content-item/index.qmd
+      #   - ./metrics/analyzing-popular-content/index.qmd
+      #   - ./metrics/analyzing-popular-publishers/index.qmd
+        - ./metrics/analyzing-most-active-content-users-and-publishers/index.qmd
       - section: "Operations"
-        file: ./14-operations/index.qmd
+        file: ./operations/index.qmd
         contents:
-        - ./14-operations/01-deploying-content/index.qmd
-        # - ./14-operations/02-rendering-content-on-demand/index.qmd
-        - ./14-operations/03-promoting-content-from-staging-to-production/index.qmd
-        - ./14-operations/04-blue-green-deployments/index.qmd
+        - ./operations/deploying-content/index.qmd
+        # - ./operations/rendering-content-on-demand/index.qmd
+        - ./operations/promoting-content-from-staging-to-production/index.qmd
+        - ./operations/blue-green-deployments/index.qmd
 
 format:
   html:

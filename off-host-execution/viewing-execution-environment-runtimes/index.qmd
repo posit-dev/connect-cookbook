@@ -1,0 +1,100 @@
+---
+title: Viewing Execution Environment Runtimes
+aliases:
+  - /cookbook/r-versions/#available-r-versions-launcher
+---
+
+## Problem
+
+You want to view the Python, R, and Quarto versions available in a given execution environment.
+
+## Solution
+
+Use the `GET /v1/environments` endpoint to get details on all environments. Then, filter the resulting data for your image of interest.
+
+::: {.panel-tabset group="language"}
+
+## Python
+
+```{.python}
+from posit import connect
+import pprint
+
+IMAGE_NAME = "ghcr.io/rstudio/content-pro:r4.1.3-py3.10.4-bionic"
+
+client = connect.Client()
+
+image = None
+all_images = client.get("/v1/environments").json()
+image = next(
+    ({key: i[key] for key in ["python", "quarto", "r"]} for i in all_images if i["title"] == IMAGE_NAME),
+    None
+)
+```
+
+```{.python}
+>>> image
+{'python': {'installations': [{'version': '3.10.4',
+    'path': '/opt/python/3.10.4/bin/python3'}]},
+ 'quarto': {'installations': [{'version': '1.0.35',
+    'path': '/opt/quarto/bin/quarto'}]},
+ 'r': {'installations': [{'version': '4.1.3', 'path': '/opt/R/4.1.3/bin/R'}]}}
+```
+
+## R
+
+```{.r}
+library(connectapi)
+library(purrr)
+
+IMAGE_NAME <- "ghcr.io/rstudio/content-pro:r4.1.3-py3.10.4-bionic"
+
+client <- connect()
+all_images <- client$GET("/v1/environments")
+image_names <- map_chr(all_images, ~ .$title)
+
+image <- all_images[[match(IMAGE_NAME, image_names)]]
+image <- image[c("python", "quarto", "r")]
+```
+
+```{.r}
+> image
+$python
+$python$installations
+$python$installations[[1]]
+$python$installations[[1]]$version
+[1] "3.10.4"
+
+$python$installations[[1]]$path
+[1] "/opt/python/3.10.4/bin/python3"
+
+
+
+
+$quarto
+$quarto$installations
+$quarto$installations[[1]]
+$quarto$installations[[1]]$version
+[1] "1.0.35"
+
+$quarto$installations[[1]]$path
+[1] "/opt/quarto/bin/quarto"
+
+
+
+
+$r
+$r$installations
+$r$installations[[1]]
+$r$installations[[1]]$version
+[1] "4.1.3"
+
+$r$installations[[1]]$path
+[1] "/opt/R/4.1.3/bin/R"
+```
+
+:::
+
+## See Also
+
+- [Viewing Contaimner Image Usage](../viewing-container-image-usage/index.qmd) for viewing a list of image names in use and how many content items use each.

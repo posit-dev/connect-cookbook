@@ -1,0 +1,119 @@
+---
+title: Finding Content with Custom Runtime Settings
+---
+
+## Problem
+
+You want to find the content items with customized runtime settings.
+
+:::{.callout-note}
+Content with custom runtime settings includes content with [`RunAsCurrentUser`](https://docs.posit.co/connect/admin/process-management/#runas-current) enabled and content with a custom [`RunAs`](https://docs.posit.co/connect/admin/process-management/#runas) Linux user account.
+:::
+
+## Solution
+
+Get a table of data for all content on the server, and transform it into a table with columns for content GUID, `RunAs` setting, title, owner username, and Dashboard URL. Filter it to include only content with custom `RunAs` settings.
+
+:::{.panel-tabset group="language"}
+
+## Python
+
+```{.python}
+from posit import connect
+import polars as pl
+
+client = connect.Client()
+
+all_content = client.content.find()
+content = (pl.DataFrame(all_content, infer_schema_length=None)
+    # combine RunAsCurrentUser and RunAs into a single column
+           .with_columns(pl.when(pl.col("run_as_current_user") == "true")
+           .then(pl.lit("RunAsCurrentUser"))
+           .otherwise(pl.col("run_as")).alias("run_as"))
+    # `owner` is a dict of attributes, let's pull out the owner's username
+          .with_columns(pl.col("owner").map_elements(lambda x: x["username"], return_dtype=pl.String).alias("owner_username"))
+    # filter and select relevant columns
+          .filter(~pl.col("run_as").is_null())
+          .select(["guid", "run_as", "title", "owner_username", "dashboard_url"]))
+```
+
+The resulting table contains a list of all content on the server with custom runtime settings.
+
+
+```{.python}
+>>> content
+shape: (3, 5)
+┌─────────────────────────────────┬──────────────────┬───────────────────────────────┬────────────────┬──────────────────┐
+│ guid                            ┆ run_as           ┆ title                         ┆ owner_username ┆ dashboard_url    │
+│ ---                             ┆ ---              ┆ ---                           ┆ ---            ┆ ---              │
+│ str                             ┆ str              ┆ str                           ┆ str            ┆ str              │
+╞═════════════════════════════════╪══════════════════╪═══════════════════════════════╪════════════════╪══════════════════╡
+│ 5258049f-fe5e-4d4e-9df1-e3e42c… ┆ RunAsCurrentUser ┆ Loan Risk Prediction Model    ┆ publisher1     ┆ https://connect… │
+│ 11471207-1059-413f-a13c-5a540f… ┆ sa-finance       ┆ Evaluation Analysis Dashboard ┆ publisher2     ┆ https://connect… │
+│ deec1ee8-3f14-43f5-8351-d44422… ┆ sa-finance       ┆ Loan Risk API                 ┆ publisher3     ┆ https://connect… │
+└─────────────────────────────────┴──────────────────┴───────────────────────────────┴────────────────┴──────────────────┘
+```
+
+You can filter the table to see content for a single `RunAs` setting.
+
+```{.python}
+> CUSTOM_RUN_AS = "sa-finance"
+> print(content.filter(pl.col("run_as") == CUSTOM_RUN_AS))
+shape: (2, 5)
+┌─────────────────────────────────┬────────────┬───────────────────────────────┬────────────────┬──────────────────┐
+│ guid                            ┆ run_as     ┆ title                         ┆ owner_username ┆ dashboard_url    │
+│ ---                             ┆ ---        ┆ ---                           ┆ ---            ┆ ---              │
+│ str                             ┆ str        ┆ str                           ┆ str            ┆ str              │
+╞═════════════════════════════════╪════════════╪═══════════════════════════════╪════════════════╪══════════════════╡
+│ 11471207-1059-413f-a13c-5a540f… ┆ sa-finance ┆ Evaluation Analysis Dashboard ┆ publisher2     ┆ https://connect… │
+│ deec1ee8-3f14-43f5-8351-d44422… ┆ sa-finance ┆ Loan Risk API                 ┆ publisher3     ┆ https://connect… │
+└─────────────────────────────────┴────────────┴───────────────────────────────┴────────────────┴──────────────────┘
+```
+
+## R
+
+```{.r}
+library(connectapi)
+library(dplyr)
+library(tidyr)
+
+client <- connect()
+
+content <- get_content(client) |>
+  # combine RunAsCurrentUser and RunAs into a single column
+  mutate(run_as = case_when(run_as_current_user == TRUE ~ "RunAsCurrentUser", .default = run_as)) |>
+  # `owner` is a list of attributes, let's pull out the owner's username
+  hoist(owner, owner_username = "username") |>
+  drop_na(run_as) |>
+  select(guid, run_as, title, owner_username, dashboard_url)
+```
+
+The resulting table contains a list of all content on the server with custom runtime settings.
+
+```{.r}
+> content
+# A tibble: 3 × 5
+  guid             run_as            title                          owner_username dashboard_url
+  <chr>            <chr>             <chr>                          <chr>          <chr>
+1 95fcb004-4fc7-…  RunAsCurrentUser  Loan Risk Prediction Model     publisher1     https://connect…
+2 be1a08f1-b41a-…  sa-finance        Evaluation Analysis Dashboard  publisher3     https://connect…
+3 75a340d8-1454-…  sa-finance        Loan Risk API                  publisher3     https://connect…
+```
+
+You can filter the table to see content for a single `RunAs setting`.
+
+```{.r}
+> CUSTOM_RUN_AS <- "sa-finance"
+> filter(content, run_as == !!CUSTOM_RUN_AS)
+# A tibble: 3 × 5
+  guid             run_as      title                          owner_username dashboard_url
+  <chr>            <chr>       <chr>                          <chr>          <chr>
+2 be1a08f1-b41a-…  sa-finance  Evaluation Analysis Dashboard  publisher3     https://connect…
+3 75a340d8-1454-…  sa-finance  Loan Risk API                  publisher3     https://connect…
+```
+
+:::
+
+## See Also
+
+- [Viewing Content Runtime Settings](../viewing-content-runtime-settings/index.qmd) to create a table totaling the usage of custom runtime settings on your Connect server.

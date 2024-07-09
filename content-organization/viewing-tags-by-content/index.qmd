@@ -1,0 +1,72 @@
+---
+title: "Viewing Tags by Content"
+---
+
+## Problem
+
+You want to view what tags are assigned to a particular content item.
+
+:::{.callout-note}
+
+To learn how to find all content by that has a particular tag assigned, see [Finding Content by Tag](../../content/finding-content-by-tag/index.qmd).
+
+:::
+
+## Solution
+
+A content item identifier is required to find tags.
+
+::: {.panel-tabset group="language"}
+
+## Python
+
+```{.python}
+from posit import connect
+
+CONTENT_GUID = "154bd2af-e8fa-4aa4-aab8-dcef701f4af9"
+
+client = connect.Client()
+
+res = client.get(f"/v1/content/{CONTENT_GUID}/tags")
+```
+
+The API response can be transformed into a data frame for easy viewing.
+
+```{.python}
+>>> import polars as pl
+>>> pl.DataFrame(res.json())
+shape: (2, 5)
+┌─────┬───────────────────────────┬───────────┬──────────────────────┬──────────────────────┐
+│ id  ┆ name                      ┆ parent_id ┆ created_time         ┆ updated_time         │
+│ --- ┆ ---                       ┆ ---       ┆ ---                  ┆ ---                  │
+│ str ┆ str                       ┆ str       ┆ str                  ┆ str                  │
+╞═════╪═══════════════════════════╪═══════════╪══════════════════════╪══════════════════════╡
+│ 4   ┆ Software                  ┆ 1         ┆ 2017-04-18T19:54:24Z ┆ 2017-05-19T18:15:39Z │
+│ 751 ┆ Artificial Intelligence   ┆ 736       ┆ 2017-04-18T19:54:32Z ┆ 2017-05-03T20:15:27Z │
+└─────┴───────────────────────────┴───────────┴──────────────────────┴──────────────────────┘
+```
+
+
+## R
+
+The `get_content_tags()` function returns a tag tree object for the provided content item.
+
+```{.r}
+library(connectapi)
+
+CONTENT_GUID <- "154bd2af-e8fa-4aa4-aab8-dcef701f4af9"
+
+target_content <- get_content(client, guid = CONTENT_GUID)
+tags <- get_content_tags(target_content)
+```
+
+`get_content_tags()` returns a tag tree object.
+
+```{.r}
+> tags
+Posit Connect Tag Tree (content)
+└── Departments
+   └── Administrative
+```
+
+:::

@@ -1,0 +1,12 @@
+---
+title: Metrics
+aliases:
+  - /cookbook/user-activity/
+listing:
+    sort: false
+    template: ../template.ejs
+    contents:
+    - ./viewing-content-usage-information
+    - ./analyzing-usage-statistics-for-a-content-item
+    - ./analyzing-most-active-content-users-and-publishers
+---

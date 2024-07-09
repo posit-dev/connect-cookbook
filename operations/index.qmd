@@ -1,0 +1,10 @@
+---
+title: Operations
+listing:
+    sort: false
+    template: ../template.ejs
+    contents:
+    - ./deploying-content
+    - ./promoting-content-from-staging-to-production
+    - ./blue-green-deployments
+---
