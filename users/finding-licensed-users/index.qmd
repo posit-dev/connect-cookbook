@@ -17,7 +17,7 @@ Filter users to those with a *licensed* account status.
 
 ## Python
 
-```python
+```{.python}
 from posit import connect
 
 client = connect.Client()
@@ -26,7 +26,7 @@ users = client.users.find(account_status="licensed")
 
 Users which have not been active within the past year are not counted. Let's remove them to get an accurate count.
 
-```python
+```{.python}
 from datetime import UTC, datetime, timedelta
 from dateutil import parser
 
@@ -47,15 +47,70 @@ users = [user for user in users if is_active(user)]
 
 Finally, we can count the total number of active licensed users.
 
-```python
+```{.python}
 >>> len(users)
 141
 ```
 
-<!--
+
 ## R
 
-TODO -->
+Get data on all users with a *licensed* account status.
+
+```{.r}
+library(connectapi)
+library(purrr)
+
+client <- connect()
+
+page <- 0
+all_results <- list()
+
+while (TRUE) {
+  page <- page + 1
+  cat(file = stderr(), "fetching page: ", page, "; acquired: ", nrow(users), "\n", sep = "")
+
+  res <- client$GET(
+    "/v1/users",
+    query = list(
+      page_number = page,
+      page_size = 100,
+      account_status = "licensed"
+    )
+  )
+  
+  if (length(res$results) == 0) {
+    break
+  }
+  all_results <- append(users, res$results)
+}
+
+users <- purrr::map_dfr(all_results, ~.x)
+```
+
+Users which have not been active within the past year are not counted. Let's remove them to get an accurate count.
+
+```{.r}
+library(dplyr)
+library(lubridate)
+
+
+one_year_ago <- now() - ddays(365)
+
+active_users <- users |>
+  mutate(across(ends_with("time"), ymd_hms)) |>
+  filter(active_time > one_year_ago)
+```
+
+Finally, we can count the total number of active users.
+
+```{.r}
+> count(users)
+# A tibble: 1 × 1
+      n
+  <int>
+1   141
+```
 
 :::
 
