@@ -50,13 +50,17 @@ If your code depends on environment variables for runtime execution, set them us
 client.patch(f"v1/content/{content.guid}/environment", json=[{'name': 'DATABASE_URL', 'value': 'postgresql://localhost:5432'}})
 ```
 
-Next, deploy the bundle. This starts a new deployment task on the server to render the bundle. See [Deploying Bundles](../../bundles/deploying-bundles) for additional information.
+Next, deploy the bundle. This starts a new deployment task on the server to render the bundle.
+
+<!-- See [Deploying Bundles](../../bundles/deploying-bundles) for additional information. -->
 
 ```python
 task = bundle.deploy()
 ```
 
-Finally, call the `wait_for` method on the deployment task. The `wait_for` method watches the deployment process and returns once it completes. Once the task is complete, check the `exit_code` to see if it fails. A non-zero exit signifies that the task failed to complete successfully. See [Viewing Task Information](../../tasks/viewing-task-information/) for additional information.
+Finally, call the `wait_for` method on the deployment task. The `wait_for` method watches the deployment process and returns once it completes. Once the task is complete, check the `exit_code` to see if it fails. A non-zero exit signifies that the task failed to complete successfully.
+
+<!-- See [Viewing Task Information](../../tasks/viewing-task-information/) for additional information. -->
 
 ```python
 task.wait_for()
