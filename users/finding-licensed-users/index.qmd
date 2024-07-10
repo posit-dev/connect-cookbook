@@ -68,7 +68,6 @@ all_results <- list()
 
 while (TRUE) {
   page <- page + 1
-  cat(file = stderr(), "fetching page: ", page, "; acquired: ", nrow(users), "\n", sep = "")
 
   res <- client$GET(
     "/v1/users",
