@@ -4,19 +4,21 @@ title: "Creating Tags"
 
 ## Problem
 
-You need to create tags.
+You want to organize content using tags.
 
 ## Solution
 
 Create tags, which can then be assigned to content items (see [*Assigning tags*](../assigning-tags/index.qmd)).
 
 ::: {.callout-warning}
-
-You must have administrator privileges to create a tag.
-
+You must have administrator privileges to create tags.
 :::
 
-If you create a tag without specifying a parent tag, it will be created at the top level of the hierarchy.
+First, create a tag category.
+
+::: {.callout-tip}
+A tag created without a parent reference is considered a tag category. Tag categories serve as the top-level category for organizing content. We cannot directly assign a tag category to content. Instead, we can use a tag category as the parent for an individual tag. This approach allows for grouping tags that are related together.
+:::
 
 ::: {.panel-tabset group="language"}
 
@@ -24,17 +26,22 @@ If you create a tag without specifying a parent tag, it will be created at the t
 
 ```{.python}
 from posit import connect
-client = connect.Client()
 
+TAG_CATEGORY_NAME = "Departments"
+
+client = connect.Client()
 response = client.post("/v1/tags", json={
     "name": "Departments",
 })
+
+departments = response.json()
 ```
 
-The response contains information on the created tag.
+The `departments` object contains additional information about the tag category, including the `id` field. We will use the `id` field to create a tag in the next step.
 
 ```{.python}
->>> pl.DataFrame(response.json())
+>>> import polars as pl
+>>> pl.DataFrame(tag_category)
 shape: (1, 5)
 ┌─────┬─────────────┬───────────┬──────────────────────┬──────────────────────┐
 │ id  ┆ name        ┆ parent_id ┆ created_time         ┆ updated_time         │
@@ -49,51 +56,61 @@ shape: (1, 5)
 
 ```{.r}
 library(connectapi)
+
+TAG_CATEGORY_NAME = "Departments"
+
 client <- connect()
-
-create_tag(client, "Departments")
-
+create_tag(client, "TAG_CATEGORY_NAME")
 ```
 
-The function does not return any output. To view the created tag, get the tags from the Connect server.
+Then get the tag information using the `get_tags` function.
 
 ```{.r}
-> tags <- get_tags(client)
-> depts_tag <- tags$Departments
-> depts_tag
+tags <- get_tags(client)
+departments <- tags$Departments
+```
+
+We can print the `departments` object to view the tag tree.
+
+```{.r}
+> departments
 Posit Connect Tag Tree (filtered)
 └── Departments
 ```
 
 :::
 
-## Discussion
+Next, create a tag and assign it to the tag category.
 
-Tags on Connect can be nested arbitrarily deep. When creating a tag, you can specify a parent to add the new tag underneath it in the hierarchy.
+::: {.callout-tip}
+See [Viewing Tag Information](../viewing-tag-information/index.qmd) for information on obtaining the `id` field for an existing tag.
+:::
+
+::: {.callout-tip}
+You can repeat the following example multiple times to create sub-categories of an arbitrary depth. Try creating another tag named "Human Resources" with the parent "Administrative".
+:::
 
 ::: {.panel-tabset group="language"}
 
 ## Python
 
-Specify the parent tag with its `id`. See [Viewing Tag Information](../viewing-tag-information/index.qmd) for details.
-
 ```{.python}
-from posit import connect
-client = connect.Client()
 
-# The ID of the "Departments" tag we created above.
-PARENT_TAG_ID = "100"
+PARENT_TAG_ID = departments['id']
+TAG_NAME = "Administrative"
 
 res = client.post("/v1/tags", json={
-    "name": "Administrative",
+    "name": TAG_NAME,
     "parent_id": PARENT_TAG_ID
 })
+
+administrative = response.json()
 ```
 
-The response contains information on the new tag.
+The `administrative` object contains a unique identifier (`id`) and and a `parent_id`, which is a reference to the parent via the provided `PARENT_TAG_ID`.
 
 ```{.python}
->>> pl.DataFrame(res.json())
+>>> pl.DataFrame(administrative)
 shape: (1, 5)
 ┌─────┬────────────────┬───────────┬──────────────────────┬──────────────────────┐
 │ id  ┆ name           ┆ parent_id ┆ created_time         ┆ updated_time         │
@@ -106,31 +123,31 @@ shape: (1, 5)
 
 ## R
 
-Pass an object representing the parent tag to the `parent` argument of `create_tag()`. See [Viewing Tag Information](../viewing-tag-information/index.qmd) for details.
+We use the `parent` argument to assign the new tag to the `departments` tag category.
 
 ```{.r}
-library(connectapi)
-client <- connect()
-
-tags <- get_tags(client)
-depts_tag <- tags$Departments
-
-create_tag(client, name = "Administrative", parent = depts_tag)
+TAG_NAME = "Administrative"
+create_tag(client, name = TAG_NAME, parent = departments)
 ```
 
-The `create_tag()` function does not return anything. Get the tags from Connect again to view the new tag tree.
+Get the tag information again using the `get_tags` function to view the updated tag tree.
+
 
 ```{.r}
 > tags <- get_tags(client)
-> depts_tag <- tags$Departments
-> depts_tag
+> tags$Departments
 Posit Connect Tag Tree (filtered)
 Departments
 └── Administrative
-> admin_tag <- tags$Departments$Administrative
-> admin_tag
+> tags$Departments$Administrative
 Posit Connect Tag Tree (filtered)
 └── Administrative
 ```
 
 :::
+
+Next, see see ['Assigning Tags'] to learn how to assign a tag to content.
+
+## See also
+
+- [Assigning Tags](../assigning-tags/)
