@@ -24,6 +24,7 @@ res = client.get("/v1/tags")
 The API results can be transformed into a DataFrame for easy viewing and filtering.
 
 ```{.python}
+>>> import polars as pl
 >>> pl.DataFrame(res.json())
 shape: (309, 5)
 ┌─────┬─────────────────────────────────┬───────────┬──────────────────────┬──────────────────────┐
