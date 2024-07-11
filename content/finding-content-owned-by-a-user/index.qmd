@@ -21,7 +21,7 @@ Using the SDK to look up a user, you can directly access that user's owned conte
 ```{.python}
 from posit import connect
 
-USERNAME = "publisher1"
+username = "publisher1"
 
 client = connect.Client()
 
@@ -49,7 +49,7 @@ Look up the user's unique identifier (GUID), and use that to find all their owne
 ```{.r}
 library(connectapi)
 
-USERNAME <- "publisher1"
+username <- "publisher1"
 
 client <- connect()
 
