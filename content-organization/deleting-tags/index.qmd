@@ -21,8 +21,13 @@ You must have administrator privileges to delete a tag.
 
 You will need the identifier of the tag you wish to delete. See [Viewing Tag Information](../viewing-tag-information/index.qmd) for details.
 
+
 ```{.python}
+from posit import connect
+
 TAG_ID = "your-tag-id"
+
+client = connect.Client()
 
 client.delete(f"/v1/tags/{TAG_ID}")
 ```
