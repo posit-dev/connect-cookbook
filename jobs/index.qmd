@@ -7,3 +7,5 @@ listing:
     - ./viewing-jobs-for-content
     - ./registering-a-job-kill-order
 ---
+
+Jobs are server processes associated with existing content items.

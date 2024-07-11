@@ -4,15 +4,17 @@ title: "Viewing Jobs for Content"
 
 ## Problem
 
-You want to find jobs for a content item.
+You want to find jobs for a content item, for instance if you need to use the job key in another recipe.
 
 ## Solution
+
+Use the content GUID to look up jobs for the content item. Get the GUID from the Dashboard's Info tab, or by following [Viewing Content Information](../../content/viewing-content-information/).
 
 ::: {.panel-tabset group="language"}
 
 ## Python
 
-```python
+```{.python}
 from posit import connect
 
 GUID = "154bd2af-e8fa-4aa4-aab8-dcef701f4af9"
@@ -22,7 +24,7 @@ response = client.get(f"v1/content/{GUID}/jobs/")
 result = response.json()
 ```
 
-```python
+```{.python}
 >>> pl.DataFrame(result)
 shape: (1, 20)
 ┌──────────┬────────┬────────┬──────────────────┬───┬───────────┬─────────┬───────┬─────────────────┐
@@ -36,7 +38,7 @@ shape: (1, 20)
 
 ## R
 
-```r
+```{.r}
 library(connectapi)
 library(dplyr)
 client <- connect()
@@ -48,13 +50,12 @@ item <- content_item(client, GUID)
 # have finished. We can filter only for currently-running jobs by filtering
 # for `finalized == FALSE`.
 jobs <- get_jobs(item)
-jobs |>
+current_jobs <- jobs |>
   filter(finalized == FALSE)
 ```
 
-### Example output
-
-```r
+```{.r}
+> current_jobs
 # A tibble: 2 × 14
         id     pid key              app_id app_guid                             variant_id bundle_id start_time          end_time tag     exit_code finalized hostname  variant_key
      <int>   <int> <chr>             <int> <chr>                                     <int>     <int> <dttm>              <dttm>   <chr>       <int> <lgl>     <chr>     <chr>

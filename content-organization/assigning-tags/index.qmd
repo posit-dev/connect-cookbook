@@ -86,7 +86,7 @@ content_item(client, guid = "154bd2af-e8fa-4aa4-aab8-dcef701f4af9")
 
 :::
 
-#### See Also
+#### See also
 
 - [Content](../../content/index.qmd)
 - [Content Organization](../index.qmd)
