@@ -114,6 +114,6 @@ You can filter the table to see content for a single `RunAs setting`.
 
 :::
 
-## See Also
+## See also
 
 - [Viewing Content Runtime Settings](../viewing-content-runtime-settings/index.qmd) to create a table totaling the usage of custom runtime settings on your Connect server.

@@ -95,6 +95,6 @@ $r$installations[[1]]$path
 
 :::
 
-## See Also
+## See also
 
 - [Viewing Contaimner Image Usage](../viewing-container-image-usage/index.qmd) for viewing a list of image names in use and how many content items use each.

@@ -1,0 +1,116 @@
+---
+title: "Viewing Content Information"
+execute:
+  eval: false
+---
+
+## Problem
+
+You want to view information associated with a content item. For instance, you might want to find GUID of a content item whose title you know.
+
+## Solution
+
+::: {.panel-tabset group="language"}
+
+## Python
+
+You can use `client.content.find()` to create a data frame of all content you have access to, based on the permissions associated with your API key.
+
+```{.python}
+from posit import connect
+import polars as pl
+
+CONTENT_TITLE = "Data Analysis"
+
+client = connect.Client()
+
+res = client.content.find()
+content_df = pl.DataFrame(res)
+```
+
+```{.python}
+>>> print(content_df)
+shape: (3, 46)
+┌────────────────┬────────────────┬────────────────┬─────────────┬───┬────────────────┬──────────┬───────┬───────────────┐
+│ guid           ┆ name           ┆ title          ┆ description ┆ … ┆ dashboard_url  ┆ app_role ┆ id    ┆ owner         │
+│ ---            ┆ ---            ┆ ---            ┆ ---         ┆   ┆ ---            ┆ ---      ┆ ---   ┆ ---           │
+│ str            ┆ str            ┆ str            ┆ str         ┆   ┆ str            ┆ str      ┆ str   ┆ struct[4]     │
+╞════════════════╪════════════════╪════════════════╪═════════════╪═══╪════════════════╪══════════╪═══════╪═══════════════╡
+│ 0b38412d-3cdf… ┆ quarterly_repo ┆ Quarterly Rep  ┆             ┆ … ┆ https://conne… ┆ none     ┆ 51694 ┆ {"2bd697db-2… │
+│ a5ad0dd3-cc39… ┆ data_analysis  ┆ Data Analysis  ┆             ┆ … ┆ https://conne… ┆ viewer   ┆ 42383 ┆ {"c2250bb4-4… │
+│ 003e900f-5359… ┆ shiny_dashboa… ┆ Shiny Dashboa… ┆             ┆ … ┆ https://conne… ┆ viewer   ┆ 34229 ┆ {"c2250bb4-4… │
+└────────────────┴────────────────┴────────────────┴─────────────┴───┴────────────────┴──────────┴───────┴───────────────┘
+```
+
+You can then filter on any field in the dashboard to get to the data you're interested in. For example, you could get the GUID for the "Data Analysis" content item.
+
+```{.python}
+>>> content_guid = content_df.filter(pl.col("title") == CONTENT_TITLE).select(["title", "guid"])
+>>> print(content_guid)
+>>> print(content_guid)
+shape: (1, 2)
+┌───────────────┬─────────────────────────────────┐
+│ title         ┆ guid                            │
+│ ---           ┆ ---                             │
+│ str           ┆ str                             │
+╞═══════════════╪═════════════════════════════════╡
+│ Data Analysis ┆ a5ad0dd3-cc39-4040-80ec-e07e4c… │
+└───────────────┴─────────────────────────────────┘
+```
+
+:::{.callout-note}
+The `title` attribute isn't guaranteed to be unique, so you may see multiple GUIDs returned at this stage.
+:::
+
+## R
+
+You can use `get_content()` to get a data frame of all content you have access to, based on the permissions associated with your API key.
+
+```{.r}
+library(connectapi)
+library(dplyr)
+
+CONTENT_TITLE = "Data Analysis"
+
+client <- connect()
+
+content_df <- get_content(client)
+```
+
+```{.r}
+> content_df
+# A tibble: 3 × 47
+   guid         name  title description access_type locked locked_message connection_timeout read_timeout init_timeout idle_timeout
+   <chr>        <chr> <chr> <chr>       <chr>       <lgl>  <chr>                       <int>        <int>        <int>        <int>
+ 1 a5ad94bc-38… quar… Quar… ""          acl         FALSE  ""                             NA           NA           NA           NA
+ 2 a5ad0dd3-cc… data… Data… ""          all         FALSE  ""                             NA           NA           NA           NA
+ 3 003e900f-53… shin… Shin… ""          all         FALSE  ""                             NA           NA           NA           NA
+# ℹ 36 more variables: max_processes <int>, min_processes <int>, max_conns_per_process <int>, load_factor <dbl>,
+#   memory_request <lgl>, memory_limit <dbl>, cpu_request <lgl>, cpu_limit <lgl>, amd_gpu_limit <lgl>, nvidia_gpu_limit <lgl>,
+#   service_account_name <lgl>, default_image_name <lgl>, created_time <dttm>, last_deployed_time <dttm>, bundle_id <chr>,
+#   app_mode <chr>, content_category <chr>, parameterized <lgl>, cluster_name <chr>, image_name <chr>, r_version <chr>,
+#   py_version <chr>, quarto_version <chr>, r_environment_management <lgl>, default_r_environment_management <lgl>,
+#   py_environment_management <lgl>, default_py_environment_management <lgl>, run_as <chr>, run_as_current_user <lgl>, …
+```
+
+You can then filter on any field in the dashboard to get to the data you're interested in. For example, you could get the GUID for the "Data Analysis" content item.
+
+```{.r}
+> content_df |>
++   filter(title == CONTENT_TITLE) %>%
++   select(title, guid)
+# A tibble: 1 × 2
+  title         guid                                
+  <chr>         <chr>                               
+1 Data Analysis a5ad0dd3-cc39-4040-80ec-e07e4cf04783
+```
+
+:::{.callout-note}
+The `title` attribute isn't guaranteed to be unique, so you may see multiple GUIDs returned at this stage.
+:::
+
+:::
+
+## See also
+
+- For more details about the data returned in this recipe, see [Get content details](../../../api/#get-/v1/content/-guid-) in the API Reference.

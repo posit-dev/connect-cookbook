@@ -55,6 +55,6 @@ guids <- client |>
 
 In this, we output a list of content identifiers (GUIDs), which can be used as inputs for other workflows. You can also simply filter the tables returned by the SDKs to see more data on the matching content.
 
-## See Also
+## See also
 
 - [Viewing Contaimner Image Usage](../viewing-container-image-usage/index.qmd) for viewing a list of image names in use and how many content items use each.

@@ -4,6 +4,7 @@ listing:
     sort: false
     template: ../template.ejs
     contents:
+    - ./viewing-content-information
     - ./viewing-content-runtime-settings
     - ./viewing-all-vanity-urls
     - ./finding-public-content

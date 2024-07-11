@@ -88,6 +88,6 @@ content_out <- content |>
 
 This may be useful when auditing the server in preparation for a migration, to understand which accounts need to be replicated in the new environment. It is also generally helpful to understand if content on the server has specific run-time requirements.
 
-## See Also
+## See also
 
 - [Finding Content with Custom Runtime Settings](../finding-content-with-custom-runtime-settings/) to enumerate all content items with `RunAsCurrentUser` enabled or a customized `RunAs` user.

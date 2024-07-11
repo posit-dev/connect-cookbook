@@ -81,7 +81,7 @@ usage <- bind_rows(static_usage, shiny_usage)
 
 Usage data for Shiny applications and other content is reported differently. For instance, only Shiny applications have an `ended` column. The `variant_key`, `rendering_id`, `bundle_id`, and `path` variables are not provided for Shiny applications. See below for resources to learn more about these variables.
 
-## See Also
+## See also
 
 - [Analyzing Usage Statistics for a Content Item](../analyzing-usage-statistics-for-a-content-item/index.qmd) for examples of ways to analyze usage data for a single piece of content.
 - [Analyzing Most Active Content, Users, and Publishers](../analyzing-most-active-content-users-and-publishers/index.qmd) for ways to summarize other data on usage of your Connect server.

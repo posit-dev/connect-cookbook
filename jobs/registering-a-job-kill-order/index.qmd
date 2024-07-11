@@ -4,11 +4,14 @@ title: "Registering a Job Kill Order"
 
 ## Problem
 
-You want to register a kill order for a job.
+You want to kill a process associated with a content item.
 
 ## Solution
 
-Use the API to delete a job by key.
+Use the API to delete a job using its *job key*. You'll need the GUID for the content item, and the job key associated with the job you wish to kill.
+
+- Get content GUID from the Dashboard's Info tab, or by following [Viewing Content Information](../../content/viewing-content-information/).
+- To find the job key, see [Viewing Jobs for Content](../viewing-jobs-for-content/index.qmd).
 
 ::: {.panel-tabset group="language"}
 
@@ -17,9 +20,7 @@ Use the API to delete a job by key.
 ```{.python}
 from posit import connect
 
-# The globally unique identifier (guid) for the content item.
 CONTENT_ITEM_GUID = '154bd2af-e8fa-4aa4-aab8-dcef701f4af9'
-# The unique key the job.
 JOB_KEY = 'CwCoI9tizMRRcvLw'
 
 client = connect.Client()
@@ -28,7 +29,7 @@ client.delete(f"v1/content/{CONTENT_ITEM_GUID}/jobs/{JOB_KEY}")
 
 ## R
 
-```r
+```{.r}
 library(connectapi)
 library(httr)
 
@@ -41,12 +42,13 @@ response <- client$DELETE(
 )
 ```
 
-```r
+```{.r}
 > print(response)
 Response [https://connect.company.co/__api__/v1/content/fdc3f938-3ace-4a22-8af2-1a8f17828b6a/jobs/CwCoI9tizMRRcvLw]
   Date: 2024-06-21 17:48
   Status: 200
   Content-Type: application/json; charset=utf-8
   Size: 199 B
+```
 
 :::

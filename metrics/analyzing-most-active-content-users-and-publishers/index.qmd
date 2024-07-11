@@ -365,7 +365,7 @@ An example bar graph visualizing this data is included in the Quarto dashboard c
 
 ### Deploying a sample Quarto dashboard with these metrics
 
-The Quarto document below builds visualizations around the data frames retrieved above. This can be deployed in your own environment, or customized to your needs.
+The Quarto document below builds visualizations around the data frames retrieved above. To use, copy the source code into a new `.qmd` file. This can be deployed in your own environment, or customized to your needs.
 
 <!-- TODO: Add github repo and manifest.json link -->
 
