@@ -26,6 +26,7 @@ res = client.get(f"/v1/tags/{TAG_ID}/content")
 The response can be easily turned into a DataFrame.
 
 ```{.python}
+>>> import polars as pl
 >>> pl.DataFrame(res.json())
 shape: (24, 45)
 ┌─────────────────────────────────┬──────────────────────────────┬──────────────────────────────┬──────────────────────────────────────────────────────────────────────────────┐
