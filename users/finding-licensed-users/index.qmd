@@ -104,7 +104,7 @@ active_users <- users |>
 Finally, we can count the total number of active users.
 
 ```{.r}
-> count(users)
+> count(active_users)
 # A tibble: 1 × 1
       n
   <int>
