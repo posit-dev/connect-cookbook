@@ -21,11 +21,11 @@ Using the SDK to look up a user, you can directly access that user's owned conte
 ```{.python}
 from posit import connect
 
-username = "publisher1"
+USERNAME = "publisher1"
 
 client = connect.Client()
 
-content = client.users.find_one(prefix = username).content.find()
+content = client.users.find_one(prefix = USERNAME).content.find()
 ```
 
 The recipe produces a DataFrame containing all of the user's owned content.
@@ -49,11 +49,11 @@ Look up the user's unique identifier (GUID), and use that to find all their owne
 ```{.r}
 library(connectapi)
 
-username <- "publisher1"
+USERNAME <- "publisher1"
 
 client <- connect()
 
-user_guid <- user_guid_from_username(client, username)
+user_guid <- user_guid_from_username(client, USERNAME)
 content <- get_content(client, owner_guid = user_guid)
 ```
 
