@@ -40,7 +40,7 @@ response = client.post("/v1/tags", json={
 departments = response.json()
 ```
 
-The `departments` object additional information about the tag catgegory, including the `id` field. We will use the `id` field in the next step to create a tag.
+The `departments` object contains additional information about the tag category, including the `id` field. We will use the `id` field to create a tag in the next step.
 
 ```{.python}
 >>> import polars as pl
