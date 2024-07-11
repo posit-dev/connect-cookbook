@@ -28,7 +28,7 @@ content = content[content['access_type']=='all']
 
 # Prepare the data
 content["Owner"] = (pd.json_normalize(content["owner"]))["username"]
-content["Last Updated"] = pd.to_datetime(content["last_deployed_time"]).dt.date
+content["Updated"] = pd.to_datetime(content["last_deployed_time"]).dt.date
 content = content[["title","Owner","content_url","Updated"]]
 content = content.rename(columns={"title": "Title", "content_url": "URL"})
 ```
