@@ -146,7 +146,7 @@ Posit Connect Tag Tree (filtered)
 
 :::
 
-Next, see see ['Assigning Tags'] to learn how to assign a tag to content.
+Next, see ['Assigning Tags'] to learn how to assign a tag to content.
 
 ## See also
 
