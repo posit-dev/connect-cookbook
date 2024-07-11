@@ -25,7 +25,7 @@ USERNAME = "publisher1"
 
 client = connect.Client()
 
-content = client.users.find_one(prefix = username).content.find()
+content = client.users.find_one(prefix = USERNAME).content.find()
 ```
 
 The recipe produces a DataFrame containing all of the user's owned content.
@@ -53,7 +53,7 @@ USERNAME <- "publisher1"
 
 client <- connect()
 
-user_guid <- user_guid_from_username(client, username)
+user_guid <- user_guid_from_username(client, USERNAME)
 content <- get_content(client, owner_guid = user_guid)
 ```
 
