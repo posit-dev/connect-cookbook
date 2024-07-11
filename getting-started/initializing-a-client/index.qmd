@@ -72,4 +72,4 @@ client <- connect(server = URL, api_key = API_KEY)
 
 ## Discussion
 
-The Posit SDK client provide an idomatic interface to Posit Connect. The client object accepts credential information, which can be provided at runtime or defined inline. The preferred method for credential injection is at runtime through environment variables. This protects your information from accidentally being shared along with source code that uses the Posit SDK. Alternatively, you can
+The Posit SDK client provide an idomatic interface to Posit Connect. The client object accepts credential information, which can be provided at runtime or defined inline. The preferred method for credential injection is at runtime through environment variables. This protects your information from accidentally being shared along with source code that uses the Posit SDK.
