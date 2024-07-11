@@ -9,6 +9,7 @@ listing:
     - ./finding-public-content
     - ./finding-content-owned-by-a-user
     - ./finding-content-by-tag
+    - ./updating-content-git-repository-setting
     - ./setting-a-content-items-vanity-url
     - ./deleting-a-content-items-vanity-url
     - ./viewing-a-content-items-vanity-url
