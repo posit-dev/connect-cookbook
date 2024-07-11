@@ -27,6 +27,8 @@ from posit import connect
 
 TAG_ID = "your-tag-id"
 
+client = connect.Client()
+
 client.delete(f"/v1/tags/{TAG_ID}")
 ```
 
