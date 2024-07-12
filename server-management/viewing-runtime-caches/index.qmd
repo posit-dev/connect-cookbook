@@ -21,9 +21,6 @@ Call Connect's API using the SDK. The API returns a JSON response that can be ea
 from posit import connect
 imports polars as pl
 
-ABC = "154bd2af-e8fa-4aa4-aab8-dcef701f4af9"
-XYZ = "23"
-
 client = connect.Client()
 
 response = client.get("/v1/system/caches/runtime")
