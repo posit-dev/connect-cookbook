@@ -13,7 +13,6 @@ from datetime import date, timedelta
 import polars as pl
 import plotly.express as px
 import plotly.graph_objects as go
-
 ```
 
 
@@ -30,7 +29,6 @@ report_from = as_of_date - timedelta(days=days_back)
 top_n = 20
 
 # Note: The CONNECT_SERVER and CONNECT_API_KEY environment variables are required for this report to pull usage data. Use environment variables for added security; do not hard-code your API key or other secrets.
-
 ```
 
 
@@ -73,13 +71,11 @@ all_users = (pl.DataFrame(client.users.find())
              .select(["guid", "username"])
              #rename guid to user_guid
               .rename({"guid": "user_guid"}))
-
-
 ```
 
 ## Row
 
-Content usage on Connect for the period of **`{.python} report_from.strftime("%Y-%m-%d")`** to **`{.python} as_of_date.strftime("%Y-%m-%d")`**
+Content usage on Connect for the period of **`{python} report_from.strftime("%Y-%m-%d")`** to **`{python} as_of_date.strftime("%Y-%m-%d")`**
 
 
 ## Row
@@ -96,9 +92,6 @@ usage_plot_data = (usage.group_by("day")
 # plot usage_plot_data using plotly
 fig = px.line(usage_plot_data.to_pandas(), x="day", y="usage", title=f"Total usage for the {days_back} day period", template="plotly_white")
 fig.update_traces(line_color='#AE929F', line_width=4)
-
-
-
 ```
 
 
@@ -132,7 +125,6 @@ fig = (
         .update_xaxes(title_text="content hits")
         .show()
         )
-
 ```
 
 
@@ -193,8 +185,6 @@ fig = (
     .update_xaxes(title_text="content hits")
     .show()
 )
-
-
 ```
 
 
@@ -258,8 +248,4 @@ fig = (
       .update_xaxes(title_text="content hits")
       .show()
 )
-
-
-
-
 ```

@@ -16,7 +16,6 @@ import polars as pl
 import numpy as np
 import plotnine as p9
 from great_tables import GT, nanoplot_options, style, loc, system_fonts, md
-
 ```
 
 
@@ -35,7 +34,6 @@ top_n = 20
 top_n = np.nan
 
 # Note: The CONNECT_SERVER and CONNECT_API_KEY environment variables are required for this report to pull usage data. Use environment variables for added security; do not hard-code your API key or other secrets.
-
 ```
 
 
@@ -43,7 +41,6 @@ top_n = np.nan
 #| label: report timeframe
 
 report_from = as_of_date - timedelta(days=days_back)
-
 ```
 
 
@@ -52,7 +49,6 @@ report_from = as_of_date - timedelta(days=days_back)
 #| label: Establish connection to Connect server
 
 client = connect.Client()
-
 ```
 
 ```{python}
@@ -85,7 +81,7 @@ unique_visitors = (
 
 ### Row
 
-Usage of **`{.python} content_info.title`**, for the period of **`{.python} report_from.strftime("%Y-%m-%d")`** to **`{.python} as_of_date.strftime("%Y-%m-%d")`**
+Usage of **`{python} content_info.title`**, for the period of **`{python} report_from.strftime("%Y-%m-%d")`** to **`{python} as_of_date.strftime("%Y-%m-%d")`**
 
 
 ### Row
@@ -128,7 +124,6 @@ p9.ggplot(usage_plot_data, p9.aes(x="day", y="usage")) + \
     p9.geom_smooth(se=False, color="#546A7B") + \
     p9.theme_minimal() + \
     p9.labs(y=None, x=None, title="Content usage for " + content_info["title"])
-
 ```
 
 
@@ -205,8 +200,6 @@ user_daily_usage_concatenated = (user_daily_usage
     )
   )
 )
-
-
 ```
 
 
@@ -250,7 +243,5 @@ long_info = (
   .fmt_markdown(columns="value", rows=["content_url", "dashboard_url", "owner_email"])
   .tab_style(style=style.text(decorate="underline"),locations=loc.body(rows=["content_url","dashboard_url","owner_email"], columns="value"))
 )
-
-# TODO: Add vanity URL to content details.
 
 ```
