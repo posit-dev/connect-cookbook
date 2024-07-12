@@ -6,7 +6,7 @@ format:
      orientation: rows
 ---
 
-```{.r}
+```{r}
 #| label: setup
 
 library(connectapi)
@@ -16,7 +16,7 @@ library(plotly)
 ```
 
 
-```{.r}
+```{r}
 #| label: user-defined inputs
 
 ### User-defined inputs
@@ -34,7 +34,7 @@ top_n <- 20
 ```
 
 
-```{.r}
+```{r}
 #| label: Establish connection to Connect server
 
 # Note `connectapi::connect` automatically detects the environment variables CONNECT_SERVER and CONNECT_API_KEY. They do not need to be specified as arguments to this function, however, if these environment variables are not set, the code will fail
@@ -42,7 +42,7 @@ client <- connect()
 
 ```
 
-```{.r}
+```{r}
 #| label: Get content info and usage
 
 ### Retrieve content details and select relevant columns
@@ -87,7 +87,7 @@ Content usage on Connect for the period of **`r report_from`** to **`r as_of_dat
 
 ## Row
 
-```{.r}
+```{r}
 #| label: plot total content usage over time
 
 usage_plot_data <- usage |>
@@ -114,7 +114,7 @@ ggplotly(gg) |>
 
 ## Row
 
-```{.r}
+```{r}
 #| label: bar graph of top N content items
 
 top_n_content <- usage |>
@@ -145,7 +145,7 @@ ggplotly(gg, tooltip = c("y", "text")) |>
 
 ```
 
-```{.r}
+```{r}
 #| label: bar graph of top N content users
 
 # identify top N content users and identify their most-frequently used content item
@@ -199,7 +199,7 @@ ggplotly(gg, tooltip = c("text")) |>
 ```
 
 
-```{.r}
+```{r}
 #| label: bar graph of top N publishers
 
 top_n_publishers <- usage |>

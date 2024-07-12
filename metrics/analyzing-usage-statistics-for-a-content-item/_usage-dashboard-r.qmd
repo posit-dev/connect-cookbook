@@ -6,7 +6,7 @@ format:
      orientation: rows
 ---
 
-```{.r}
+```{r}
 #| label: setup
 
 library(connectapi)
@@ -16,7 +16,7 @@ library(plotly)
 ```
 
 
-```{.r}
+```{r}
 #| label: user-defined inputs
 
 # 1. specify the guid for the content
@@ -34,21 +34,21 @@ top_n <- Inf
 ```
 
 
-```{.r}
+```{r}
 #| label: report timeframe
 
 report_from <- as_of_date - lubridate::ddays(days_back)
 
 ```
 
-```{.r}
+```{r}
 #| label: Establish connection to Connect server
 
 client <- connect()
 
 ```
 
-```{.r}
+```{r}
 #| label: Get content info and usage
 
 # Determine if the content type is Shiny or not. This will dictate which telemetry endpoint to use
@@ -92,7 +92,7 @@ Usage of **`r content_info$title`**, for the period of **`r report_from`** to **
 
 ###  Row
 
-```{.r}
+```{r}
 #| content: valuebox
 #| title: "Total content hits in period"
 #| icon: binoculars
@@ -102,7 +102,7 @@ list (
 )
 ```
 
-```{.r}
+```{r}
 #| content: valuebox
 #| title: "Unique viewers in period"
 #| icon: people
@@ -115,7 +115,7 @@ list (
 
 ###  Row
 
-```{.r}
+```{r}
 #| label: plot content usage over time
 
 usage_plot_data <- usage |>
@@ -139,7 +139,7 @@ usage_plot_data <- usage |>
 ```
 
 
-```{.r}
+```{r}
 #| label: Create table of content usage by user
 #| html-table-processing: none
 
@@ -189,7 +189,7 @@ usage |>
 
 ##
 
-```{.r}
+```{r}
 #| label: make a table of content details
 #| html-table-processing: none
 
