@@ -15,6 +15,11 @@ Create a data frame of content usage metrics.
 ## Python
 
 ```{.python}
+from posit import connect
+import polars as pl
+
+client = connect.Client()
+
 usage = client.metrics.usage.find()
 usage_df = pl.DataFrame(usage, infer_schema_length=len(usage))
 ```
