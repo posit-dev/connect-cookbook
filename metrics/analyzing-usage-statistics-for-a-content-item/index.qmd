@@ -40,8 +40,6 @@ The code samples below yields content usage data as a data frame.
 ```{.python}
 from posit import connect
 from datetime import date, timedelta
-import os
-import sys
 import polars as pl
 import numpy as np
 
