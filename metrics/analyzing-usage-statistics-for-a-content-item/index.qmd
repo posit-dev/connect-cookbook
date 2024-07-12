@@ -1,5 +1,7 @@
 ---
 title: Analyzing Usage Statistics for a Content Item
+execute:
+  eval: false
 ---
 
 ## Problem
@@ -311,7 +313,7 @@ setuptools==69.2.0
 <!-- TODO: Add a screenshot -->
 <!-- TODO: Add vanity URL to content details. -->
 
-````{.markdown}
+````markdown
 {{< include ./_usage-dashboard-py.qmd >}}
 ````
 
@@ -319,7 +321,7 @@ setuptools==69.2.0
 
 <!-- TODO: Add a screenshot -->
 
-````{.markdown}
+````markdown
 {{< include ./_usage-dashboard-r.qmd >}}
 ````
 

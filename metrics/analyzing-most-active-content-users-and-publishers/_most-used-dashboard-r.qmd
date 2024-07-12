@@ -6,7 +6,7 @@ format:
      orientation: rows
 ---
 
-```{r}
+```{{r}}
 #| label: setup
 #| include: false
 
@@ -17,7 +17,7 @@ library(plotly)
 ```
 
 
-```{r}
+```{{r}}
 #| label: user-defined inputs
 #| include: false
 
@@ -35,7 +35,7 @@ top_n <- 20
 ```
 
 
-```{r}
+```{{r}}
 #| label: Establish connection to Connect server
 #| include: false
 #| 
@@ -43,7 +43,7 @@ top_n <- 20
 client <- connect()
 ```
 
-```{r}
+```{{r}}
 #| label: Get content info and usage
 #| include: false
 
@@ -82,12 +82,12 @@ all_users <- connectapi::get_users(client, limit = Inf) |>
 
 ## Row
 
-Content usage on Connect for the period of **`{r} report_from`** to **`{r} as_of_date`**
+Content usage on Connect for the period of **`{{r}} report_from`** to **`{{r}} as_of_date`**
 
 
 ## Row
 
-```{r}
+```{{r}}
 #| label: plot total content usage over time
 
 usage_plot_data <- usage |>
@@ -112,7 +112,7 @@ ggplotly(gg) |>
 
 ## Row
 
-```{r}
+```{{r}}
 #| label: bar graph of top N content items
 
 top_n_content <- usage |>
@@ -141,7 +141,7 @@ ggplotly(gg, tooltip = c("y", "text")) |>
       config(displayModeBar = FALSE)
 ```
 
-```{r}
+```{{r}}
 #| label: bar graph of top N content users
 
 # identify top N content users and identify their most-frequently used content item
@@ -194,7 +194,7 @@ ggplotly(gg, tooltip = c("text")) |>
 ```
 
 
-```{r}
+```{{r}}
 #| label: bar graph of top N publishers
 
 top_n_publishers <- usage |>
