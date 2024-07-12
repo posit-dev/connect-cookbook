@@ -57,4 +57,4 @@ In this, we output a list of content identifiers (GUIDs), which can be used as i
 
 ## See also
 
-- [Viewing Contaimner Image Usage](../viewing-container-image-usage/index.qmd) for viewing a list of image names in use and how many content items use each.
+- [Viewing Container Image Usage](../viewing-container-image-usage/index.qmd) for viewing a list of image names in use and how many content items use each.
