@@ -6,18 +6,17 @@ format:
      orientation: rows
 ---
 
-```{.python}
+```{{python}}
 #| label: setup
 from posit import connect
 from datetime import date, timedelta
 import polars as pl
 import plotly.express as px
 import plotly.graph_objects as go
-
 ```
 
 
-```{.python}
+```{{python}}
 #| label: user-defined inputs
 
 # 1. Specify timeframe for the report. Default is 90 days prior to today
@@ -30,18 +29,17 @@ report_from = as_of_date - timedelta(days=days_back)
 top_n = 20
 
 # Note: The CONNECT_SERVER and CONNECT_API_KEY environment variables are required for this report to pull usage data. Use environment variables for added security; do not hard-code your API key or other secrets.
-
 ```
 
 
-```{.python}
+```{{python}}
 #| label: Establish connection to Connect server
 
 # Note `connect.Client()` automatically detects the environment variables CONNECT_SERVER and CONNECT_API_KEY. They do not need to be specified as arguments to this function, however, if these environment variables are not set, the code will fail
 client = connect.Client()
 ```
 
-```{.python}
+```{{python}}
 # | label: Get content info and usage
 
 ### Retrieve content details and select relevant columns
@@ -73,19 +71,17 @@ all_users = (pl.DataFrame(client.users.find())
              .select(["guid", "username"])
              #rename guid to user_guid
               .rename({"guid": "user_guid"}))
-
-
 ```
 
 ## Row
 
-Content usage on Connect for the period of **`{.python} report_from.strftime("%Y-%m-%d")`** to **`{.python} as_of_date.strftime("%Y-%m-%d")`**
+Content usage on Connect for the period of **`{{python}} report_from.strftime("%Y-%m-%d")`** to **`{{python}} as_of_date.strftime("%Y-%m-%d")`**
 
 
 ## Row
 
 
-```{.python}
+```{{python}}
 # plot total content usage over time
 
 usage_plot_data = (usage.group_by("day")
@@ -96,15 +92,12 @@ usage_plot_data = (usage.group_by("day")
 # plot usage_plot_data using plotly
 fig = px.line(usage_plot_data.to_pandas(), x="day", y="usage", title=f"Total usage for the {days_back} day period", template="plotly_white")
 fig.update_traces(line_color='#AE929F', line_width=4)
-
-
-
 ```
 
 
 ## Row
 
-```{.python}
+```{{python}}
 # bar graph of top N content items
 
 # identify top N content
@@ -132,11 +125,10 @@ fig = (
         .update_xaxes(title_text="content hits")
         .show()
         )
-
 ```
 
 
-```{.python}
+```{{python}}
 # bar graph of top N content users
 
 # identify top N content users and identify their most-frequently used content item
@@ -193,12 +185,10 @@ fig = (
     .update_xaxes(title_text="content hits")
     .show()
 )
-
-
 ```
 
 
-```{.python}
+```{{python}}
 # bar graph of top N publishers
 
 # table of most frequent content_hits with content info
@@ -258,8 +248,4 @@ fig = (
       .update_xaxes(title_text="content hits")
       .show()
 )
-
-
-
-
 ```

@@ -6,8 +6,9 @@ format:
      orientation: rows
 ---
 
-```{.r}
+```{{r}}
 #| label: setup
+#| include: false
 
 library(connectapi)
 library(tidyverse)
@@ -16,8 +17,9 @@ library(plotly)
 ```
 
 
-```{.r}
+```{{r}}
 #| label: user-defined inputs
+#| include: false
 
 ### User-defined inputs
 # 1. Specify timeframe for the report. Default is 90 days prior to today
@@ -30,20 +32,20 @@ top_n <- 20
 
 
 # Note: The CONNECT_SERVER and CONNECT_API_KEY environment variables are required for this report to pull usage data. Use environment variables for added security; do not hard-code your API key or other secrets.
-
 ```
 
 
-```{.r}
+```{{r}}
 #| label: Establish connection to Connect server
-
+#| include: false
+#| 
 # Note `connectapi::connect` automatically detects the environment variables CONNECT_SERVER and CONNECT_API_KEY. They do not need to be specified as arguments to this function, however, if these environment variables are not set, the code will fail
 client <- connect()
-
 ```
 
-```{.r}
+```{{r}}
 #| label: Get content info and usage
+#| include: false
 
 ### Retrieve content details and select relevant columns
 content_info <- connectapi::get_content(client) |>
@@ -76,18 +78,16 @@ usage <- bind_rows(usage_shiny, usage_non_shiny) |>
 ### Get all user details to cross reference user_guids with usernames
 all_users <- connectapi::get_users(client, limit = Inf) |>
   select(guid, username, email) |> rename(user_guid = guid)
-
-
 ```
 
 ## Row
 
-Content usage on Connect for the period of **`r report_from`** to **`r as_of_date`**
+Content usage on Connect for the period of **`{{r}} report_from`** to **`{{r}} as_of_date`**
 
 
 ## Row
 
-```{.r}
+```{{r}}
 #| label: plot total content usage over time
 
 usage_plot_data <- usage |>
@@ -108,13 +108,11 @@ gg <- ggplot(usage_plot_data, aes(day, usage)) +
 # make interactive with plotly
 ggplotly(gg) |>
       config(displayModeBar = FALSE)
-
-
 ```
 
 ## Row
 
-```{.r}
+```{{r}}
 #| label: bar graph of top N content items
 
 top_n_content <- usage |>
@@ -141,11 +139,9 @@ text=paste("owner username:",owner_username))) +
 # make interactive with plotly and include the owner_username and tot_usage in the tooltip
 ggplotly(gg, tooltip = c("y", "text")) |>
       config(displayModeBar = FALSE)
-
-
 ```
 
-```{.r}
+```{{r}}
 #| label: bar graph of top N content users
 
 # identify top N content users and identify their most-frequently used content item
@@ -195,11 +191,10 @@ gg <- ggplot(top_n_users, aes(
 # make interactive with plotly and include the owner_username and tot_usage in the tooltip
 ggplotly(gg, tooltip = c("text")) |>
   config(displayModeBar = FALSE)
-
 ```
 
 
-```{.r}
+```{{r}}
 #| label: bar graph of top N publishers
 
 top_n_publishers <- usage |>
@@ -240,6 +235,4 @@ gg <- ggplot(top_n_publishers, aes(
 # make interactive with plotly and include the owner_username and tot_usage in the tooltip
 ggplotly(gg, tooltip = c("text")) |>
   config(displayModeBar = FALSE)
-
-
 ```
