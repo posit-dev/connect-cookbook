@@ -15,11 +15,22 @@ CONNECT_API_KEY = Variable.get("CONNECT_API_KEY")
     catchup=False
 )
 def example():
+
+    @task
+    def etl():
+        pass
+
     @task
     def restart():
         client = connect.Client(CONNECT_SERVER, CONNECT_API_KEY)
         content = client.content.get("5b6f05d1-1fea-480b-b8fa-51aec687a0bd")
-        task = content.deploy()
-        task.wait_for()
-    restart()
+        task = content.restart()
+        if task:
+            task.wait_for()
+
+    @task
+    def notification():
+        pass
+
+    etl() >> restart() >> notification()
 example()
