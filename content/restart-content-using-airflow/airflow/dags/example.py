@@ -1,3 +1,4 @@
+import pandas as pd
 import pendulum
 import pins
 import seaborn as sns
@@ -16,14 +17,26 @@ CONNECT_API_KEY = Variable.get("CONNECT_API_KEY")
     catchup=False,
 )
 def example():
+
+    @task
+    def extract():
+        iris = sns.load_dataset("iris", cache=False)
+        iris.to_csv('/tmp/iris.csv', index=False)
+
+    @task
+    def transform():
+        iris = pd.read_csv('/tmp/iris.csv')
+        iris['petal_area'] = iris['petal_length'] * iris['petal_width']
+        iris['sepal_area'] = iris['sepal_length'] * iris['sepal_width']
+        iris.to_csv('/tmp/iris_transformed.csv', index=False)
+
     @task
     def load():
+        iris_transformed = pd.read_csv('/tmp/iris_transformed.csv')
         client = connect.Client(CONNECT_SERVER, CONNECT_API_KEY)
         board = pins.board_connect(CONNECT_SERVER, api_key=CONNECT_API_KEY, cache=None)
-
-        iris = sns.load_dataset("iris", cache=False)
         board.pin_write(
-            iris,
+            iris_transformed,
             name=f"{client.me.username}/iris_dataset",
             type="csv",
             description="Iris dataset for demonstration purposes.",
@@ -40,9 +53,5 @@ def example():
         )
         content.restart()
 
-    @task
-    def notification():
-        pass
-
-    load() >> restart() >> notification()
+    extract() >> transform() >> load() >> restart()
 example()
