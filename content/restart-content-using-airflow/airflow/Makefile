@@ -10,7 +10,7 @@ all: init deps up
 
 clean:
 	-$(DOCKER_COMPOSE) down --volumes --rmi all
-	-rm -r ./logs .env airflow docker-compose.yaml
+	-rm -r ./logs .env airflow
 	-find . -name "*.egg-info" -exec rm -rf {} +
 	-find . -name "*.pyc" -exec rm -f {} +
 	-find . -name "__pycache__" -exec rm -rf {} +

@@ -1,0 +1,6 @@
+matplotlib
+pandas
+pins
+posit-sdk
+seaborn
+shiny
