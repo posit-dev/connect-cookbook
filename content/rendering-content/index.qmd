@@ -1,0 +1,65 @@
+---
+title: Rendering Content
+---
+
+## Problem
+
+You need to render content. For example, your content utilizes a dataset that has been updated and you want to rerender the content to show the latest information.
+
+## Solution
+
+Obtain the content and render it.
+
+::: {.panel-tabset group="language"}
+
+## Python
+
+Invoke the `render` method to render content.
+
+```python
+from posit import connect
+
+CONTENT_GUID = "154bd2af-e8fa-4aa4-aab8-dcef701f4af9"
+
+client = connect.Client()
+content = client.content.get(CONTENT_GUID)
+content.render()
+```
+
+The `render` method returns a task object. See [Tasks](../../tasks/) to learn more.
+
+```python
+task = content.render()
+task.wait_for()
+assert task.exit_code == 1
+```
+
+Invoking `render` on content that is cannot be rendered will result in an error. To avoid this, check the `is_rendered` attribute. This is useful if you need to render multiple content items.
+
+```python
+if content.is_rendered:
+    content.render()
+```
+
+## R
+
+Invoke the `content_render` function to render content.
+
+```r
+library(connectapi)
+
+CONTENT_GUID <- "65d02ea5-2e26-436a-afe3-4ef98a8ba8fc"
+
+client <- connect()
+content <- content_item(client, CONTENT_GUID)
+content_render(content)
+```
+
+Invoking `cotent_render` on content that cannot be rendered will result in an error. To avoid this, check `content_is_rendered`. This is useful if you need to restart multiple content items.
+
+```r
+if (content_is_rendered(content)) {
+    content_render(content)
+}
+```
+:::

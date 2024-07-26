@@ -66,6 +66,7 @@ website:
       #   - ./content/finding-authorized-content/index.qmd
         - ./content/finding-content-owned-by-a-user/index.qmd
         - ./content/finding-content-by-tag/index.qmd
+        - ./content/rendering-content/index.qmd
       #   - ./content/creating-content/index.qmd
       #   - ./content/creating-content-git-repository-settings/index.qmd
         # - ./content/creating-content-git-repository-settings/index.qmd
