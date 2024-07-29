@@ -34,7 +34,7 @@ task.wait_for()
 assert task.exit_code == 1
 ```
 
-Certain content application types support rendering, while others do not. Invoking `render` on content that cannot be rendered will result in an error. To avoid this, check the `is_rendered` attribute. If content does not support `render`, it may support the `restart.` See [Restarting Content](../restarting-content)
+Certain content application types support rendering, while others do not. Invoking `render` on content that cannot be rendered will result in an error. To avoid this, check the `is_rendered` attribute. If content does not support `render`, it may support the `restart.` See [Restarting Content](../restarting-content).
 
 ```python
 if content.is_rendered:
