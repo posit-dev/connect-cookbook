@@ -47,11 +47,12 @@ content <- content_item(client, CONTENT_GUID)
 content_restart(content)
 ```
 
-Invoking `restart` on content that is not interactive will result in an error. To avoid this, check `content_is_interactive`. This is useful if you need to restart multiple content items.
+Invoking `content_restart()` on content that is not interactive will result in an error. To avoid this, check `content_is_interactive()`. This is useful if you need to restart multiple content items.
 
 ```r
-if content_is_interactive(content)
-    content_restart(content)
+if content_is_interactive(content) {
+  content_restart(content)
+}
 ```
 :::
 
