@@ -26,7 +26,7 @@ content = client.content.get(CONTENT_GUID)
 content.render()
 ```
 
-The `render` method returns a task object. See [Tasks](../../tasks/) to learn more.
+The `render` method returns a `task` object. This `task` tracks the render operation on Connect. You may call `wait_for` to await the render operation. A non-zero exit code signals and error during rendering.
 
 ```python
 task = content.render()
@@ -34,7 +34,7 @@ task.wait_for()
 assert task.exit_code == 1
 ```
 
-Invoking `render` on content that is cannot be rendered will result in an error. To avoid this, check the `is_rendered` attribute. This is useful if you need to render multiple content items.
+Certain content application types support rendering, while others do not. Invoking `render` on content that cannot be rendered will result in an error. To avoid this, check the `is_rendered` attribute. If content does not support `render`, it may support the `restart.` See [Restarting Content](../restarting-content)
 
 ```python
 if content.is_rendered:
@@ -59,13 +59,13 @@ Polling the resulting task object will wait until the render has finished, or ra
 
 ```r
 > poll_task(render_task)
-Posit Connect Content Task: 
+Posit Connect Content Task:
   Content GUID: 65d02ea5-2e26-436a-afe3-4ef98a8ba8fc
   URL: https://connect.example/connect/#/apps/65d02ea5-2e26-436a-afe3-4ef98a8ba8fc/
   Task ID: QK2ks2BsiVv9tPsn
 ```
 
-Invoking `content_render()` on content that cannot be rendered will result in an error. To avoid this, check `content_is_rendered()`. This is useful if you need to restart multiple content items.
+Certain content application types support rendering, while others do not. Invoking `content_render` on content that cannot be rendered will result in an error. To avoid this, check using the `content_is_rendered` function. If content does not support `content_render`, it may support the `content_render.` See [Restarting Content](../restarting-content).
 
 ```r
 if (content_is_rendered(content)) {
@@ -73,3 +73,7 @@ if (content_is_rendered(content)) {
 }
 ```
 :::
+
+## See also
+
+- [Restarting Content](../restarting-content)
