@@ -1,0 +1,79 @@
+---
+title: Rendering Content
+---
+
+## Problem
+
+You need to render content. For example, your content utilizes a dataset that has been updated and you want to rerender the content to show the latest information.
+
+## Solution
+
+Obtain the content and render it.
+
+::: {.panel-tabset group="language"}
+
+## Python
+
+Invoke the `render` method to render content.
+
+```python
+from posit import connect
+
+CONTENT_GUID = "154bd2af-e8fa-4aa4-aab8-dcef701f4af9"
+
+client = connect.Client()
+content = client.content.get(CONTENT_GUID)
+content.render()
+```
+
+The `render` method returns a `task` object. This `task` tracks the render operation on Connect. You may call `wait_for` to await the render operation. A non-zero exit code signals and error during rendering.
+
+```python
+task = content.render()
+task.wait_for()
+assert task.exit_code == 1
+```
+
+Certain content application types support rendering, while others do not. Invoking `render` on content that cannot be rendered will result in an error. To avoid this, check the `is_rendered` attribute. If content does not support `render`, it may support the `restart.` See [Restarting Content](../restarting-content)
+
+```python
+if content.is_rendered:
+    content.render()
+```
+
+## R
+
+Invoke the `content_render` function to render content.
+
+```r
+library(connectapi)
+
+CONTENT_GUID <- "65d02ea5-2e26-436a-afe3-4ef98a8ba8fc"
+
+client <- connect()
+content <- content_item(client, CONTENT_GUID)
+render_task <- content_render(content)
+```
+
+Polling the resulting task object will wait until the render has finished, or raise an error if it fails.
+
+```r
+> poll_task(render_task)
+Posit Connect Content Task:
+  Content GUID: 65d02ea5-2e26-436a-afe3-4ef98a8ba8fc
+  URL: https://connect.example/connect/#/apps/65d02ea5-2e26-436a-afe3-4ef98a8ba8fc/
+  Task ID: QK2ks2BsiVv9tPsn
+```
+
+Certain content application types support rendering, while others do not. Invoking `content_render` on content that cannot be rendered will result in an error. To avoid this, check using the `content_is_rendered` function. If content does not support `content_render`, it may support the `content_render.` See [Restarting Content](../restarting-content).
+
+```r
+if (content_is_rendered(content)) {
+    content_render(content)
+}
+```
+:::
+
+## See also
+
+- [Restarting Content](../restarting-content)
