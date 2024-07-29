@@ -52,10 +52,20 @@ CONTENT_GUID <- "65d02ea5-2e26-436a-afe3-4ef98a8ba8fc"
 
 client <- connect()
 content <- content_item(client, CONTENT_GUID)
-content_render(content)
+render_task <- content_render(content)
 ```
 
-Invoking `cotent_render` on content that cannot be rendered will result in an error. To avoid this, check `content_is_rendered`. This is useful if you need to restart multiple content items.
+Polling the resulting task object will wait until the render has finished, or raise an error if it fails.
+
+```r
+> poll_task(render_task)
+Posit Connect Content Task: 
+  Content GUID: 65d02ea5-2e26-436a-afe3-4ef98a8ba8fc
+  URL: https://connect.example/connect/#/apps/65d02ea5-2e26-436a-afe3-4ef98a8ba8fc/
+  Task ID: QK2ks2BsiVv9tPsn
+```
+
+Invoking `content_render()` on content that cannot be rendered will result in an error. To avoid this, check `content_is_rendered()`. This is useful if you need to restart multiple content items.
 
 ```r
 if (content_is_rendered(content)) {
