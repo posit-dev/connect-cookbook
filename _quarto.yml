@@ -66,7 +66,6 @@ website:
       #   - ./content/finding-authorized-content/index.qmd
         - ./content/finding-content-owned-by-a-user/index.qmd
         - ./content/finding-content-by-tag/index.qmd
-        - ./content/rendering-content/index.qmd
       #   - ./content/creating-content/index.qmd
       #   - ./content/creating-content-git-repository-settings/index.qmd
         # - ./content/creating-content-git-repository-settings/index.qmd
@@ -78,6 +77,8 @@ website:
         - ./content/deleting-a-content-items-vanity-url/index.qmd
       #   - ./content/duplicating-content/index.qmd
         - ./content/viewing-a-content-items-vanity-url/index.qmd
+        - ./content/rendering-content/index.qmd
+        - ./content/restarting-content/index.qmd
       - section: "Content Access Controls"
         file: ./content-access-controls/index.qmd
         contents:

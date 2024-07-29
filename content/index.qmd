@@ -10,9 +10,10 @@ listing:
     - ./finding-public-content
     - ./finding-content-owned-by-a-user
     - ./finding-content-by-tag
-    - ./rendering-content
     - ./updating-content-git-repository-settings
     - ./setting-a-content-items-vanity-url
     - ./deleting-a-content-items-vanity-url
     - ./viewing-a-content-items-vanity-url
+    - ./rendering-content
+    - ./restarting-content
 ---

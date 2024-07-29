@@ -1,0 +1,65 @@
+---
+title: Restarting Content
+---
+
+## Problem
+
+You need to restart interactive content. For example, your content loads a dataset into memory on startup and you want to refresh the dataset.
+
+## Solution
+
+Get the content and restart it.
+
+::: {.panel-tabset group="language"}
+
+## Python
+
+Invoke the `restart` method to trigger a content restart.
+
+```python
+from posit import connect
+
+CONTENT_GUID = "154bd2af-e8fa-4aa4-aab8-dcef701f4af9"
+
+client = connect.Client()
+content = client.content.get(CONTENT_GUID)
+content.restart()
+```
+
+Certain content application types support restarting, while others do not. Invoking `restart` on content that does not support it will result in an error. To avoid this, check the `is_interactive` attribute. If content does not support `restart`, it may support the `render.` See [Rendering Content](../rendering-content).
+
+```python
+if content.is_interactive:
+    content.restart()
+```
+
+## R
+
+Invoke the `content_restart` function to trigger a content restart.
+
+```r
+library(connectapi)
+
+CONTENT_GUID <- "65d02ea5-2e26-436a-afe3-4ef98a8ba8fc"
+
+client <- connect()
+content <- content_item(client, CONTENT_GUID)
+content_restart(content)
+```
+
+Certain content application types support restarting, while others do not. Invoking `content_restart` on content that does not support it will result in an error. To avoid this, check the `content_is_interactive` attribute. If content does not support `content_restart`, it may support the `content_render.` See [Rendering Content](../rendering-content).
+
+```r
+if content_is_interactive(content) {
+  content_restart(content)
+}
+```
+:::
+
+## Discussion
+
+Restarting interactive content is an asynchronous process and has potential side effects dependent on your content's architecture.
+
+For content that utilizes a client-server architecture, anyone viewing the information must refresh their client to establish a new connection with the server. Some frameworks provide built-in support for this scenario (e.g., Shiny), but this is only sometimes the case. Please consult your framework documentation to understand the ramifications of restarting the content server.
+
+For content that utilizes a client-only architecture, anyone viewing the content is unaffected. However, the viewer must refresh their client to see the restart side effects (e.g., an updated dataset).
