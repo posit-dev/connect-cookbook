@@ -65,10 +65,10 @@ Posit Connect Content Task:
   Task ID: QK2ks2BsiVv9tPsn
 ```
 
-Certain content application types support rendering, while others do not. Invoking `content_render` on content that cannot be rendered will result in an error. To avoid this, check using the `content_is_rendered` function. If content does not support `content_render`, it may support the `content_render.` See [Restarting Content](../restarting-content).
+Certain content application types support rendering, while others do not. Invoking `content_render` on content that cannot be rendered will result in an error. To avoid this, check the `content$is_rendered` attribute. If content does not support `content_render`, it may support the `content_render.` See [Restarting Content](../restarting-content).
 
 ```r
-if (content_is_rendered(content)) {
+if (content$is_rendered) {
     content_render(content)
 }
 ```

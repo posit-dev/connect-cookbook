@@ -47,10 +47,10 @@ content <- content_item(client, CONTENT_GUID)
 content_restart(content)
 ```
 
-Certain content application types support restarting, while others do not. Invoking `content_restart` on content that does not support it will result in an error. To avoid this, check the `content_is_interactive` attribute. If content does not support `content_restart`, it may support the `content_render.` See [Rendering Content](../rendering-content).
+Certain content application types support restarting, while others do not. Invoking `content_restart` on content that does not support it will result in an error. To avoid this, check the `content$is_interactive` attribute. If content does not support `content_restart`, it may support the `content_render.` See [Rendering Content](../rendering-content).
 
 ```r
-if content_is_interactive(content) {
+if (content$is_interactive) {
   content_restart(content)
 }
 ```
