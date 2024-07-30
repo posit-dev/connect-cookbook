@@ -63,3 +63,7 @@ Restarting interactive content is an asynchronous process and has potential side
 For content that utilizes a client-server architecture, anyone viewing the information must refresh their client to establish a new connection with the server. Some frameworks provide built-in support for this scenario (e.g., Shiny), but this is only sometimes the case. Please consult your framework documentation to understand the ramifications of restarting the content server.
 
 For content that utilizes a client-only architecture, anyone viewing the content is unaffected. However, the viewer must refresh their client to see the restart side effects (e.g., an updated dataset).
+
+## See also
+
+- [Rendering Content](../rendering-content/)
