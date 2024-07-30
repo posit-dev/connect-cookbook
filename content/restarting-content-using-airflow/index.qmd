@@ -1,0 +1,39 @@
+---
+title: Restarting Content using Airflow
+---
+
+:::{.callout-note}
+This recipe uses Airflow 2.9.2.
+:::
+
+## Problem
+
+You want to implement an Airflow DAG that restart content on Connect.
+
+## Solution
+
+Let's define an Airflow DAG that restarts the content on a schedule.
+
+In this example, let's get credential information stored as Airflow variables.
+
+```python
+from airflow.models import Variable
+
+CONNECT_SERVER = Variable.get("CONNECT_SERVER")
+CONNECT_API_KEY = Variable.get("CONNECT_API_KEY")
+```
+
+Then create a DAG that gets the content by it's unique identifier (guid) and then restarts it.
+
+
+
+### Full example
+
+```python
+{{< include ./airflow/dags/simple.py >}}
+```
+
+
+## See also
+
+- [Restarting Content](../restarting-content)

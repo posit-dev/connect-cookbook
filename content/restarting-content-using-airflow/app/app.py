@@ -1,16 +1,16 @@
 import seaborn as sns
-from shiny import App, render, ui
 from pins import board_connect
-
+from shiny import App, render, ui
 
 board = board_connect()
-iris = board.pin_read("taylor_steinberg/iris_dataset")
+# penguins = board.pin_read("taylor_steinberg/penguins")
+penguins = sns.load_dataset('penguins')
 
 app_ui = ui.page_fluid(
     ui.page_fluid(
         ui.row(
             ui.column(
-                12, ui.output_plot("pairplot", height="100vh"), style="height: 100vh;"
+                12, ui.output_plot("plot", height="100vh"), style="height: 100vh;"
             )
         )
     )
@@ -20,8 +20,8 @@ app_ui = ui.page_fluid(
 def server(input, output, session):
     @output
     @render.plot
-    def pairplot():
-        return sns.pairplot(iris, hue="species", markers=["o", "s", "D"])
+    def plot():
+        return sns.pairplot(penguins, hue="species")
 
 
 app = App(app_ui, server)

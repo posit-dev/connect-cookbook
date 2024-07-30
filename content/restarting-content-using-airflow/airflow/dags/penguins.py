@@ -11,35 +11,34 @@ CONNECT_API_KEY = Variable.get("CONNECT_API_KEY")
 
 
 @dag(
-    dag_id="example",
+    dag_id="penguins",
     schedule_interval="0 * * * *",
-    start_date=pendulum.datetime(2021, 1, 1, tz="UTC"),
+    start_date=pendulum.now(),
     catchup=False,
 )
-def example():
+def penguins_dag():
 
     @task
     def extract():
-        iris = sns.load_dataset("iris", cache=False)
-        iris.to_csv('/tmp/iris.csv', index=False)
+        penguins = sns.load_dataset("penguins", cache=False)
+        penguins.to_csv('/tmp/penguins.csv', index=False)
 
     @task
     def transform():
-        iris = pd.read_csv('/tmp/iris.csv')
-        iris['petal_area'] = iris['petal_length'] * iris['petal_width']
-        iris['sepal_area'] = iris['sepal_length'] * iris['sepal_width']
-        iris.to_csv('/tmp/iris_transformed.csv', index=False)
+        penguins = pd.read_csv('/tmp/penguins.csv')
+        penguins = penguins.sample(500, replace=True)
+        penguins.to_csv('/tmp/penguins.csv', index=False)
 
     @task
     def load():
-        iris_transformed = pd.read_csv('/tmp/iris_transformed.csv')
+        penguins = pd.read_csv('/tmp/penguins.csv')
         client = connect.Client(CONNECT_SERVER, CONNECT_API_KEY)
         board = pins.board_connect(CONNECT_SERVER, api_key=CONNECT_API_KEY, cache=None)
         board.pin_write(
-            iris_transformed,
-            name=f"{client.me.username}/iris_dataset",
+            penguins,
+            name=f"{client.me.username}/penguins",
             type="csv",
-            description="Iris dataset for demonstration purposes.",
+            description="Penguins dataset for demonstration purposes.",
         )
 
     @task
@@ -52,6 +51,7 @@ def example():
             if item.title == "Airflow Example - Shiny Application"
         )
         content.restart()
+        print(content.dashboard_url)
 
     extract() >> transform() >> load() >> restart()
-example()
+penguins_dag()

@@ -1,8 +1,0 @@
-git+https://github.com/posit-dev/posit-sdk-py.git@main
-matplotlib
-pandas
-pendulum
-pins
-pyarrow
-seaborn
-shiny

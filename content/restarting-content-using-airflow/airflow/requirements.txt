@@ -1,0 +1,8 @@
+matplotlib
+pandas
+pendulum
+pins
+posit-sdk
+pyarrow
+seaborn
+shiny
