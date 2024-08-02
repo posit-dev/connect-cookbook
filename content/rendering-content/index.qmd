@@ -43,6 +43,12 @@ if content.is_rendered:
 
 ## R
 
+:::{.callout-note}
+
+This functionality requires `connectapi` version 0.3.0.
+
+:::
+
 Invoke the `content_render` function to render content.
 
 ```r
