@@ -8,7 +8,7 @@ This recipe assumes familiarity with the `targets` R package. See the `targets` 
 
 ## Problem
 
-You use the [`targets`](https://books.ropensci.org/targets/) R package to manage a data science pipeline. You have content published to Connect that uses artifacts created by the pipeline and want to programmatically trigger the content to render or restart after certain stages of the pipeline have finished.
+You use the [`targets`](https://books.ropensci.org/targets/) R package to manage a data science pipeline. You have content published to Connect that uses artifacts created by the pipeline, and want to programmatically trigger the content to render or restart after certain stages of the pipeline have finished.
 
 ## Solution
 
