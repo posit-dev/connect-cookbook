@@ -95,4 +95,5 @@ In this example, the output of `pin_versions()` changes when a new version of th
 
 ## See also
 
-- For details on rendering and restarting content, see [Rendering Content](../../content/rendering-content/index.qmd) and [Restarting Content](../../content/restarting-content/index.qmd).
+- [Rendering Content](../../content/rendering-content/index.qmd)
+- [Restarting Content](../../content/restarting-content/index.qmd)
