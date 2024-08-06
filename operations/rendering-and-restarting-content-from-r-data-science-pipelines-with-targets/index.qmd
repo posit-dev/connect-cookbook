@@ -89,7 +89,7 @@ The output of `publish_data()` is used as the dependency for each of the functio
 
 ## Discussion
 
-This example uses `pins`, but that isn't a requirement to trigger content renders and restarts on Connect from `targets`. Any data source that you publish to from R and load from a Connect content item can be used similarly, as long as your `targets` function returns an artifact whose hash changes whenever the content needs to be rendered or restarted.
+This example uses `pins`, but that isn't a requirement to trigger content renders and restarts on Connect from `targets`. As long as your `targets` function returns an artifact whose hash changes whenever the content needs to be rendered or restarted, any data source that you publish to from R and load from a Connect content item can be used similarly.
 
 In this example, the output of `pin_versions()` changes when a new version of the dataset is published. This is returned from our `publish_data()` function, and is passed in as a dependency to our `remote_render()` and `remote_refresh()` functions, causing them to run whenever a new pin is published.
 
