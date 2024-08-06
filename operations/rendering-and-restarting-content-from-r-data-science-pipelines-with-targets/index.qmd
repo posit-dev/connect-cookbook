@@ -1,0 +1,101 @@
+---
+title: Workflow Automation in R using `targets`
+---
+
+:::{.callout-note}
+This recipe assumes familiarity with the `targets` R package. See the `targets` [user manual](https://books.ropensci.org/targets/) for documentation. This recipe does not contain Python examples.
+:::
+
+## Problem
+
+You use the [`targets`](https://books.ropensci.org/targets/) R package to manage a data science pipeline. You have content published to Connect that uses artifacts created by the pipeline, and want to programmatically trigger the content to render or restart after certain stages of the pipeline have finished.
+
+## Solution
+
+:::{.callout-note}
+This functionality requires `connectapi` version 0.3.0 or later.
+:::
+
+Define a `targets` function that uses `connectapi` to render or restart your content. This example loads a data frame, performs a simple manipulation, and publishes the result to a pin using the [`pins` package](https://pins.rstudio.com/).
+
+This is the file layout in our `targets` project.
+
+```{.default}
+├── _targets.R
+├── penguins.csv
+├── R/
+│   ├── functions.R
+```
+
+The `load_data()` function reads the data, performs a bootstrap sample operation, and returns a data frame. The `publish_data()` function takes the resulting data frame, publishes it to a pin stored on Connect, and returns a data frame of pin versions. 
+
+The functions `remote_render()` and `remote_restart()` call `content_render()` and `content_restart()` respectively, to render or restart pieces of Connect content that load the pin data directly. These functions have an argument which is not used directly in the function body, but is used to tell `targets` when to run them.
+
+```{.r}
+# R/functions.R
+load_data <- function(file) {
+  read_csv(file) %>%
+    # In this example, changing the sample size causes the rest of the
+    # pipeline to rerun.
+    sample_n(size = 300, replace = TRUE)
+}
+
+publish_data <- function(penguins_df) {
+  board <- board_connect(auth = "envvar")
+  board %>% pin_write(penguins_df, "toph/penguins")
+
+  # Return the version of the pin. This changes whenever the pin is updated.
+  board %>% pin_versions("toph/penguins")
+}
+
+remote_render <- function(pin_versions) {
+  # Including the pin_versions as a dependency causes the render function to be
+  # called whenever the pin has been updated.
+  client <- connect()
+  content_item(client, "2ab81f20-bbb5-4b6f-bbc6-2014ddb2cb80") %>%
+    content_render() %>%
+    poll_task()
+}
+
+remote_restart <- function(pin_versions) {
+  # Including the pin_versions as a dependency causes the restart function to be
+  # called whenever the pin has been updated.
+  client <- connect()
+  content_item(client, "d656f5df-8897-4878-8802-4cf74d0c078d") %>%
+    content_restart()
+}
+```
+
+We use these functions in the file `_targets.R` to define our pipeline. The output of `publish_data()` — the data frame of pin version data — is passed to `remote_render()` and `remote_refresh()`. The version data changes whenever the pin is updated, which causes `targets` to run all the functions that depend on it, refreshing the content on Connect as needed.
+
+```{.r}
+# _targets.R
+library(targets)
+
+tar_option_set(
+  packages = c("readr", "tibble", "connectapi", "pins", "dplyr")
+)
+
+tar_source("R/functions.R")
+
+list(
+  tar_target(penguins_file, "penguins.csv", format = "file"),
+  tar_target(penguins_df, load_data(penguins_file)),
+  tar_target(pin_versions, publish_data(penguins_df)),
+  tar_target(render_result, remote_render(pin_versions)),
+  tar_target(restart_result, remote_refresh(pin_versions))
+)
+```
+
+This `targets` pipeline thus allows us to automate content render and restart tasks on Connect from an external data science pipeline.
+
+## Discussion
+
+This example uses `pins`, but that isn't a requirement to trigger content renders and restarts on Connect from `targets`. As long as your `targets` function returns an artifact whose hash changes whenever the content needs to be rendered or restarted, any data source that you publish to from R and load from a Connect content item can be used similarly.
+
+In this example, the output of `pin_versions()` changes when a new version of the dataset is published. This is returned from our `publish_data()` function, and is passed in as a dependency to our `remote_render()` and `remote_refresh()` functions, causing them to run whenever a new pin is published.
+
+## See also
+
+- [Rendering Content](../../content/rendering-content/index.qmd)
+- [Restarting Content](../../content/restarting-content/index.qmd)

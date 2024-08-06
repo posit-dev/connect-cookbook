@@ -7,4 +7,5 @@ listing:
     - ./deploying-content
     - ./promoting-content-from-staging-to-production
     - ./blue-green-deployments
+    - ./rendering-and-restarting-content-from-r-data-science-pipelines-with-targets
 ---
