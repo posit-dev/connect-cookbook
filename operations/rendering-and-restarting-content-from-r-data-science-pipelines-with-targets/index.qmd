@@ -29,7 +29,7 @@ This is the file layout in our `targets` project.
 
 The `load_data()` function reads the data, performs a bootstrap sample operation, and returns a data frame. The `publish_data()` function takes the resulting data frame, publishes it to a pin stored on Connect, and returns a data frame of pin versions. 
 
-The functions `remote_render()` and `remote_restart()` call `content_render()` and `content_restart()` respectively, to render or restart pieces of Connect content that load the pin data directly. These functions have an argument which is not used directly in the function body, but is used to tell `targets` to when to run them.
+The functions `remote_render()` and `remote_restart()` call `content_render()` and `content_restart()` respectively, to render or restart pieces of Connect content that load the pin data directly. These functions have an argument which is not used directly in the function body, but is used to tell `targets` when to run them.
 
 ```{.r}
 # R/functions.R
