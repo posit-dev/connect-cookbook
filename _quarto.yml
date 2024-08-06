@@ -161,6 +161,7 @@ website:
         # - ./operations/rendering-content-on-demand/index.qmd
         - ./operations/promoting-content-from-staging-to-production/index.qmd
         - ./operations/blue-green-deployments/index.qmd
+        - ./operations/rendering-and-restarting-content-from-r-data-science-pipelines-with-targets/index.qmd
 
 format:
   html:
