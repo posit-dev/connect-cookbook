@@ -27,7 +27,7 @@ This is the file layout in our `targets` project.
 │   ├── functions.R
 ```
 
-The `load_data()` function reads the data, performs a bootstrap sample operation, and returns a data frame. The `publish_data()` function takes the resulting data frame, publishes it to a pin stored on Connect, and returns a data frame of the pin versions. The functions `remote_render()` and `remote_restart()` call `content_render()` and `content_restart()` respectively, to render or restart pieces of Connect content that load the pin data directly. They depend on the pin version data from `publish_data()` even though that object is not used directly in the function body, which causes them to run whenever the pin has been updated.
+The `load_data()` function reads the data, performs a bootstrap sample operation, and returns a data frame. The `publish_data()` function takes the resulting data frame, publishes it to a pin stored on Connect, and returns a data frame of the pin versions. The functions `remote_render()` and `remote_restart()` call `content_render()` and `content_restart()` respectively, to render or restart pieces of Connect content that load the pin data directly. They depend on the pin version data from `publish_data()`, even though that object is not used directly in the function body, which causes them to run whenever the pin has been updated.
 
 ```{.r}
 # R/functions.R
