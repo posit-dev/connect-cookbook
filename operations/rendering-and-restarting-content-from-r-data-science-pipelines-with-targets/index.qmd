@@ -13,7 +13,7 @@ You use the [`targets`](https://books.ropensci.org/targets/) R package to manage
 ## Solution
 
 :::{.callout-note}
-This functionality requires `connectapi` version 0.3.0.
+This functionality requires `connectapi` version 0.3.0 or later.
 :::
 
 Define a `targets` function that uses `connectapi` to render or restart your content. This example loads a data frame, performs a simple manipulation, and publishes the result to a pin using the [`pins` package](https://pins.rstudio.com/).
