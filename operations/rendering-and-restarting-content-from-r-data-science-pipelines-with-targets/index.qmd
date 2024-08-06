@@ -27,7 +27,9 @@ This is the file layout in our `targets` project.
 │   ├── functions.R
 ```
 
-The `load_data()` function reads the data, performs a bootstrap sample operation, and returns a data frame. The `publish_data()` function takes the resulting data frame, publishes it to a pin stored on Connect, and returns a data frame of the pin versions. The functions `remote_render()` and `remote_restart()` call `content_render()` and `content_restart()` respectively, to render or restart pieces of Connect content that load the pin data directly. They depend on the pin version data from `publish_data()`, even though that object is not used directly in the function body, which causes them to run whenever the pin has been updated.
+The `load_data()` function reads the data, performs a bootstrap sample operation, and returns a data frame. The `publish_data()` function takes the resulting data frame, publishes it to a pin stored on Connect, and returns a data frame of pin versions. 
+
+The functions `remote_render()` and `remote_restart()` call `content_render()` and `content_restart()` respectively, to render or restart pieces of Connect content that load the pin data directly. These functions have an argument which is not used directly in the function body, but is used to tell `targets` to when to run them.
 
 ```{.r}
 # R/functions.R
@@ -64,7 +66,7 @@ remote_restart <- function(pin_versions) {
 }
 ```
 
-The functions are used in the pipeline file `_targets.R` like this.
+We use these functions in the file `_targets.R` to define our pipeline. The output of `publish_data()` — the data frame of pin version data — is passed to `remote_render()` and `remote_refresh()`. The version data changes whenever the pin is updated, which causes `targets` to run all the functions that depend on it, refreshing the content on Connect as needed.
 
 ```{.r}
 # _targets.R
@@ -85,7 +87,7 @@ list(
 )
 ```
 
-The output of `publish_data()` is used as the dependency for each of the functions that updates the content on Connect.
+This `targets` pipeline thus allows us to automate content render and restart tasks on Connect from an external data science pipeline.
 
 ## Discussion
 
