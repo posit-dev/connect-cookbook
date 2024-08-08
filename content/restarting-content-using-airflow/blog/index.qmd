@@ -2,21 +2,21 @@
 title: Machine Learning Development with Posit Connect and Airflow
 ---
 
-This tutorial demonstrates using Posit Connect and Apache Airflow to implement a simple machine learning development lifecycle. Wow, that was a mouthful. Let's break it down.
+This tutorial demonstrates using Posit Connect and Apache Airflow to implement a simple machine learning development lifecycle. Wow, that was a mouthful. Let’s break it down.
 
-Apache Airflow is self-described as ["a platform created by the community to programmatically author, schedule, and monitor workflows"](https://airflow.apache.org). In other words, we can use Apache Airflow to orchestrate custom workflows. This includes, but is not limited to, a machine learning development workflow.
+Apache Airflow is self-described as “a platform created by the community to programmatically author, schedule, and monitor workflows.” In other words, we can use Apache Airflow to orchestrate custom workflows. This includes but is not limited to, a machine learning development workflow.
 
-A machine learning development workflow is designed, in part, to create a machine learning model systematicaly. A robust workflow often has many additional components, but for this tutorial, we will concentrate on producing a model that we can use to perform a classification.
+A machine learning development workflow is designed, in part, to create a machine learning model systematically. A robust workflow often has many additional components, but for this tutorial, let’s concentrate on producing a model that we can use to perform a classification.
 
-After training the model, we will deploy an application to Connect that uses the model to predict a classification based on user input.
+After training the model, we’ll deploy an application to Connect that uses the model to predict a classification based on user input.
 
-Then, we will automate our machine learning development workflow for Apache Airflow and programatically update our application to use different models.
+Then, we’ll refactor our machine learning development workflow for Apache Airflow and programmatically update our application to use different models.
 
 ## Machine Learning Development Workflow
 
 ### Data Exploration
 
-The first step in our machine learning development workflow is data exploration. For this tutorial we will use the [`palmerpenguins`](https://allisonhorst.github.io/palmerpenguins/) dataset.
+The first step in our machine learning development workflow is data exploration. For this tutorial, let's use the [`palmerpenguins`](https://allisonhorst.github.io/palmerpenguins/) dataset.
 
 To get started, import the penguins dataset from [`seaborn`](https://seaborn.pydata.org) and understand it's shape.
 
@@ -33,10 +33,10 @@ penguins.info()
 
 Great! The dataframe contains 344 entries and 7 columns.
 
-Let's try to build a machine learning model which correctly determines the species using other information avaiable in the dataset. The `species` column contains three unique values: *Adelie*, *Chinstrap*, and *Gentoo*. For simplicity, let's use the four numerical columns as features in our dataset: `bill_length_mm`, `bill_depth_mm`, `flipper_length_mm`, and `body_mass_g`.
+Let's try to build a machine learning model which correctly determines the species using other information available in the dataset. The `species` column contains three unique values: *Adelie*, *Chinstrap*, and *Gentoo*. For simplicity, let's use the four numerical columns as features in our dataset: `bill_length_mm`, `bill_depth_mm`, `flipper_length_mm`, and `body_mass_g`.
 
 ::: {.callout-tip}
-Check out the ["Introduction to palmerpenguins"](https://allisonhorst.github.io/palmerpenguins/articles/intro.html) to learn more about the dataset.
+To learning more bout this datset, check out ["Introduction to palmerpenguins"](https://allisonhorst.github.io/palmerpenguins/articles/intro.html)
 :::
 
 ### Feature Extraction
@@ -65,7 +65,7 @@ X = penguins[["bill_length_mm", "bill_depth_mm", "flipper_length_mm", "body_mass
 y = penguins["species"]
 ```
 
-Next, split `X` and `y` into training and testing sets. We'll use to the testing set to evaulate the performance of our model.
+Next, split `X` and `y` into training and testing sets. Let's use the testing set to evaulate the performance of our model.
 
 ```{python}
 from sklearn.model_selection import train_test_split
@@ -113,7 +113,7 @@ The confusion matrix shows the cross-section of predicted and true classificatio
 
 ### Model Saving
 
-Finally, let's write the encoder and pipeline to Connect. Check out the `pins` documentation for additional information on configuring a `board_connect` with your credentials.
+Finally, let's write the encoder and pipeline to Connect. For additional information on configuring a `board_connect` with your credentials, check out the [`pins` documentation](https://rstudio.github.io/pins-python/).
 
 ```python
 import pins
@@ -176,7 +176,7 @@ Start your Shiny application using `shiny run app.py`. Here's the application ru
 Let's publish this application to Connect using the [Posit Publisher extension](https://open-vsx.org/extension/posit/publisher) for VSCode and Positron. I named my application "Penguin Predictions". You can name your application anything you like.
 
 ::: {.callout-warning}
-At the time of writing, the Posit Publisher extension is avaiable as a pre-release. For alternative publishing solutions, see the [Posit Connect Documentation](https://docs.posit.co/connect/user/publishing-overview/).
+At the time of writing, the Posit Publisher extension is available as a pre-release. For alternative publishing solutions, see the [Posit Connect Documentation](https://docs.posit.co/connect/user/publishing-overview/).
 :::
 
 ![](publish.gif){width=100%}
