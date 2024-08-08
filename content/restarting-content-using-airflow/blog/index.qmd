@@ -14,7 +14,7 @@ Then, we’ll refactor our machine learning development workflow for Apache Airf
 
 ## Machine Learning Development Workflow
 
-### Data Exploration
+### Data exploration
 
 The first step in our machine learning development workflow is data exploration. For this tutorial, let's use the [`palmerpenguins`](https://allisonhorst.github.io/palmerpenguins/) dataset.
 
@@ -39,7 +39,7 @@ Let's try to build a machine learning model which correctly determines the speci
 To learning more bout this datset, check out ["Introduction to palmerpenguins"](https://allisonhorst.github.io/palmerpenguins/articles/intro.html)
 :::
 
-### Feature Extraction
+### Feature extraction
 
 Let's begin by cleaning by preparing the dataset for model training.
 
@@ -75,7 +75,7 @@ X_train, X_test, y_train, y_test = train_test_split(
 )
 ```
 
-### Model Training
+### Model training
 
 Let's train a simple logistic regression model and evaluate its performance. We'll use a `StandardScaler` to normalize the distribution of each column in the feature sets. This is necessary to reduce bias among features.
 
@@ -89,7 +89,7 @@ pipeline = Pipeline([("scaler", StandardScaler()), ("model", LogisticRegression(
 pipeline = pipeline.fit(X_train, y_train)
 ```
 
-### Model Evaluation
+### Model evaluation
 
 Here we predict the `species` of penguins in the `X_test` dataset.
 
@@ -111,7 +111,7 @@ plt.show()
 
 The confusion matrix shows the cross-section of predicted and true classifications. In this example, the model incorrectly classified 2 *Chinstrap* penguins as *Adelie* penguins.
 
-### Model Saving
+### Model saving
 
 Finally, let's write the encoder and pipeline to Connect. For additional information on configuring a `board_connect` with your credentials, check out the [`pins` documentation](https://rstudio.github.io/pins-python/).
 
@@ -129,7 +129,7 @@ Now that we have trained and deployed our model to Connect, let's build a Shiny 
 Storing machine learning models as `pins` works well for small models. But, larger models may require an alternative storage solution. `pins` supports a variety of storage solutions. Check out the [`pins` documentation](https://rstudio.github.io/pins-python/reference/) to learn more.
 :::
 
-## Create an Application
+## Create an application
 
 Let's create a simple [`shiny`](https://shiny.posit.co/py/index.html) application and publish it on Connect. This example loads the dataset from `encoder` and `pipeline` files created above as Connect Pins. We then collect input from the user and then call the `pipeline.predict` method to determine the species based on the input information. Since the prediction produces a numeric value, we use the encoder to convert the numeric value back to the human-readable `species`.
 
@@ -207,7 +207,7 @@ In our example, we will keep things simple, but here are a few examples of how d
 
 You can see how Airflow can quickly improve our machine-learning workflow to accommodate our organization's needs.
 
-### Data Preparation {#airflow-data-preparation}
+### Data preparation {#airflow-data-preparation}
 
 The first step in our Airflow DAG is to prepare the data. We will load the `palmerpenguins` dataset, clean it by removing missing values, and encode the species column.
 
@@ -225,7 +225,7 @@ def prepare_data():
     penguins["species"] = encoder.fit_transform(penguins["species"])
     return {"penguins": penguins, "encoder": encoder}
 ```
-### Model Training {#airflow-model-training}
+### Model training {#airflow-model-training}
 
 Next, we will train a logistic regression model using the prepared data. We will split the data into training and testing sets, create a pipeline with a standard scaler and logistic regression model, and fit the model.
 
@@ -251,7 +251,7 @@ def train_model(data):
     return {"pipeline": pipeline, "encoder": encoder, "X_test": X_test, "y_test": y_test}
 ```
 
-### Model Evaluation {#airflow-model-evaluation}
+### Model evaluation {#airflow-model-evaluation}
 
 We will evaluate the trained model by calculating its accuracy score on the test set. If the model meets a specified threshold, we will proceed to deploy it.
 
@@ -272,7 +272,7 @@ def evaluate_model(data):
     return True
 ```
 
-### Model Deployment {#airflow-model-deployment}
+### Model deployment {#airflow-model-deployment}
 
 If the model evaluation is successful, we will deploy the model and encoder using Posit Connect. We will use the pins package to write the encoder and pipeline to Connect.
 
@@ -297,7 +297,7 @@ def deploy_model(data, is_valid):
     return True
 ```
 
-### Application Restart {#airflow-application-restart}
+### Application restart {#airflow-application-restart}
 
 Finally, if the model is successfully deployed, we will restart our Shiny application on Posit Connect to use the updated model.
 
@@ -331,7 +331,7 @@ def penguins_dag():
     restart_app(is_deployed)
 ```
 
-### Full Example
+### Full example
 
 ```python
 import datetime
