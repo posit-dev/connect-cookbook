@@ -1,0 +1,7 @@
+jupyter==1.0.0
+pandas
+pins
+scikit-learn==1.5.1
+seaborn==0.13.2
+shiny
+matplotlib

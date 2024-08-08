@@ -1,8 +1,7 @@
-matplotlib
 pandas
-pendulum
 pins
 posit-sdk
 pyarrow
 seaborn
-shiny
+scikit-learn
+vetiver
