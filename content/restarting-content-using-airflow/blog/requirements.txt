@@ -1,7 +1,8 @@
-jupyter==1.0.0
+jupyter
+matplotlib
 pandas
 pins
-scikit-learn==1.5.1
-seaborn==0.13.2
+posit-sdk
+scikit-learn
+seaborn
 shiny
-matplotlib
