@@ -1,0 +1,7 @@
+pandas
+pins
+posit-sdk
+pyarrow
+seaborn
+scikit-learn
+vetiver

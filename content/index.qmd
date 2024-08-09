@@ -16,4 +16,5 @@ listing:
     - ./viewing-a-content-items-vanity-url
     - ./rendering-content
     - ./restarting-content
+    - ./restarting-content-using-airflow
 ---

@@ -1,0 +1,97 @@
+---
+title: Restarting Content using Airflow
+---
+
+## Problem
+
+You want to implement an Airflow DAG that restarts content on a scheduled interval.
+
+## Solution
+
+:::{.callout-note}
+This recipe uses Airflow 2.9.2.
+:::
+
+Let's define an Airflow DAG that runs every hour using the cron expression `0 * * * *`.
+
+```python
+import pendulum
+from airflow.decorators import dag, task
+
+
+@dag(
+    dag_id="example",
+    schedule_interval="0 * * * *",
+    start_date=pendulum.now(),
+    catchup=False,
+)
+def example():
+    @task
+    def restart():
+        pass  # placeholder for task logic
+    restart()
+
+
+example()
+```
+
+Next, we'll extend the `restart` task to intialize a client using credential information stored as *Airflow Variables*. See the [Airflow Variables documentation](https://airflow.apache.org/docs/apache-airflow/stable/core-concepts/variables.html) for additional information.
+
+```python
+from airflow.models import Variable
+from posit import connect
+
+
+@dag(
+    dag_id="example",
+    schedule_interval="0 * * * *",
+    start_date=pendulum.now(),
+    catchup=False,
+)
+def example():
+    @task
+    def restart():
+        client = connect.Client(
+            Variable.get("CONNECT_SERVER"), Variable.get("CONNECT_API_KEY")
+        )
+    restart()
+
+
+example()
+```
+
+Finally, let's get the content using it's unique identifier (guid) and then restart it.
+
+```python
+CONTENT_GUID = "a35ae786-16da-43c6-93d8-0c709766dc46"
+
+
+@dag(
+    dag_id="example",
+    schedule_interval="0 * * * *",
+    start_date=pendulum.now(),
+    catchup=False,
+)
+def example():
+    @task
+    def restart():
+        client = connect.Client(
+            Variable.get("CONNECT_SERVER"), Variable.get("CONNECT_API_KEY")
+        )
+        content = client.content.get(CONTENT_GUID)
+        content.restart()
+    restart()
+
+
+example()
+```
+
+### Full example
+
+```python
+{{< include ./airflow/dags/simple.py >}}
+```
+
+## See also
+
+- [Restarting Content](../restarting-content)

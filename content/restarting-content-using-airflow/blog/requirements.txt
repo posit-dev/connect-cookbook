@@ -1,0 +1,8 @@
+jupyter
+matplotlib
+pandas
+pins
+posit-sdk
+scikit-learn
+seaborn
+shiny
