@@ -1,0 +1,88 @@
+---
+title: "Recipe: Update Environment Variables"
+format:
+  html:
+    toc: true
+---
+
+This recipe provides a method to update an environment variable used across a Posit Connect deployment.
+
+## Ingredients
+
+Running this recipe requires administrator privileges on Posit Connect.
+You would need the following information in your environment to run this report:
+
+- CONNECT_SERVER
+- CONNECT_API_KEY
+
+Additionally, you would need to know the name of the environment variable to be updated and its new value.
+
+## Method
+
+The following script abstracts all Connect content and identifies if the content uses a specified environemnt variable, and then updates the variable with a specified value.
+
+::: {.callout-warning}
+This recipe updates the environment across all content deployed on Connect. There might be situation(s) where the environment variable needs to be updated for a fixed content list. Please make sure to identify that content list and then update the script below before running the environment variable update.
+:::
+
+
+::: {.panel-tabset}
+
+## R
+
+```{r identify_content_r}
+#| eval: false
+#| warning: false
+#| code-fold: false
+#| output: false
+
+library(connectapi)
+library(dplyr)
+library(tidyr)
+library(glue)
+library(gt)
+
+# get Server URL and API Key from the environment
+CONNECT_SERVER <- Sys.getenv('CONNECT_SERVER')
+CONNECT_API_KEY <-Sys.getenv('CONNECT_API_KEY')
+
+# check if API Key is valid
+if (is.null(CONNECT_API_KEY) || is.na(CONNECT_API_KEY) || nchar(CONNECT_API_KEY) == 0) {
+        stop("ERROR: valid CONNECT API key is required")
+      }
+
+# check if Server URL is valid
+if (is.null(CONNECT_SERVER) || is.na(CONNECT_SERVER) || nchar(CONNECT_SERVER) == 0) {
+        stop("ERROR: valid CONNECT server URL is required")
+      }
+
+# get content from Connect API
+client <- connectapi::connect()
+
+content <- connectapi::get_content(client)
+
+# TODO: replace 'TESTVAR' with the environment variable to be updated
+env_var <- "TESTVAR"
+
+# TODO: replace with the new value for the environment variable
+new_value <- ""
+
+purrr::walk(content$guid, ~ {
+  en <- get_environment(content_item(client, .x))
+  if (env_var %in% en$env_vars) {
+    set_environment_new(en, "{env_var}" := new_value)
+    print(paste("Updated", env_var, "in Content", .x))
+  } else {
+    print(paste("Environment variable", env_var, "not found in Content", .x))
+  }
+})
+
+```
+
+## Python
+
+```{python}
+
+```
+
+:::
